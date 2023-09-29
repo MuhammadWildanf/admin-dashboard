@@ -9,10 +9,7 @@ type Props = {
 
 const Pagination = ({ currentPage, totalPage, onNext, onPrevious }: Props) => {
   return (
-    <div className="py-2 flex border-t items-center justify-between">
-      <div className="text-sm text-gray-700">
-        Page {currentPage} of {totalPage}
-      </div>
+    <div className="py-2 flex border-t items-center gap-3">
       <div className="flex gap-2 items-center">
         <Button
           className="px-4 text-sm"
@@ -28,6 +25,10 @@ const Pagination = ({ currentPage, totalPage, onNext, onPrevious }: Props) => {
         >
           Next
         </Button>
+      </div>
+
+      <div className="text-sm text-gray-700 border-l pl-3">
+        Page {currentPage} of {totalPage}
       </div>
     </div>
   );

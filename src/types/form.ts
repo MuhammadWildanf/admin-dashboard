@@ -1,5 +1,6 @@
 import { Control } from "react-hook-form";
 import React, { ChangeEvent } from "react";
+import { ActionMeta } from "react-select";
 
 export type FormType = {
   autofocus?: boolean;
@@ -57,9 +58,9 @@ export type FormSelectType = {
   error?: [] | null;
   disabled?: boolean;
   control?: Control<any>;
-  // onChange?:
-  //   | ((newValue: unknown, actionMeta: ActionMeta<unknown>) => void)
-  //   | undefined;
+  onChange?:
+    | ((newValue: unknown, actionMeta: ActionMeta<unknown>) => void)
+    | undefined;
   onChangeAsync?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -219,8 +220,11 @@ export type FormCheckboxType = {
   disabled?: boolean;
   value?: any;
   checked?: boolean;
+  options?: [];
   control?: Control<any>;
   onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: [] | null;
+  display?: "inline" | "block" | "grid";
+  grid?: number;
 };
