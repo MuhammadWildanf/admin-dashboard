@@ -31,7 +31,7 @@ const activationCodeMenu = {
   label: "Kode Aktivasi",
   name: "activation-code",
   icon: HiOutlineKey,
-  href: "/",
+  href: "/activation-code",
 };
 
 export const menuSuperAdmin: Menu[] = [

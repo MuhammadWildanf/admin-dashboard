@@ -18,6 +18,7 @@ import { Spinner } from "flowbite-react";
 import { error } from "console";
 import { ModuleType } from "../../../types/assessment-tools/module";
 import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
+import { useAlert } from "../../../stores/alert";
 
 type FormValues = {
   name: string;
@@ -48,6 +49,7 @@ const IndexModule = () => {
 
   const { modules, setModules } = useTestModules();
   const { control, handleSubmit, setValue, reset } = useForm<FormValues>();
+  const { setMessage } = useAlert();
 
   const getModules = async (q?: string, searchMode: boolean = false) => {
     setLoading(true);
@@ -100,17 +102,20 @@ const IndexModule = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     setLoadingSubmit(true);
-    console.log(modalMode);
     if (modalMode === "create") {
       try {
         let payload = {
           ...data,
           test: data.test ? data.test.map((item) => item.id) : [],
         };
-        await request.post("/tools/create-module", payload);
+        const { data: res } = await request.post(
+          "/tools/create-module",
+          payload
+        );
         await getModules();
         setLoading(false);
         setModalAdd(false);
+        setMessage(res.message, "success");
       } catch (err: any) {
         setErrors(err.response.data.errors);
       }
@@ -121,7 +126,7 @@ const IndexModule = () => {
           test: data.test ? data.test.map((item) => item.id) : [],
           _method: "PUT",
         };
-        await request.post(
+        const { data: res } = await request.post(
           `/tools/update-module/${moduleSelected?.id}`,
           payload
         );
@@ -129,6 +134,7 @@ const IndexModule = () => {
         setLoading(false);
         setModuleSelected(undefined);
         setModalAdd(false);
+        setMessage(res.message, "success");
       } catch (err: any) {
         setErrors(err.response.data.errors);
       }

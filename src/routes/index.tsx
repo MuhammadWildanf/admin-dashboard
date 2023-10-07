@@ -7,6 +7,8 @@ import NotFound from "../pages/404";
 import IndexTestTool from "../pages/assessment-tools/testtools";
 import IndexTools from "../pages/assessment-tools";
 import IndexModule from "../pages/assessment-tools/moduls";
+import IndexActivationCode from "../pages/activation-codes";
+import DetailActivationCode from "../pages/activation-codes/detail";
 
 export const routes = createBrowserRouter([
   {
@@ -46,6 +48,22 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <IndexModule />
+      </Private>
+    ),
+  },
+  {
+    path: "/activation-code",
+    element: (
+      <Private>
+        <IndexActivationCode />
+      </Private>
+    ),
+  },
+  {
+    path: "/activation-code/:code",
+    element: (
+      <Private>
+        <DetailActivationCode />
       </Private>
     ),
   },

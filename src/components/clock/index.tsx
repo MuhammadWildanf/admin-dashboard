@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
+import "moment-timezone";
+import { getClientTimezone } from "../../helper/date";
 
 const Clock = () => {
   const [currentTime, setCurrentTime] = useState(moment());
+  const [timezone, setTimezone] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    setTimezone(getClientTimezone());
+    // console.log(new Date());
+  }, []);
 
   useEffect(() => {
     // Update the time every second
@@ -24,9 +32,7 @@ const Clock = () => {
       <div className="text-2xl font-semibold leading-none w-28 pr-2 border-r">
         {formattedTime}
       </div>
-      <div className="leading-none text-blue-800">
-        {Intl.DateTimeFormat().resolvedOptions().timeZone}
-      </div>
+      <div className="leading-none text-blue-800">{timezone}</div>
     </div>
   );
 };

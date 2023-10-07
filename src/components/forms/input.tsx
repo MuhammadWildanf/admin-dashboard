@@ -15,6 +15,7 @@ export const FormInput = ({
   control,
   error,
   onChange,
+  defaultValue,
 }: Props) => {
   return (
     <div className="mb-3">
@@ -25,6 +26,7 @@ export const FormInput = ({
         <Controller
           name={name}
           control={control}
+          defaultValue={defaultValue}
           render={({ field }) => (
             <input
               {...field}

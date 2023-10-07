@@ -1,4 +1,5 @@
 import BreadcrumbLayout from "../../components/breadcrumb";
+import Alert from "../../components/toast";
 import NavbarLayout from "./navbar";
 import SidebarLayout from "./sidebar";
 
@@ -7,7 +8,7 @@ type Props = {
   isBlank?: boolean;
   withPageTitle?: boolean;
   pageTitleContent?: JSX.Element | JSX.Element[] | string;
-  title?: string;
+  title?: string | JSX.Element;
 };
 
 const Layout = ({
@@ -45,6 +46,7 @@ const Layout = ({
           </div>
         </>
       )}
+      <Alert />
     </main>
   );
 };
