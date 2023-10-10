@@ -39,9 +39,9 @@ request.interceptors.response.use(
       const pathname = window.location.href.split("//");
       const currentURL = pathname[1];
       // If the error status is 401 (Unauthorized), reload the page
-      if (currentURL.split("/")[2] !== "login") {
-        window.location.href = "/auth/login";
-      }
+      // if (currentURL.split("/")[2] !== "login") {
+      //   window.location.href = "/auth/login";
+      // }
     }
 
     return Promise.reject(error);
