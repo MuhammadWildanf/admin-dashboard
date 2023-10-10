@@ -3,7 +3,7 @@ import Layout from "../layout.tsx/app";
 import { useEffect, useState } from "react";
 import { useActivationCode } from "../../stores/activation-code";
 import { getData } from "../../api/get-data";
-import { parseDate } from "../../helper/date";
+import { calculateAge, parseDate } from "../../helper/date";
 import moment from "moment";
 import Biodata from "./results/biodata";
 import Cfit2Result from "./results/cfit2";
@@ -103,7 +103,12 @@ const DetailActivationCode = () => {
                     ? moment(detail.activation_code.participant?.birth).format(
                         "DD MMMM YYYY"
                       )
-                    : "-"}
+                    : "-"}{" "}
+                  (
+                  {detail?.activation_code?.participant?.birth
+                    ? calculateAge(detail?.activation_code.participant?.birth)
+                    : ""}
+                  )
                 </div>
               </div>
               <div className="flex gap-2">

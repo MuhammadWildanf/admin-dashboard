@@ -16,3 +16,12 @@ export const getClientTimezone = () => {
   const timeZone = moment.tz.guess();
   return timeZone;
 };
+
+export const calculateAge = (birthdate: string) => {
+  const currentDate = moment();
+  const birthdateMoment = moment(birthdate);
+  const years = currentDate.diff(birthdateMoment, "years");
+  birthdateMoment.add(years, "years"); // Add years to get accurate month calculation
+  const months = currentDate.diff(birthdateMoment, "months");
+  return `${years} Thn, ${months} Bln`;
+};
