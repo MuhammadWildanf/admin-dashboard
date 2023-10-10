@@ -17,7 +17,7 @@ const Guest = ({ children }: Props) => {
   const checkSession = async () => {
     try {
       await request.get("/auth/me").then(() => {
-        // navigate(-1);
+        navigate(-1);
       });
     } catch {
       return;

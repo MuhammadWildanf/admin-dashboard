@@ -22,8 +22,8 @@ const Private = ({ children }: Props) => {
       const { data } = await request.get("/auth/me");
       return data;
     } catch {
-      // cookies.remove("accessToken", { path: "/" });
-      // navigate("/auth/login");
+      cookies.remove("accessToken", { path: "/" });
+      navigate("/auth/login");
     }
   };
 
