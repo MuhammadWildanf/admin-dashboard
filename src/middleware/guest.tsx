@@ -26,8 +26,9 @@ const Guest = ({ children }: Props) => {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([checkSession()]);
-    setLoading(false);
+    Promise.all([checkSession()]).then((res) => {
+      setLoading(false);
+    });
   }, []);
 
   return <>{loading ? <LoadingPage /> : <>{children}</>}</>;

@@ -25,6 +25,11 @@ const EppsResult = ({ data }: Props) => {
               <Table.Td className="text-center">{item.ss}</Table.Td>
             </Table.Tr>
           ))}
+          <Table.Tr>
+            <Table.Td cols={5}>
+              <strong>Cons: {data?.norma?.cons}</strong>
+            </Table.Td>
+          </Table.Tr>
         </Table>
       </div>
     </>

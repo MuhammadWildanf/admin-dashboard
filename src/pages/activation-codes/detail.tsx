@@ -11,6 +11,7 @@ import LoadingPage from "../layout.tsx/loading";
 import CfitResult from "./results/cfit";
 import ISTResult from "./results/ist";
 import EppsResult from "./results/epps";
+import RmibResult from "./results/rmib";
 
 const DetailActivationCode = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -138,6 +139,9 @@ const DetailActivationCode = () => {
 
                   case "epps":
                     return <EppsResult key={key} data={item} />;
+
+                  case "rmib":
+                    return <RmibResult key={key} data={item} />;
                 }
                 return <></>;
               })}
