@@ -12,6 +12,15 @@ import CfitResult from "./results/cfit";
 import ISTResult from "./results/ist";
 import EppsResult from "./results/epps";
 import RmibResult from "./results/rmib";
+import McResult from "./results/mc";
+import PapiResult from "./results/papi";
+import KraeplinResult from "./results/kraeplin";
+import DiscResult from "./results/disc";
+import MsdtResult from "./results/msdt";
+import VakResult from "./results/vak";
+import MinatResult from "./results/minat";
+import GrafisResult from "./results/grafis";
+import DocsResult from "./results/docs";
 
 const DetailActivationCode = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -49,7 +58,7 @@ const DetailActivationCode = () => {
           <>
             <div className="mb-6 -mt-4">
               <span
-                className={`py-1 px-4 rounded text-white ${
+                className={`py-1 px-4 rounded text-white uppercase text-sm ${
                   detail?.activation_code.status === "belum digunakan" &&
                   "bg-gray-600"
                 }  ${
@@ -142,11 +151,38 @@ const DetailActivationCode = () => {
                   case "ist":
                     return <ISTResult key={key} data={item} />;
 
+                  case "papi":
+                    return <PapiResult key={key} data={item} />;
+
                   case "epps":
                     return <EppsResult key={key} data={item} />;
 
                   case "rmib":
                     return <RmibResult key={key} data={item} />;
+
+                  case "mc":
+                    return <McResult key={key} data={item} />;
+
+                  case "kraeplin":
+                    return <KraeplinResult key={key} data={item} />;
+
+                  case "disc":
+                    return <DiscResult key={key} data={item} />;
+
+                  case "msdt":
+                    return <MsdtResult key={key} data={item} />;
+
+                  case "vak":
+                    return <VakResult key={key} data={item} />;
+
+                  case "minat":
+                    return <MinatResult key={key} data={item} />;
+
+                  case "grafis":
+                    return <GrafisResult key={key} data={item} />;
+
+                  case "docs":
+                    return <DocsResult key={key} data={item} />;
                 }
                 return <></>;
               })}

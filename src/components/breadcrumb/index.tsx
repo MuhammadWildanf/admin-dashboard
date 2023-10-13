@@ -18,7 +18,7 @@ const BreadcrumbLayout = () => {
               key === paths.length - 1 && "text-blue-700"
             }`}
           >
-            {item === ""
+            {item === "" && key === 0
               ? "dashboard"
               : item
                   .split("-")

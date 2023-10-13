@@ -11,49 +11,43 @@ const Biodata = ({ data }: Props) => {
       <div className="mt-2">
         <div className="grid grid-cols-3 py-1">
           <div className="">Agama</div>
-          <div className="grid-cols-2 capitalize">
+          <div className="col-span-2 capitalize">
             : {data?.data.agama || "-"}
           </div>
         </div>
 
         <div className="grid grid-cols-3  py-1">
           <div className="">Status Pernikahan</div>
-          <div className="grid-cols-2 capitalize">
+          <div className="col-span-2 capitalize">
             : {data?.data.status_perkawinan || "-"}
           </div>
         </div>
 
         <div className="grid grid-cols-3  py-1">
           <div className="">Alamat Lengkap</div>
-          <div className="grid-cols-2 capitalize">
-            : {data?.data.alamat || "-"}
-          </div>
+          <div className="col-span-2">: {data?.data.alamat || "-"}</div>
         </div>
 
         <div className="grid grid-cols-3  py-1">
           <div className="">No Telp</div>
-          <div className="grid-cols-2 capitalize">
-            : {data?.data.no_telphone || "-"}
-          </div>
+          <div className="col-span-2 ">: {data?.data.no_telphone || "-"}</div>
         </div>
 
         <div className="grid grid-cols-3  py-1">
           <div className="">Email</div>
-          <div className="grid-cols-2 capitalize">
-            : {data?.data.email || "-"}
-          </div>
+          <div className="col-span-2 ">: {data?.data.email || "-"}</div>
         </div>
 
         <div className="grid grid-cols-3  py-1">
           <div className="">Bahasa Asing</div>
-          <div className="grid-cols-2 capitalize">
+          <div className="col-span-2 capitalize">
             : {data?.data.bahasa_asing || "-"}
           </div>
         </div>
 
         <div className="grid grid-cols-3  py-1">
           <div className="">Posisi yang dituju</div>
-          <div className="grid-cols-2 capitalize">
+          <div className="col-span-2 capitalize">
             : {data?.data.posisi_yang_dituju || "-"}
           </div>
         </div>

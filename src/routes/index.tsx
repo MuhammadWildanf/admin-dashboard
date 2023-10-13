@@ -9,6 +9,7 @@ import IndexTools from "../pages/assessment-tools";
 import IndexModule from "../pages/assessment-tools/moduls";
 import IndexActivationCode from "../pages/activation-codes";
 import DetailActivationCode from "../pages/activation-codes/detail";
+import SheetActivationCode from "../pages/activation-codes/sheet";
 
 export const routes = createBrowserRouter([
   {
@@ -61,6 +62,22 @@ export const routes = createBrowserRouter([
   },
   {
     path: "/activation-code/:code",
+    element: (
+      <Private>
+        <DetailActivationCode />
+      </Private>
+    ),
+  },
+  {
+    path: "/activation-code/:code/sheet",
+    element: (
+      <Private>
+        <SheetActivationCode />
+      </Private>
+    ),
+  },
+  {
+    path: "/activation-code/:code/access",
     element: (
       <Private>
         <DetailActivationCode />

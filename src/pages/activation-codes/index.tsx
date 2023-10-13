@@ -152,7 +152,7 @@ const IndexActivationCode = () => {
   return (
     <Layout
       withPageTitle
-      title="Alat Tes"
+      title="Kode Aktivasi Asesmen"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -303,7 +303,14 @@ const IndexActivationCode = () => {
                               >
                                 <HiExclamationCircle />
                               </div>
-                              <div className="bg-gray-600 text-white p-1 cursor-pointer hover:bg-gray-700 rounded">
+                              <div
+                                className="bg-gray-600 text-white p-1 cursor-pointer hover:bg-gray-700 rounded"
+                                onClick={() =>
+                                  navigate(
+                                    `/activation-code/${item.code}/sheet`
+                                  )
+                                }
+                              >
                                 <HiClipboardList />
                               </div>
                               <div className="bg-green-600 text-white p-1 cursor-pointer hover:bg-green-700 rounded">

@@ -4,7 +4,7 @@ import { HiOutlineMinusSm, HiOutlinePlusSm } from "react-icons/hi";
 import { useMenu } from "../../stores/menu";
 import { useSession } from "../../stores/session";
 import { menuSuperAdmin } from "./sidebar-menu";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SidebarLayout = () => {
   const { open, setOpen } = useMenu();
@@ -49,6 +49,7 @@ const SidebarItems = ({ className }: Props) => {
 
   const location = useLocation();
   const { pathname } = location;
+  const navigate = useNavigate();
 
   return (
     <Sidebar className={`fixed h-screen top-0 ${className}`} theme={theme}>
@@ -99,8 +100,10 @@ const SidebarItems = ({ className }: Props) => {
                   ) : (
                     <Sidebar.Item
                       key={key}
-                      href={item.href}
+                      // href={item.href}
+                      onClick={() => navigate(item.href ?? "/")}
                       icon={item.icon}
+                      className={`cursor-pointer`}
                       active={
                         (item.name === "dashboard" &&
                           !pathname.split("/")[1]) ||
