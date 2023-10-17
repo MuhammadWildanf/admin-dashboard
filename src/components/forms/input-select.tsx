@@ -3,6 +3,7 @@ import Select from "react-select";
 import { FormSelectType } from "../../types/form";
 import { Controller } from "react-hook-form";
 import { StylesConfig } from "react-select";
+import moment from "moment";
 
 type Props = FormSelectType;
 
@@ -295,6 +296,83 @@ export const FormSelectAsyncCustom = ({
           />
         )}
       />
+      {error && <small className="text-xs text-red-600">{error}</small>}
+    </div>
+  );
+};
+
+export const FormSelectTimezone = ({
+  label,
+  name,
+  placeholder,
+  required = false,
+  defaultValue,
+  control,
+  multiple,
+  optionLabel,
+  optionValue,
+  value,
+  error,
+  disabled,
+  onChange,
+}: Props) => {
+  const timezones = moment.tz.names().map((timezone) => ({
+    value: timezone,
+    label: timezone,
+  }));
+
+  const currentTimezone = timezones.find(
+    (item) => item.value === defaultValue ?? moment.tz.guess()
+  );
+
+  return (
+    <div className="mb-3">
+      <label htmlFor={label} className="block mb-1 text-sm text-gray-700">
+        {label} {required ? <span className="text-red-600">*</span> : ""}
+      </label>
+      {control ? (
+        <Controller
+          name={name}
+          control={control}
+          defaultValue={currentTimezone}
+          render={({ field }) => (
+            <Select
+              {...field}
+              styles={selectStyle}
+              required={required}
+              placeholder={placeholder}
+              menuPortalTarget={document.body}
+              menuPosition={"fixed"}
+              isDisabled={disabled}
+              getOptionLabel={
+                optionLabel ? optionLabel : (option: any) => option.label
+              }
+              getOptionValue={
+                optionValue ? optionValue : (option: any) => option.value
+              }
+              options={timezones}
+            />
+          )}
+        />
+      ) : (
+        <Select
+          styles={selectStyle}
+          required={required}
+          placeholder={placeholder}
+          menuPortalTarget={document.body}
+          menuPosition={"fixed"}
+          getOptionLabel={
+            optionLabel ? optionLabel : (option: any) => option.label
+          }
+          getOptionValue={
+            optionValue ? optionValue : (option: any) => option.value
+          }
+          options={timezones}
+          isDisabled={disabled}
+          onChange={onChange}
+          defaultValue={currentTimezone}
+        />
+      )}
       {error && <small className="text-xs text-red-600">{error}</small>}
     </div>
   );

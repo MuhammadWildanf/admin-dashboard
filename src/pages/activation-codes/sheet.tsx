@@ -120,11 +120,11 @@ const SheetActivationCode = () => {
                       <div className="flex gap-1 text-sm">
                         <div className="pr-2 border-r">
                           Mulai:{" "}
-                          {item.created_at ? parseDate(item.creted_at) : "-"}
+                          {item.created_at ? parseDate(item.created_at) : "-"}
                         </div>
                         <div className="pl-1">
                           Selesai:{" "}
-                          {item.created_at ? parseDate(item.updated_at) : "-"}
+                          {item.updated_at ? parseDate(item.updated_at) : "-"}
                         </div>
                       </div>
                     </div>

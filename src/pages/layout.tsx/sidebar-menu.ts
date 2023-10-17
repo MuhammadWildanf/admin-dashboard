@@ -1,4 +1,9 @@
-import { HiChartPie, HiDocumentText, HiOutlineKey } from "react-icons/hi";
+import {
+  HiChartPie,
+  HiDocumentText,
+  HiOutlineKey,
+  HiUserGroup,
+} from "react-icons/hi";
 import { useSession } from "../../stores/session";
 
 type Menu = {
@@ -27,6 +32,14 @@ const testToolMenu = {
   ],
 };
 
+const userManagementMenu = {
+  label: "Manajemen User",
+  name: "users",
+  icon: HiUserGroup,
+  href: "#",
+  child: [{ label: "Admin", name: "admin", href: "/users/admin" }],
+};
+
 const activationCodeMenu = {
   label: "Kode Aktivasi",
   name: "activation-code",
@@ -38,4 +51,5 @@ export const menuSuperAdmin: Menu[] = [
   dashboardMenu,
   activationCodeMenu,
   testToolMenu,
+  userManagementMenu,
 ];

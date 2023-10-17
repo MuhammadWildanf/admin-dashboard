@@ -21,6 +21,7 @@ import VakResult from "./results/vak";
 import MinatResult from "./results/minat";
 import GrafisResult from "./results/grafis";
 import DocsResult from "./results/docs";
+import TiuResult from "./results/tiu";
 
 const DetailActivationCode = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -183,6 +184,9 @@ const DetailActivationCode = () => {
 
                   case "docs":
                     return <DocsResult key={key} data={item} />;
+
+                  case "tiu":
+                    return <TiuResult key={key} data={item} />;
                 }
                 return <></>;
               })}

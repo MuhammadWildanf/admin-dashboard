@@ -31,3 +31,29 @@ export type ActivationCodeDetailType = {
   };
   result: any[];
 };
+
+export type AccessDataType = {
+  code: string;
+  created_at: string;
+  access: {
+    id: number;
+    ip: string;
+    token: string;
+    expired_at: string;
+    created_at: string | null;
+    updated_at: string;
+    is_active: number;
+    user_agent: {
+      device: boolean;
+      browser: {
+        name: string;
+        version: string;
+      };
+      platform: {
+        name: string;
+        version: string;
+      };
+    };
+    ip_detail: {};
+  }[];
+};

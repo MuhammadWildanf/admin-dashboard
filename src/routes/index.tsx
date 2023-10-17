@@ -10,6 +10,9 @@ import IndexModule from "../pages/assessment-tools/moduls";
 import IndexActivationCode from "../pages/activation-codes";
 import DetailActivationCode from "../pages/activation-codes/detail";
 import SheetActivationCode from "../pages/activation-codes/sheet";
+import AccessActivationCode from "../pages/activation-codes/access";
+import ProfilePage from "../pages/profile";
+import UserAdmin from "../pages/users/admins";
 
 export const routes = createBrowserRouter([
   {
@@ -25,6 +28,14 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <Homepage />
+      </Private>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <Private>
+        <ProfilePage />
       </Private>
     ),
   },
@@ -80,7 +91,15 @@ export const routes = createBrowserRouter([
     path: "/activation-code/:code/access",
     element: (
       <Private>
-        <DetailActivationCode />
+        <AccessActivationCode />
+      </Private>
+    ),
+  },
+  {
+    path: "/users/admin",
+    element: (
+      <Private>
+        <UserAdmin />
       </Private>
     ),
   },

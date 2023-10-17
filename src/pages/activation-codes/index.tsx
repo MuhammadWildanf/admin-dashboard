@@ -116,7 +116,6 @@ const IndexActivationCode = () => {
 
   const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
-    console.log(data);
     try {
       let payload = {
         ...data,
@@ -314,7 +313,13 @@ const IndexActivationCode = () => {
                                 <HiClipboardList />
                               </div>
                               <div className="bg-green-600 text-white p-1 cursor-pointer hover:bg-green-700 rounded">
-                                <HiKey />
+                                <HiKey
+                                  onClick={() =>
+                                    navigate(
+                                      `/activation-code/${item.code}/access`
+                                    )
+                                  }
+                                />
                               </div>
                             </div>
                           )}

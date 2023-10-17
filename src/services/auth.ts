@@ -17,8 +17,9 @@ export const setAccessToken = (token: string) => {
 
 export const logout = async () => {
   try {
-    await request.post("/logout");
+    await request.post("/auth/logout");
     cookies.remove("accessToken", { path: "/" });
+    window.location.reload();
     return true;
   } catch {
     return false;

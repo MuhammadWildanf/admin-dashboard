@@ -1,11 +1,24 @@
-import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { Dropdown, Navbar, Spinner } from "flowbite-react";
 import { useMenu } from "../../stores/menu";
 import { useSession } from "../../stores/session";
 import Clock from "../../components/clock";
+import { User } from "@phosphor-icons/react";
+import { useState } from "react";
+import { logout } from "../../services/auth";
+import { useNavigate } from "react-router-dom";
 
 const NavbarLayout = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+
   const { setOpen, open } = useMenu();
   const { me } = useSession();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    setLoading(true);
+    await logout();
+    setLoading(false);
+  };
 
   return (
     <Navbar fluid className="shadow-lg z-50 w-full fixed top-0">
@@ -48,11 +61,9 @@ const NavbarLayout = () => {
           arrowIcon={false}
           inline
           label={
-            <Avatar
-              alt="User settings"
-              img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-              rounded
-            />
+            <div className="w-10 h-10 bg-gray-300 rounded-full flex justify-center items-center">
+              <User size={30} className="text-gray-600" />
+            </div>
           }
           className="w-44"
         >
@@ -62,9 +73,18 @@ const NavbarLayout = () => {
               {me?.role}
             </span>
           </Dropdown.Header>
-          {/* <Dropdown.Item>Dashboard</Dropdown.Item>
-          <Dropdown.Item>Settings</Dropdown.Item> */}
-          <Dropdown.Item>Logout</Dropdown.Item>
+          <Dropdown.Item onClick={() => navigate("/profile")}>
+            Profil
+          </Dropdown.Item>
+          <Dropdown.Item onClick={handleLogout}>
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Spinner /> Logging out...
+              </div>
+            ) : (
+              "Logout"
+            )}
+          </Dropdown.Item>
         </Dropdown>
       </div>
     </Navbar>

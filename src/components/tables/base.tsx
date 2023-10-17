@@ -6,6 +6,7 @@ type Props = {
   style?: CSS.Properties;
   cols?: number;
   rows?: number;
+  bordered?: boolean;
 };
 
 const Table = ({ children, className, style }: Props) => {
@@ -24,9 +25,11 @@ const Thead = ({ children, className, style }: Props) => {
   );
 };
 
-const Th = ({ children, className, style }: Props) => {
+const Th = ({ children, className, style, cols, rows }: Props) => {
   return (
     <th
+      colSpan={cols}
+      rowSpan={rows}
       style={style}
       className={`border-none text-left p-2 text-sm ${className}`}
     >
