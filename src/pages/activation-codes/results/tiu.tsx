@@ -36,7 +36,7 @@ const TiuResult = ({ data }: Props) => {
                 Sedang
               </td>
               <td colSpan={2} className="border text-center py-2">
-                Rendah
+                Tinggi
               </td>
             </tr>
             <tr className="text-sm border">
