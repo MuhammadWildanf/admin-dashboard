@@ -81,11 +81,30 @@ const Td2 = ({ children, className, style, cols, rows }: Props) => {
 
 const Loading = () => {
   return (
-    <div role="status" className="animate-pulse pt-4">
-      <div className="h-4 bg-gray-200 rounded dark:bg-gray-700 w-full mb-4"></div>
-      <div className="h-4 bg-gray-200 rounded dark:bg-gray-700 w-full mb-4"></div>
+    <div role="status" className="animate-pulse">
+      <div className="h-4 bg-gray-200 rounded dark:bg-gray-700 w-full"></div>
       <span className="sr-only">Loading...</span>
     </div>
+  );
+};
+
+const TrLoading = ({ cols, rows }: Props) => {
+  return (
+    <>
+      {Array(rows)
+        .fill(null)
+        .map((_, index) => (
+          <Table.Tr>
+            {Array(cols)
+              .fill(null)
+              .map((_, index) => (
+                <Table.Td>
+                  <Loading />
+                </Table.Td>
+              ))}
+          </Table.Tr>
+        ))}
+    </>
   );
 };
 
@@ -101,5 +120,6 @@ Table.Td = Td;
 Table.Td2 = Td2;
 Table.Loading = Loading;
 Table.NotFound = NotFound;
+Table.TrLoading = TrLoading;
 
 export default Table;

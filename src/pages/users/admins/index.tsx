@@ -20,7 +20,8 @@ import {
 import { SelectOptionType } from "../../../types/form";
 import { UserAdminType } from "../../../types/users";
 import { request } from "../../../api/config";
-import { Pencil, Trash } from "@phosphor-icons/react";
+import { Key, Pencil, Trash } from "@phosphor-icons/react";
+import { useAlert } from "../../../stores/alert";
 
 type FormValues = {
   name: string;
@@ -47,12 +48,15 @@ const UserAdmin = () => {
   const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
     undefined
   );
+  const [modalReset, setModalReset] = useState<boolean>(false);
+  const [randomString, setRandomString] = useState<string | null>(null);
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<UserAdminType | null>(null);
 
   const { control, setValue, reset, handleSubmit } = useForm<FormValues>();
   const { setUserAdmins, userAdmins } = useUserAdmin();
+  const { setMessage } = useAlert();
 
   const roles = [
     { label: "Super Admin", value: "superadmin" },
@@ -106,6 +110,7 @@ const UserAdmin = () => {
       }
       setModalAdd(false);
       setModalMode(undefined);
+      setMessage("Admin user saved!", "success");
     } catch (err: any) {
       setErrors(err.response.data.errors);
       console.log(err);
@@ -132,8 +137,44 @@ const UserAdmin = () => {
       await request.delete(`/users/admin/${selected?.id}/destroy`);
       setSelected(null);
       setModalDelete(false);
-    } catch (err) {}
+      setMessage("User deleted", "success");
+    } catch (err: any) {
+      setErrors(err.response.data.errors);
+    }
     setLoadingSubmit(false);
+  };
+
+  const handleResetPassword = handleSubmit(async (data) => {
+    setLoadingSubmit(true);
+    try {
+      let payload = {
+        password: data.password,
+      };
+      await request.post(
+        `/users/admin/${selected?.id}/updatePassword`,
+        payload
+      );
+      setSelected(null);
+      setModalReset(false);
+      setMessage("Password changed!", "success");
+    } catch (err: any) {
+      console.log(err);
+      setErrors(err.response.data.errors);
+    }
+    setLoadingSubmit(false);
+  });
+
+  const generateRandomString = (length: number) => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters.charAt(randomIndex);
+    }
+
+    return result;
   };
 
   useEffect(() => {
@@ -194,33 +235,11 @@ const UserAdmin = () => {
           <Table.Th>Role</Table.Th>
           <Table.Th>Zona waktu</Table.Th>
           <Table.Th>Status</Table.Th>
-          <Table.Th>Opsi</Table.Th>
+          <Table.Th className="text-center">Opsi</Table.Th>
         </Table.Thead>
         <Table.Tbody>
           {loading ? (
-            <Table.Tr>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-            </Table.Tr>
+            <Table.TrLoading cols={7} rows={4} />
           ) : (
             <>
               {userAdmins?.data.length === 0 ? (
@@ -258,7 +277,7 @@ const UserAdmin = () => {
                         )}
                       </Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {
@@ -269,6 +288,14 @@ const UserAdmin = () => {
                           <Pencil
                             className="text-blue-600 text-xl cursor-pointer"
                             onClick={() => handleFormEdit(item)}
+                          />
+                          <Key
+                            className="text-yellow-600 text-xl cursor-pointer"
+                            onClick={() => {
+                              setSelected(item);
+                              setRandomString(generateRandomString(8));
+                              setModalReset(true);
+                            }}
                           />
                         </div>
                       </Table.Td>
@@ -334,6 +361,26 @@ const UserAdmin = () => {
           </Button>
         </div>
       </BaseModal>
+
+      <BaseModal
+        title={`Reset Password untuk ${selected?.name}`}
+        isOpen={modalReset}
+        close={() => setModalReset(false)}
+      >
+        <FormInput
+          name="password"
+          control={control}
+          label="Password"
+          defaultValue={randomString}
+          error={errors?.password}
+        />
+        <div className="mt-3 flex items-center justify-end">
+          <Button className="px-8" onClick={handleResetPassword}>
+            {loadingSubmit ? <Spinner /> : "Simpan"}
+          </Button>
+        </div>
+      </BaseModal>
+
       <ModalDeleteConfirmation
         isOpen={modalDelete}
         close={() => setModalDelete(false)}

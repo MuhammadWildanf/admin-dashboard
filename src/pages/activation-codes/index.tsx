@@ -205,32 +205,7 @@ const IndexActivationCode = () => {
         </Table.Thead>
         <Table.Tbody>
           {loading ? (
-            <Table.Tr>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-              <Table.Td>
-                <Table.Loading />
-              </Table.Td>
-            </Table.Tr>
+            <Table.TrLoading cols={8} rows={5} />
           ) : (
             <>
               {activationCodes?.data.length === 0 ? (
