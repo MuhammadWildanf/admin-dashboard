@@ -246,9 +246,18 @@ const IndexActivationCode = () => {
                         ).toString()}
                       </Table.Td>
                       <Table.Td>
-                        <>
-                          {item.code} <br />{" "}
-                        </>
+                        <div className="flex items-center gap-1">
+                          <span>{item.code}</span>
+                          <span
+                            className={`text-xs uppercase text-white font-bold px-2 rounded ${
+                              item.type === "logos"
+                                ? "bg-blue-600"
+                                : "bg-pink-600"
+                            }`}
+                          >
+                            {item.type === "logos" ? "L" : "D"}
+                          </span>
+                        </div>
                       </Table.Td>
                       <Table.Td>{item.module_name ?? "-"}</Table.Td>
                       <Table.Td>{item.participant ?? "-"}</Table.Td>
