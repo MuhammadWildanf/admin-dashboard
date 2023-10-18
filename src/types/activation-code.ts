@@ -6,7 +6,11 @@ export type ActivationCodeType = {
   is_used: boolean;
   module_name: string | null;
   participant: string | null;
-  psikolog_name: string | null;
+  psikolog: {
+    id: string;
+    name: string;
+  } | null;
+  type: string;
   status: string | null;
   created_at: string;
   updated_at: string;

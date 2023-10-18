@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import AddButton from "../../components/buttons/add";
-import { InputSearch } from "../../components/forms/input-search";
 import Layout from "../layout.tsx/app";
 import { useForm } from "react-hook-form";
 import { useActivationCode } from "../../stores/activation-code";
@@ -30,6 +29,8 @@ import moment from "moment-timezone";
 import { Button } from "../../components/buttons";
 import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
 import { ActivationCodeType } from "../../types/activation-code";
+import { PsikologType } from "../../types/psikolog";
+import { SelectOptionType } from "../../types/form";
 
 type FormValues = {
   modul_id: ModuleType;
@@ -37,6 +38,8 @@ type FormValues = {
   start_at: string;
   end_at: string;
   amount: number;
+  type: SelectOptionType;
+  psikolog_id: PsikologType;
 };
 
 type ErrorForm = {
@@ -45,12 +48,9 @@ type ErrorForm = {
   start_at: [] | null;
   end_at: [] | null;
   amount: [] | null;
+  psikolog_id: [] | null;
+  type: [] | null;
 };
-
-interface TimezoneOption {
-  label: string;
-  value: string;
-}
 
 const IndexActivationCode = () => {
   const [q, setQ] = useState<string | undefined>(undefined);
@@ -65,10 +65,15 @@ const IndexActivationCode = () => {
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<ActivationCodeType | null>(null);
 
-  const { handleSubmit, reset, control } = useForm<FormValues>();
+  const { handleSubmit, reset, control, watch } = useForm<FormValues>();
   const { activationCodes, setActivationCode } = useActivationCode();
 
   const navigate = useNavigate();
+
+  const codeType = [
+    { label: "Logos", value: "logos" },
+    { label: "Deeptalk", value: "deeptalk" },
+  ];
 
   const getActivationCode = async (
     search?: string,
@@ -114,19 +119,33 @@ const IndexActivationCode = () => {
     return data.data.data;
   };
 
+  const selectPsikolog = async (inputValue: string) => {
+    let params = {
+      q: inputValue,
+      type: watch("type") ? watch("type").value : null,
+    };
+    const { data } = await request.get("/select/psikolog", {
+      params: params,
+    });
+    return data.data.data;
+  };
+
   const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
       let payload = {
         ...data,
-        modul_id: data.modul_id.id,
+        modul_id: data?.modul_id?.id,
+        psikolog_id: data?.psikolog_id.id,
+        type: data?.type.value,
         timezone: moment.tz.guess(),
       };
       await request.post("/activation-code", payload);
       setModalAdd(false);
       setModalMode(undefined);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      setErrors(err.response.data.errors);
     }
     setLoadingSubmit(false);
   });
@@ -226,10 +245,14 @@ const IndexActivationCode = () => {
                             (activationCodes.current_page - 1)
                         ).toString()}
                       </Table.Td>
-                      <Table.Td>{item.code}</Table.Td>
+                      <Table.Td>
+                        <>
+                          {item.code} <br />{" "}
+                        </>
+                      </Table.Td>
                       <Table.Td>{item.module_name ?? "-"}</Table.Td>
                       <Table.Td>{item.participant ?? "-"}</Table.Td>
-                      <Table.Td>{item.psikolog_name ?? "-"}</Table.Td>
+                      <Table.Td>{item.psikolog?.name ?? "-"}</Table.Td>
                       <Table.Td>
                         {item.start_at
                           ? item.end_at &&
@@ -328,6 +351,7 @@ const IndexActivationCode = () => {
           error={errors?.amount}
           defaultValue={1}
         />
+
         <FormSelectAsync
           label="Pilih Alat Test"
           name="modul_id"
@@ -337,6 +361,26 @@ const IndexActivationCode = () => {
           optionValue={(option: ModuleType) => `${option.id}`}
           error={errors?.modul_id}
         />
+
+        <FormSelect
+          label="Digunakan untuk"
+          name="type"
+          control={control}
+          defaultValue={{ label: "Logos", value: "logos" }}
+          options={codeType}
+          error={errors?.type}
+        />
+
+        <FormSelectAsync
+          label="Pilih Psikolog"
+          name="psikolog_id"
+          control={control}
+          loadOption={selectPsikolog}
+          optionLabel={(option: PsikologType) => `${option.fullname}`}
+          optionValue={(option: PsikologType) => `${option.id}`}
+          error={errors?.modul_id}
+        />
+
         <FormInput
           name="start_at"
           control={control}
@@ -344,6 +388,7 @@ const IndexActivationCode = () => {
           label="Tanggal Mulai"
           error={errors?.start_at}
         />
+
         <FormInput
           name="end_at"
           control={control}
