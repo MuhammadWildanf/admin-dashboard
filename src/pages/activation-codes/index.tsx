@@ -136,8 +136,8 @@ const IndexActivationCode = () => {
       let payload = {
         ...data,
         modul_id: data?.modul_id?.id,
-        psikolog_id: data?.psikolog_id.id,
-        type: data?.type.value,
+        psikolog_id: data?.psikolog_id?.id ?? "",
+        type: data?.type?.value,
         timezone: moment.tz.guess(),
       };
       await request.post("/activation-code", payload);
