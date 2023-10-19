@@ -13,6 +13,7 @@ import SheetActivationCode from "../pages/activation-codes/sheet";
 import AccessActivationCode from "../pages/activation-codes/access";
 import ProfilePage from "../pages/profile";
 import UserAdmin from "../pages/users/admins";
+import PrintActivationCode from "../pages/activation-codes/print";
 
 export const routes = createBrowserRouter([
   {
@@ -92,6 +93,14 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <AccessActivationCode />
+      </Private>
+    ),
+  },
+  {
+    path: "/activation-code/:code/print",
+    element: (
+      <Private>
+        <PrintActivationCode />
       </Private>
     ),
   },

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../layout.tsx/app";
 import { useEffect, useState } from "react";
 import { useActivationCode } from "../../stores/activation-code";
@@ -22,12 +22,16 @@ import MinatResult from "./results/minat";
 import GrafisResult from "./results/grafis";
 import DocsResult from "./results/docs";
 import TiuResult from "./results/tiu";
+import { Button } from "../../components/buttons";
+import { Printer } from "@phosphor-icons/react";
 
 const DetailActivationCode = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const { code } = useParams();
   const { detail, setDetail } = useActivationCode();
+
+  const navigate = useNavigate();
 
   const getDetail = async () => {
     setLoading(true);
@@ -57,7 +61,7 @@ const DetailActivationCode = () => {
           <LoadingPage />
         ) : (
           <>
-            <div className="mb-6 -mt-4">
+            <div className="mb-6 -mt-4 flex items-center justify-between">
               <span
                 className={`py-1 px-4 rounded text-white uppercase text-sm ${
                   detail?.activation_code.status === "belum digunakan" &&
@@ -70,6 +74,20 @@ const DetailActivationCode = () => {
               >
                 {detail?.activation_code.status}
               </span>
+              <div className="">
+                <Button
+                  className="text-sm px-4"
+                  onClick={() =>
+                    navigate(
+                      `/activation-code/${detail?.activation_code.code}/print`
+                    )
+                  }
+                >
+                  <div className="flex items-center gap-2">
+                    <Printer size={18} /> Print
+                  </div>
+                </Button>
+              </div>
             </div>
             <div className="py-2 border-t grid grid-cols-2 gap-2 text-sm">
               <div className="flex gap-2">
