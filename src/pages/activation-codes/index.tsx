@@ -362,7 +362,7 @@ const IndexActivationCode = () => {
         />
 
         <FormSelectAsync
-          label="Pilih Alat Test"
+          label="Pilih Modul"
           name="modul_id"
           control={control}
           loadOption={selectModules}
