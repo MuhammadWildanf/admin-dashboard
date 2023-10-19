@@ -31,6 +31,7 @@ import ModalDeleteConfirmation from "../../components/modal/delete-confirmation"
 import { ActivationCodeType } from "../../types/activation-code";
 import { PsikologType } from "../../types/psikolog";
 import { SelectOptionType } from "../../types/form";
+import { Pencil } from "@phosphor-icons/react";
 
 type FormValues = {
   modul_id: ModuleType;
@@ -58,14 +59,19 @@ const IndexActivationCode = () => {
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [modalAdd, setModalAdd] = useState<boolean>(false);
+  const [modalEditPsikolog, setModalEditPsikolog] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
     undefined
   );
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<ActivationCodeType | null>(null);
+  const [selectedPsikolog, setSelectedPsikolog] = useState<PsikologType | null>(
+    null
+  );
 
-  const { handleSubmit, reset, control, watch } = useForm<FormValues>();
+  const { handleSubmit, reset, control, watch, setValue } =
+    useForm<FormValues>();
   const { activationCodes, setActivationCode } = useActivationCode();
 
   const navigate = useNavigate();
@@ -127,7 +133,18 @@ const IndexActivationCode = () => {
     const { data } = await request.get("/select/psikolog", {
       params: params,
     });
-    return data.data.data;
+    return data.data?.data;
+  };
+
+  const selectPsikologById = async (id: string) => {
+    let params = {
+      id: id,
+      type: watch("type") ? watch("type").value : null,
+    };
+    const { data } = await request.get("/select/psikolog", {
+      params: params,
+    });
+    return data.data.data[0] ?? null;
   };
 
   const handleSave = handleSubmit(async (data) => {
@@ -157,8 +174,28 @@ const IndexActivationCode = () => {
       setSelected(null);
       setModalDelete(false);
     } catch (err) {}
+    reset();
     setLoadingSubmit(false);
   };
+
+  const handleChangePsikolog = handleSubmit(async (data) => {
+    setLoadingSubmit(true);
+    try {
+      let payload = {
+        psikolog_id: data?.psikolog_id?.id,
+      };
+      await request.post(
+        `/activation-code/${selected?.id}/change-psikolog`,
+        payload
+      );
+    } catch (err: any) {
+      console.log(err);
+      setErrors(err.response.data.errors);
+    }
+    reset();
+    setModalEditPsikolog(false);
+    setLoadingSubmit(false);
+  });
 
   useEffect(() => {
     Promise.all([getActivationCode()]).then((res) => {
@@ -261,7 +298,28 @@ const IndexActivationCode = () => {
                       </Table.Td>
                       <Table.Td>{item.module_name ?? "-"}</Table.Td>
                       <Table.Td>{item.participant ?? "-"}</Table.Td>
-                      <Table.Td>{item.psikolog?.name ?? "-"}</Table.Td>
+                      <Table.Td>
+                        <div className="flex items-center gap-2">
+                          {item.psikolog?.name ?? "-"}
+                          <div>
+                            <Pencil
+                              onClick={async () => {
+                                setSelected(item);
+                                setModalEditPsikolog(true);
+                                setValue(
+                                  "psikolog_id",
+                                  item.psikolog
+                                    ? await selectPsikologById(
+                                        item.psikolog?.id
+                                      )
+                                    : null
+                                );
+                              }}
+                              className="text-blue-600 cursor-pointer"
+                            />
+                          </div>
+                        </div>
+                      </Table.Td>
                       <Table.Td>
                         {item.start_at
                           ? item.end_at &&
@@ -411,6 +469,30 @@ const IndexActivationCode = () => {
           </Button>
         </div>
       </BaseModal>
+
+      <BaseModal
+        title={`Ubah Psikolog #${selected?.code}`}
+        isOpen={modalEditPsikolog}
+        close={() => setModalEditPsikolog(false)}
+      >
+        <FormSelectAsync
+          label="Pilih Psikolog"
+          name="psikolog_id"
+          control={control}
+          loadOption={selectPsikolog}
+          defaultValue={selectedPsikolog}
+          optionLabel={(option: PsikologType) => `${option.fullname}`}
+          optionValue={(option: PsikologType) => `${option.id}`}
+          error={errors?.modul_id}
+        />
+
+        <div className="mt-3 flex items-center justify-end">
+          <Button className="px-8" onClick={handleChangePsikolog}>
+            {loadingSubmit ? <Spinner /> : "Simpan"}
+          </Button>
+        </div>
+      </BaseModal>
+
       <ModalDeleteConfirmation
         isOpen={modalDelete}
         close={() => setModalDelete(false)}
