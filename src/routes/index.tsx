@@ -14,6 +14,8 @@ import AccessActivationCode from "../pages/activation-codes/access";
 import ProfilePage from "../pages/profile";
 import UserAdmin from "../pages/users/admins";
 import PrintActivationCode from "../pages/activation-codes/print";
+import ProductIndex from "../pages/product";
+import ProductDetail from "../pages/product/detail";
 
 export const routes = createBrowserRouter([
   {
@@ -109,6 +111,22 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <UserAdmin />
+      </Private>
+    ),
+  },
+  {
+    path: "/product",
+    element: (
+      <Private>
+        <ProductIndex />
+      </Private>
+    ),
+  },
+  {
+    path: "/product/:productId",
+    element: (
+      <Private>
+        <ProductDetail />
       </Private>
     ),
   },

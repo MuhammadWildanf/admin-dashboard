@@ -4,7 +4,7 @@ import { Label, Radio } from "flowbite-react";
 
 type Props = FormCheckboxType;
 
-export const FormInput = ({
+export const FormInputRadio = ({
   label,
   name,
   className,
@@ -13,6 +13,7 @@ export const FormInput = ({
   control,
   error,
   display = "block",
+  defaultValue,
   grid,
   options,
   onChange,
@@ -27,11 +28,16 @@ export const FormInput = ({
           name={name}
           control={control}
           render={({ field }) => (
-            <div className={`${display} ${display === "grid" && "gap-2"}`}>
+            <div
+              className={`${display} py-2 ${display === "grid" && "gap-2"} ${
+                display === "flex" && "gap-3"
+              }`}
+            >
               {options?.map((item: any, key) => (
                 <div className="flex items-center gap-2">
                   <Radio
-                    defaultChecked
+                    {...field}
+                    defaultChecked={defaultValue === item.value}
                     id={`radio-option-${name}-${key}`}
                     name={name}
                     value={item.value}

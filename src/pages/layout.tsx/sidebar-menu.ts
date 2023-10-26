@@ -1,5 +1,6 @@
 import {
   HiChartPie,
+  HiCube,
   HiDocumentText,
   HiOutlineKey,
   HiUserGroup,
@@ -47,9 +48,17 @@ const activationCodeMenu = {
   href: "/activation-code",
 };
 
+const ProductMenu = {
+  label: "Manajemen Produk",
+  name: "product",
+  icon: HiCube,
+  href: "/product",
+};
+
 export const menuSuperAdmin: Menu[] = [
   dashboardMenu,
   activationCodeMenu,
   testToolMenu,
+  ProductMenu,
   userManagementMenu,
 ];

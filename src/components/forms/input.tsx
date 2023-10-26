@@ -2,6 +2,7 @@ import { Eye, EyeSlash, Key } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { FormType } from "../../types/form";
+import { formatCurrencyValue } from "../../helper/currency";
 
 type Props = FormType;
 
@@ -280,6 +281,95 @@ export const FormInputPassword = ({
           </div>
         </div>
       )}
+      {error && <small className="text-xs text-red-600">{error}</small>}
+    </div>
+  );
+};
+
+export const FormInputCurrency = ({
+  label,
+  name,
+  className,
+  placeholder,
+  onInput,
+  onChange,
+  required = false,
+  register,
+  defaultValue,
+  disabled = false,
+  error,
+  control,
+}: Props) => {
+  const [val, setVal] = useState<string | number>(defaultValue ?? 0);
+
+  const handleInput = (input: string) => {
+    let parseInput = formatCurrencyValue(input);
+    if (input === "") setVal(0);
+    else {
+      let value = parseFloat(parseInput).toLocaleString("id-ID");
+      setVal(value);
+    }
+  };
+
+  return (
+    <div className="mb-3">
+      <label htmlFor={label} className="block mb-1 text-sm text-gray-700">
+        {label}
+        {required ? <span className="text-red-600">*</span> : ""}
+      </label>
+      <div className="w-full relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          <span className="text-gray-700 text-2xl">
+            <span className="text-base flex items-center text-gray-600">
+              Rp
+            </span>
+          </span>
+        </div>
+        {control ? (
+          <Controller
+            name={name}
+            control={control}
+            defaultValue={defaultValue}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                id={label}
+                className={`
+                  block w-full rounded-lg pl-11 
+                  ${error ? "border-red-600" : "border-gray-300"} 
+                  ${disabled && "cursor-not-allowed bg-gray-100 text-gray-600"}
+                  ${className}
+                `}
+                placeholder={placeholder ?? ""}
+                required={required}
+                disabled={disabled}
+                value={val}
+                onChange={(e) => {
+                  handleInput(e.target.value);
+                  field.onChange(e.target.value.replace(/\./g, ""));
+                }}
+              />
+            )}
+          />
+        ) : (
+          <input
+            type="text"
+            id={label}
+            className={`
+            block w-full rounded-lg pl-11 
+            ${error ? "border-red-600" : "border-gray-300"} 
+            ${disabled && "cursor-not-allowed bg-gray-100 text-gray-600"}
+            ${className}
+          `}
+            placeholder={placeholder ?? ""}
+            required={required}
+            disabled={disabled}
+            value={val}
+            onChange={(e) => handleInput(e.target.value)}
+          />
+        )}
+      </div>
       {error && <small className="text-xs text-red-600">{error}</small>}
     </div>
   );

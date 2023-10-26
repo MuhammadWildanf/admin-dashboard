@@ -220,11 +220,11 @@ export type FormCheckboxType = {
   disabled?: boolean;
   value?: any;
   checked?: boolean;
-  options?: [];
+  options?: any[];
   control?: Control<any>;
   onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: [] | null;
-  display?: "inline" | "block" | "grid";
+  display?: "inline" | "block" | "grid" | "flex";
   grid?: number;
 };

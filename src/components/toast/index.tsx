@@ -26,7 +26,7 @@ const Alert = () => {
         <div className="fixed top-5 right-5 z-50">
           <Toast>
             {type === "success" && (
-              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-600 dark:bg-green-800 dark:text-green-200">
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-600 text-green-50 dark:bg-green-800 dark:text-green-200">
                 <HiCheck className="h-5 w-5" />
               </div>
             )}

@@ -12,6 +12,7 @@ export const getData = async (
       let params = {
         q: q ?? "",
         page: searchMode ? 1 : page ?? 1,
+        with_paginate: 1,
       };
       const { data } = await request.get(url, {
         params: params,

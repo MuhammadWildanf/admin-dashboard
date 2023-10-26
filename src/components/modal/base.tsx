@@ -5,8 +5,8 @@ import { HiOutlineX } from "react-icons/hi";
 type Props = {
   isOpen: boolean;
   close: () => void;
-  title?: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  title?: string | JSX.Element | JSX.Element[];
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
   children?: string | JSX.Element | JSX.Element[];
 };
 
