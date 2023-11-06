@@ -7,6 +7,7 @@ type Props = {
   cols?: number;
   rows?: number;
   bordered?: boolean;
+  onClick?: () => void;
 };
 
 const Table = ({ children, className, style }: Props) => {
@@ -46,9 +47,13 @@ const TBody = ({ children, className, style }: Props) => {
   );
 };
 
-const Tr = ({ children, className, style }: Props) => {
+const Tr = ({ children, className, style, onClick }: Props) => {
   return (
-    <tr style={style} className={`border-t text-sm ${className}`}>
+    <tr
+      style={style}
+      onClick={onClick}
+      className={`border-t text-sm ${className}`}
+    >
       {children}
     </tr>
   );

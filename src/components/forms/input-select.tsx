@@ -217,6 +217,10 @@ export const FormSelectAsync = ({
               isMulti={multiple}
               // value={value}
               isDisabled={disabled}
+              onChange={(e, actionMeta) => {
+                field.onChange(e);
+                onChange?.(e, actionMeta);
+              }}
             />
           )}
         />

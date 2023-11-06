@@ -16,6 +16,25 @@ import UserAdmin from "../pages/users/admins";
 import PrintActivationCode from "../pages/activation-codes/print";
 import ProductIndex from "../pages/product";
 import ProductDetail from "../pages/product/detail";
+import IndexAsesmen from "../pages/asesment-center";
+import PendingAsesmen from "../pages/asesment-center/pending";
+import DetailAsesmen from "../pages/asesment-center/detail";
+import PartnerPage from "../pages/partner";
+import ClientPage from "../pages/partner/client";
+import CompanyPage from "../pages/partner/company";
+import CompanyPendingPage from "../pages/partner/company/pending";
+import CompanyDetailPage from "../pages/partner/company/detail";
+import TaxPage from "../pages/tax";
+import Maintenance from "../pages/maintenance";
+import CreateInvoice from "../pages/invoice/create";
+import CreateFromInvoice from "../pages/invoice/create-from";
+import CreateBlankInvoice from "../pages/invoice/create-blank";
+import InvoiceIndex from "../pages/invoice";
+import InvoiceDetail from "../pages/invoice/detail";
+import EditInvoice from "../pages/invoice/edit";
+import InvoicePrint from "../pages/invoice/print";
+import CompanyInvoice from "../pages/partner/company/invoice";
+import AddCompanyInvoice from "../pages/partner/company/add-invoice";
 
 export const routes = createBrowserRouter([
   {
@@ -127,6 +146,174 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <ProductDetail />
+      </Private>
+    ),
+  },
+  {
+    path: "/asesmen",
+    element: (
+      <Private>
+        <IndexAsesmen />
+      </Private>
+    ),
+  },
+  {
+    path: "/asesmen/pending",
+    element: (
+      <Private>
+        <PendingAsesmen />
+      </Private>
+    ),
+  },
+  {
+    path: "/asesmen/:asesmenId",
+    element: (
+      <Private>
+        <DetailAsesmen />
+      </Private>
+    ),
+  },
+  {
+    path: "/partner",
+    element: (
+      <Private>
+        <PartnerPage />
+      </Private>
+    ),
+  },
+  {
+    path: "/partner/client",
+    element: (
+      <Private>
+        <ClientPage />
+      </Private>
+    ),
+  },
+  {
+    path: "/partner/company",
+    element: (
+      <Private>
+        <CompanyPage />
+      </Private>
+    ),
+  },
+  {
+    path: "/partner/company/pending",
+    element: (
+      <Private>
+        <CompanyPendingPage />
+      </Private>
+    ),
+  },
+  {
+    path: "/partner/company/:companyId",
+    element: (
+      <Private>
+        <CompanyDetailPage />
+      </Private>
+    ),
+  },
+  {
+    path: "/partner/company/:companyId/invoice",
+    element: (
+      <Private>
+        <CompanyInvoice />
+      </Private>
+    ),
+  },
+  {
+    path: "/partner/company/:companyId/add-invoice",
+    element: (
+      <Private>
+        <AddCompanyInvoice />
+      </Private>
+    ),
+  },
+  {
+    path: "/tax",
+    element: (
+      <Private>
+        <TaxPage />
+      </Private>
+    ),
+  },
+  {
+    path: "/tax/setting",
+    element: (
+      <Private>
+        <TaxPage />
+      </Private>
+    ),
+  },
+  {
+    path: "/tax/journal",
+    element: (
+      <Private>
+        <Maintenance />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice",
+    element: (
+      <Private>
+        <Maintenance />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice/create",
+    element: (
+      <Private>
+        <CreateInvoice />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice/create-from/:asesmenId",
+    element: (
+      <Private>
+        <CreateFromInvoice />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice/create-blank",
+    element: (
+      <Private>
+        <CreateBlankInvoice />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice/",
+    element: (
+      <Private>
+        <InvoiceIndex />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice/:invoiceId",
+    element: (
+      <Private>
+        <InvoiceDetail />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice/:invoiceId/edit",
+    element: (
+      <Private>
+        <EditInvoice />
+      </Private>
+    ),
+  },
+  {
+    path: "/invoice/:invoiceId/print",
+    element: (
+      <Private>
+        <InvoicePrint />
       </Private>
     ),
   },

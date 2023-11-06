@@ -1,8 +1,11 @@
 import {
+  HiBriefcase,
   HiChartPie,
+  HiClipboardList,
   HiCube,
   HiDocumentText,
   HiOutlineKey,
+  HiReceiptTax,
   HiUserGroup,
 } from "react-icons/hi";
 import { useSession } from "../../stores/session";
@@ -55,10 +58,62 @@ const ProductMenu = {
   href: "/product",
 };
 
+const CompanyMenu = {
+  label: "Perusahaan & Klien",
+  name: "partner",
+  icon: HiBriefcase,
+  href: "#",
+  child: [
+    { label: "Klien", name: "client", href: "/partner/client" },
+    { label: "Perusahaan", name: "company", href: "/partner/company" },
+  ],
+};
+
+const AsesmenMenu = {
+  label: "Assessment Center",
+  name: "asesmen",
+  icon: HiClipboardList,
+  href: "/asesmen",
+};
+
+const InvoiceMenu = {
+  label: "Invoice & Tagihan",
+  name: "invoice",
+  icon: HiDocumentText,
+  href: "#",
+  child: [
+    { label: "List Invoice", name: "", href: "/invoice/" },
+    {
+      label: "Buat Invoice Kosongan",
+      name: "create-blank",
+      href: "/invoice/create-blank",
+    },
+  ],
+};
+
+const TaxMenu = {
+  label: "Pajak",
+  name: "tax",
+  icon: HiReceiptTax,
+  href: "#",
+  child: [
+    { label: "Pengaturan", name: "setting", href: "/tax/setting" },
+    {
+      label: "Jurnal Pajak",
+      name: "journal",
+      href: "/tax/journal",
+    },
+  ],
+};
+
 export const menuSuperAdmin: Menu[] = [
   dashboardMenu,
   activationCodeMenu,
   testToolMenu,
   ProductMenu,
+  CompanyMenu,
+  AsesmenMenu,
+  InvoiceMenu,
+  TaxMenu,
   userManagementMenu,
 ];

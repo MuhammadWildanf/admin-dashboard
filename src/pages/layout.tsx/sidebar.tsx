@@ -41,7 +41,14 @@ const SidebarItems = ({ className }: Props) => {
         off: "w-64",
       },
       // inner: `h-full overflow-y-auto overflow-x-hidden rounded bg-white md:bg-gray-50 py-4 px-3 dark:bg-gray-800`,
-      inner: `h-full overflow-y-auto overflow-x-hidden rounded bg-white py-4 px-3 dark:bg-gray-800`,
+      inner: `h-full overflow-y-auto overflow-x-hidden rounded bg-white py-4 px-3`,
+    },
+    item: {
+      base: "text-gray-500",
+      active: "bg-gray-500 dark:bg-gray-700",
+      content: {
+        base: "text-red-400",
+      },
     },
   };
 
@@ -64,6 +71,7 @@ const SidebarItems = ({ className }: Props) => {
                       key={key}
                       icon={item.icon}
                       label={item.label}
+                      className="text-sm"
                       open={item.name === pathname.split("/")[1] ? true : false}
                       renderChevronIcon={(theme, open) => {
                         const IconComponent = open
@@ -89,6 +97,7 @@ const SidebarItems = ({ className }: Props) => {
                         <Sidebar.Item
                           href={child.href}
                           key={key}
+                          className="text-sm"
                           active={
                             child.name === pathname.split("/")[2] ? true : false
                           }
@@ -103,7 +112,7 @@ const SidebarItems = ({ className }: Props) => {
                       // href={item.href}
                       onClick={() => navigate(item.href ?? "/")}
                       icon={item.icon}
-                      className={`cursor-pointer`}
+                      className={`cursor-pointer text-sm`}
                       active={
                         (item.name === "dashboard" &&
                           !pathname.split("/")[1]) ||

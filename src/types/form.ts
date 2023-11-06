@@ -19,8 +19,11 @@ export type FormType = {
   onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-  error?: [] | null;
+  // error?: [] | null;
+  error?: any;
+  // error?: string | string[] | null | undefined;
   regex?: string;
+  hint?: string | null;
 };
 
 export type FormDaterangeType = {
@@ -36,6 +39,7 @@ export type FormDaterangeType = {
   control?: Control<any>;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: [] | null;
+  hint?: string | null;
 };
 
 export type FormSelectType = {
@@ -62,6 +66,7 @@ export type FormSelectType = {
     | ((newValue: unknown, actionMeta: ActionMeta<unknown>) => void)
     | undefined;
   onChangeAsync?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  hint?: string | null;
 };
 
 export type SelectOptionType = {
@@ -101,6 +106,7 @@ export type FormSelectTypeSetting = {
   control?: Control<any>;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeAsync: (e: any) => void;
+  hint?: string | null;
 };
 
 export type FormInputTooltipType = {
@@ -122,6 +128,7 @@ export type FormInputTooltipType = {
   tooltip?: string;
   id?: string;
   describeInput?: string;
+  hint?: string | null;
 };
 
 export type FormTextareaType = {
@@ -144,6 +151,7 @@ export type FormTextareaType = {
     event: React.ChangeEvent<HTMLTextAreaElement> | undefined
   ) => void;
   error?: [] | null;
+  hint?: string | null;
 };
 
 export type DatePickType = {
@@ -165,6 +173,7 @@ export type FormUploadType = {
   onChange?: (event: React.ChangeEvent<HTMLPictureElement> | undefined) => void;
   error?: [] | null;
   withDownload?: boolean;
+  hint?: string | null;
 };
 
 export type DateRangeFormType = {
@@ -184,9 +193,14 @@ export type DateRangeFormType = {
   control?: Control<any>;
   onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeStartAt?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeEndAt?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error_start_at?: [] | null;
   error_end_at?: [] | null;
   withNote?: boolean;
+  hint?: string | null;
+  maxDate?: Date;
+  minDate?: Date;
 };
 
 export type FormSwitchType = {
@@ -207,6 +221,7 @@ export type FormSwitchType = {
   options?: string[];
   size?: "sm" | "md" | "lg";
   ref?: any;
+  hint?: string | null;
 };
 
 export type FormCheckboxType = {
@@ -227,4 +242,5 @@ export type FormCheckboxType = {
   error?: [] | null;
   display?: "inline" | "block" | "grid" | "flex";
   grid?: number;
+  hint?: string | null;
 };

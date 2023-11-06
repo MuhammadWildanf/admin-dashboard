@@ -1,6 +1,6 @@
 import { Eye, EyeSlash, Key } from "@phosphor-icons/react";
 import { useState } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { FormType } from "../../types/form";
 import { formatCurrencyValue } from "../../helper/currency";
 
@@ -17,6 +17,9 @@ export const FormInput = ({
   error,
   onChange,
   defaultValue,
+  value,
+  disabled,
+  hint,
 }: Props) => {
   return (
     <div className="mb-3">
@@ -35,10 +38,15 @@ export const FormInput = ({
               className={`block w-full rounded-lg border border-gray-300 p-2 ${
                 error ? "border-red-600" : "border-gray-300"
               } ${className} ${
-                field.disabled && "cursor-not-allowed bg-gray-100 text-gray-600"
+                disabled && "cursor-not-allowed bg-gray-100 text-gray-600"
               }`}
               placeholder={placeholder ?? ""}
               required={required}
+              disabled={disabled}
+              onChange={(e) => {
+                field.onChange(e);
+                onChange?.(e);
+              }}
             />
           )}
         />
@@ -48,13 +56,25 @@ export const FormInput = ({
           name={name} // Add name for uncontrolled inputs
           className={`block w-full rounded-lg border border-gray-300 p-2 ${
             error ? "border-red-600" : "border-gray-300"
-          } ${className}`}
+          } ${disabled && "cursor-not-allowed bg-gray-100"} ${className}`}
           placeholder={placeholder ?? ""}
           required={required}
           onChange={onChange}
+          defaultValue={defaultValue}
+          value={value}
+          disabled={disabled}
         />
       )}
-      {error && <small className="text-xs text-red-600">{error}</small>}
+      {hint && (
+        <>
+          <small className="text-xs text-gray-600">{hint}</small> <br />
+        </>
+      )}
+      {error && (
+        <>
+          <small className="text-xs text-red-600">{error}</small>
+        </>
+      )}
     </div>
   );
 };
@@ -300,7 +320,14 @@ export const FormInputCurrency = ({
   error,
   control,
 }: Props) => {
-  const [val, setVal] = useState<string | number>(defaultValue ?? 0);
+  const { getValues } = useFormContext();
+  const [val, setVal] = useState<string | number>(
+    (getValues(name)
+      ? parseFloat(getValues(name)).toLocaleString("id-ID")
+      : 0) ??
+      defaultValue ??
+      0
+  );
 
   const handleInput = (input: string) => {
     let parseInput = formatCurrencyValue(input);
@@ -348,6 +375,7 @@ export const FormInputCurrency = ({
                 onChange={(e) => {
                   handleInput(e.target.value);
                   field.onChange(e.target.value.replace(/\./g, ""));
+                  onChange?.(e);
                 }}
               />
             )}
@@ -366,7 +394,10 @@ export const FormInputCurrency = ({
             required={required}
             disabled={disabled}
             value={val}
-            onChange={(e) => handleInput(e.target.value)}
+            onChange={(e) => {
+              handleInput(e.target.value);
+              onChange?.(e);
+            }}
           />
         )}
       </div>
