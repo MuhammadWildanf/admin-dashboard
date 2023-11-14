@@ -77,7 +77,9 @@ const ProfilePage = () => {
 
       <div className="mt-5 grid grid-cols-2 gap-4">
         <div className="rounded-xl border">
-          <div className="py-3 px-4 font-bold bg-gray-100 ">Ubah Profile</div>
+          <div className="py-3 px-4 font-bold bg-gray-100 rounded-t-xl">
+            Ubah Profile
+          </div>
           <div className="py-3 px-4">
             <FormInput
               control={control}
@@ -107,7 +109,9 @@ const ProfilePage = () => {
           </div>
         </div>
         <div className="rounded-xl border">
-          <div className="py-3 px-4 font-bold bg-gray-100 ">Ubah Password</div>
+          <div className="py-3 px-4 font-bold bg-gray-100 rounded-t-xl">
+            Ubah Password
+          </div>
           <div className="py-3 px-4">
             <FormInput
               control={control}

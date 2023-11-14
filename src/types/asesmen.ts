@@ -27,6 +27,10 @@ export type AsesmentParticipantType = {
   id: number;
   nik: string;
   assessment_id: string;
+  assessment: {
+    id: string;
+    test_date: string;
+  };
   activation_code: string | null;
   confirmed_at: string | null;
   name: string;
@@ -42,6 +46,9 @@ export type AsesmentParticipantType = {
   notes: string | null;
   price: number;
   product: { id: number | string; name: string };
+  is_finished: boolean;
+  has_report: boolean;
+  has_invoice: boolean;
   created_at: string;
   updated_at: string;
 };

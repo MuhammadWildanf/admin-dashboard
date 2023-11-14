@@ -12,7 +12,7 @@ import Table from "../../../components/tables/base";
 import { currency } from "../../../helper/currency";
 import { Checkbox, Spinner } from "flowbite-react";
 import { useAsesmen } from "../../../stores/asesmen";
-import { CheckCircle, X } from "@phosphor-icons/react";
+import { ArrowRight, CheckCircle, X } from "@phosphor-icons/react";
 
 type FormValues = {
   start_at: Date;
@@ -23,6 +23,9 @@ const AddCompanyInvoice = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [selectedParticipants, setSelectedParticipants] = useState<number[]>(
+    []
+  );
   const [page, setPage] = useState<"asesmen" | "participant" | "invoice">(
     "asesmen"
   );
@@ -66,24 +69,75 @@ const AddCompanyInvoice = () => {
     setLoading(false);
   });
 
-  const handleChangeCheckbox = (value: string) => {
+  const handleChangeCheckbox = async (value: string) => {
     if (!selected?.includes(value)) {
       // If it doesn't exist, insert it
-      setSelected([...selected, value]);
+      await setSelected([...selected, value]);
+    } else {
+      const updatedSelected = selected.filter((item) => item !== value);
+      await setSelected(updatedSelected);
+    }
+  };
+
+  const handleSelectAll = async () => {
+    if (selected.length === sellings?.data.length) {
+      await setSelected([]);
+    } else {
+      await setSelected(sellings?.data.map((item) => item.reg_id) ?? []);
+    }
+  };
+
+  const handleChangeParticipantCheckbox = async (value: number) => {
+    if (!selectedParticipants?.includes(value)) {
+      // If it doesn't exist, insert it
+      await setSelectedParticipants([...selectedParticipants, value]);
+    } else {
+      const updatedSelected = selectedParticipants.filter(
+        (item) => item !== value
+      );
+      await setSelectedParticipants(updatedSelected);
+    }
+  };
+
+  const handleSelectAllParticipant = async () => {
+    if (selectedParticipants.length === participants?.data.length) {
+      await setSelectedParticipants([]);
+    } else {
+      await setSelectedParticipants(
+        participants?.data.map((item) => item.id) ?? []
+      );
     }
   };
 
   const handleNext = async () => {
+    if (selected.length === 0) {
+      navigate(`/partner/company/${companyId}/create-invoice?participantIds=`);
+    } else {
+      setLoadingSubmit(true);
+      try {
+        const { data } = await request.get(
+          "/company/get-asesmem-participants",
+          {
+            params: {
+              asesmen_ids: selected,
+            },
+          }
+        );
+        setParticipants(data.data);
+        setPage("participant");
+      } catch (err: any) {}
+
+      setLoadingSubmit(false);
+    }
+  };
+
+  const handleGenerate = async () => {
     setLoadingSubmit(true);
-    try {
-      const { data } = await request.get("/company/get-asesmem-participants", {
-        params: {
-          asesmen_ids: selected,
-        },
-      });
-      setParticipants(data.data);
-      setPage("participant");
-    } catch (err: any) {}
+    let getParticipants = selectedParticipants.join(",");
+
+    navigate(
+      `/partner/company/${companyId}/create-invoice?participantIds=${getParticipants}`
+    );
 
     setLoadingSubmit(false);
   };
@@ -121,7 +175,10 @@ const AddCompanyInvoice = () => {
             <Table>
               <Table.Thead>
                 <Table.Th className="text-center">
-                  <Checkbox />
+                  <Checkbox
+                    onClick={handleSelectAll}
+                    // defaultChecked={selected.length === sellings?.data.length}
+                  />
                 </Table.Th>
                 <Table.Th>Tgl Tes</Table.Th>
                 <Table.Th>Klien yang mendaftarkan</Table.Th>
@@ -150,7 +207,9 @@ const AddCompanyInvoice = () => {
                                   onChange={() =>
                                     handleChangeCheckbox(item.reg_id)
                                   }
+                                  checked={selected.includes(item.reg_id)}
                                   name={`check.${key}`}
+                                  key={key}
                                 />
                               </>
                             </Table.Td>
@@ -194,72 +253,105 @@ const AddCompanyInvoice = () => {
         )}
 
         {page === "participant" && (
-          <Table>
-            <Table.Thead>
-              <Table.Th className="text-center">
-                <Checkbox />
-              </Table.Th>
-              <Table.Th>Nama Peserta</Table.Th>
-              <Table.Th>Kode Aktivasi</Table.Th>
-              <Table.Th>Jenis Asesmen</Table.Th>
-              <Table.Th>Tgl Tes</Table.Th>
-              <Table.Th className="text-center">Harga</Table.Th>
-              <Table.Th className="text-center">Selesai Tes</Table.Th>
-              <Table.Th className="text-center">Laporan Tes</Table.Th>
-              <Table.Th className="text-center">Invoiced</Table.Th>
-            </Table.Thead>
-            <Table.Tbody>
-              {loading ? (
-                <Table.TrLoading cols={5} rows={4} />
-              ) : (
-                <>
-                  {participants?.data.length === 0 ? (
-                    <Table.Tr>
-                      <Table.Tr>Tidak ada data peserta</Table.Tr>
-                    </Table.Tr>
-                  ) : (
-                    <>
-                      {participants?.data.map((item, key) => (
-                        <Table.Tr key={key}>
-                          <Table.Td className="text-center">
-                            <Checkbox />
-                          </Table.Td>
-                          {/* <Table.Td>
-                        <>{key + 1}</>
-                      </Table.Td> */}
-                          <Table.Td>{item.name}</Table.Td>
-                          <Table.Td>{item.activation_code ?? "-"}</Table.Td>
-                          <Table.Td>{item.product.name}</Table.Td>
-                          <Table.Td>-</Table.Td>
-                          <Table.Td className="text-right">
-                            {item.price ? currency(item.price) : "-"}
-                          </Table.Td>
-                          <Table.Td className="text-center">
-                            <div className="flex items-center justify-center">
-                              <CheckCircle
-                                size={20}
-                                className="text-green-700"
+          <>
+            <Table>
+              <Table.Thead>
+                <Table.Th className="text-center">
+                  <Checkbox onChange={handleSelectAllParticipant} />
+                </Table.Th>
+                <Table.Th>Nama Peserta</Table.Th>
+                <Table.Th>Kode Aktivasi</Table.Th>
+                <Table.Th>Jenis Asesmen</Table.Th>
+                <Table.Th>Tgl Tes</Table.Th>
+                <Table.Th className="text-center">Harga</Table.Th>
+                <Table.Th className="text-center">Selesai Tes</Table.Th>
+                <Table.Th className="text-center">Laporan Tes</Table.Th>
+                <Table.Th className="text-center">Invoiced</Table.Th>
+              </Table.Thead>
+              <Table.Tbody>
+                {loading ? (
+                  <Table.TrLoading cols={5} rows={4} />
+                ) : (
+                  <>
+                    {participants?.data.length === 0 ? (
+                      <Table.Tr>
+                        <Table.Tr>Tidak ada data peserta</Table.Tr>
+                      </Table.Tr>
+                    ) : (
+                      <>
+                        {participants?.data.map((item, key) => (
+                          <Table.Tr key={key}>
+                            <Table.Td className="text-center">
+                              <Checkbox
+                                onChange={() =>
+                                  handleChangeParticipantCheckbox(item.id)
+                                }
+                                checked={selectedParticipants.includes(item.id)}
                               />
-                            </div>
-                          </Table.Td>
-                          <Table.Td className="text-center">
-                            <div className="flex items-center justify-center">
-                              <X size={20} className="text-red-700" />
-                            </div>
-                          </Table.Td>
-                          <Table.Td className="text-center">
-                            <div className="flex items-center justify-center">
-                              <X size={20} className="text-red-700" />
-                            </div>
-                          </Table.Td>
-                        </Table.Tr>
-                      ))}
-                    </>
-                  )}
-                </>
-              )}
-            </Table.Tbody>
-          </Table>
+                            </Table.Td>
+                            <Table.Td>{item.name}</Table.Td>
+                            <Table.Td>{item.activation_code ?? "-"}</Table.Td>
+                            <Table.Td>{item.product.name}</Table.Td>
+                            <Table.Td>-</Table.Td>
+                            <Table.Td className="text-right">
+                              {item.price ? currency(item.price) : "-"}
+                            </Table.Td>
+                            <Table.Td className="text-center">
+                              <div className="flex items-center justify-center">
+                                {item.is_finished ? (
+                                  <CheckCircle
+                                    size={20}
+                                    className="text-green-700"
+                                  />
+                                ) : (
+                                  <X size={20} className="text-red-700" />
+                                )}
+                              </div>
+                            </Table.Td>
+                            <Table.Td className="text-center">
+                              <div className="flex items-center justify-center">
+                                {item.has_report ? (
+                                  <CheckCircle
+                                    size={20}
+                                    className="text-green-700"
+                                  />
+                                ) : (
+                                  <X size={20} className="text-red-700" />
+                                )}
+                              </div>
+                            </Table.Td>
+                            <Table.Td className="text-center">
+                              <div className="flex items-center justify-center">
+                                {item.has_report ? (
+                                  <CheckCircle
+                                    size={20}
+                                    className="text-green-700"
+                                  />
+                                ) : (
+                                  <X size={20} className="text-red-700" />
+                                )}
+                              </div>
+                            </Table.Td>
+                          </Table.Tr>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </Table.Tbody>
+            </Table>
+            <div className="py-2 flex justify-end items-center">
+              <Button className="px-6" onClick={handleGenerate}>
+                {loadingSubmit ? (
+                  <Spinner />
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span>Lanjutkan</span> <ArrowRight />
+                  </div>
+                )}
+              </Button>
+            </div>
+          </>
         )}
       </>
     </Layout>

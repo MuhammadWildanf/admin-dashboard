@@ -10,7 +10,6 @@ import { Button } from "../../components/buttons";
 import { HiSearch } from "react-icons/hi";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { getData } from "../../api/get-data";
 import { parseDate } from "../../helper/date";
 
 type FormValues = {

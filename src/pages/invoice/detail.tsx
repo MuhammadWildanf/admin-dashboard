@@ -34,7 +34,9 @@ const InvoiceDetail = () => {
       );
       return data.data;
     } catch (err: any) {
-      console.log(err);
+      if (err.response.status === 404) {
+        return navigate("/not-found");
+      }
     }
   };
 
@@ -54,16 +56,15 @@ const InvoiceDetail = () => {
   };
 
   const handleDelete = async () => {
-    setLoadingSubmit(true);
     try {
       await request.delete(`invoice/${invoice?.id}/destroy`).then(() => {
-        navigate("/invoice/");
+        navigate("/invoice");
         setMessage("Berhasil menghapus!", "success");
       });
     } catch (err: any) {
       setMessage("Oops, something went wrong", "error");
     }
-    setModalDelete(false);
+    // setModalDelete(false);
     setLoadingSubmit(false);
   };
 
@@ -318,7 +319,7 @@ const InvoiceDetail = () => {
           </div>
         </div>
 
-        {invoice?.attachment.length !== 0 && (
+        {invoice?.attachment && invoice?.attachment?.length !== 0 && (
           <div className="md:col-span-2">
             <strong>Lampiran:</strong>
             <Table className="mt-2">
@@ -329,7 +330,7 @@ const InvoiceDetail = () => {
                 <Table.Th>Tgl Tes</Table.Th>
               </Table.Thead>
               <Table.Tbody>
-                {invoice?.attachment.map((item, key) => (
+                {invoice?.attachment?.map((item, key) => (
                   <Table.Tr>
                     <Table.Td>
                       <>{key + 1}</>

@@ -2,6 +2,7 @@ type Props = {
   children?: JSX.Element | JSX.Element[] | string;
   className?: string;
   disabled?: boolean;
+  type?: "submit" | "button";
   onClick?: () => void;
   variant?: "primary" | "danger" | "info";
 };
@@ -11,10 +12,12 @@ export const Button = ({
   className,
   disabled = false,
   onClick,
+  type = "button",
   variant = "primary",
 }: Props) => {
   return (
     <button
+      type={type}
       className={`${className} ${
         disabled && "bg-gray-500 text-white cursor-not-allowed"
       } ${

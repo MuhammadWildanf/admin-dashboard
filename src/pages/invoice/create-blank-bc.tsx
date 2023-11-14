@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Layout from "../layout.tsx/app";
+import moment from "moment";
 import Table from "../../components/tables/base";
 import { currency, terbilang } from "../../helper/currency";
 import {
@@ -8,16 +9,80 @@ import {
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Form, useNavigate, useParams } from "react-router-dom";
+import { useAsesmen } from "../../stores/asesmen";
+import { getData } from "../../api/get-data";
 import { Checkbox, Label, Spinner } from "flowbite-react";
+import { CheckCircle, X } from "@phosphor-icons/react";
 import { FormInput, FormInputCurrency } from "../../components/forms/input";
 import { HiExclamationCircle, HiTrash } from "react-icons/hi";
 import { Button } from "../../components/buttons";
 import { FormSelectAsync } from "../../components/forms/input-select";
 import { request } from "../../api/config";
 import { Editor } from "@tinymce/tinymce-react";
-import { ErrorForm, InvoiceValuesType } from "../../types/forms/invoice";
-import { useSession } from "../../stores/session";
+
+type FormValues = {
+  invoice_number: string;
+  due_date: string;
+  bill_to: string;
+  bill_address: string;
+  email: string;
+  phone: string;
+  terbilang: string;
+  signed_by_name: string;
+  signed_by_title: string;
+  withAttachment: boolean;
+  withPaymentLink: boolean;
+  company_id: { id: string; name: string };
+  notes?: string;
+  items: {
+    description: string;
+    amount: number;
+    price: string;
+  }[];
+  participants: {
+    name: string;
+    module: string;
+    test_date: string;
+  }[];
+  taxes: {
+    id: number;
+    name: string;
+    percent: number;
+    type: "plus" | "min";
+  }[];
+};
+
+type ErrorForm = {
+  invoice_number: [] | null;
+  company_id: [] | null;
+  due_date: [] | null;
+  bill_to: [] | null;
+  bill_address: [] | null;
+  email: [] | null;
+  phone: [] | null;
+  terbilang: [] | null;
+  signed_by_name: [] | null;
+  signed_by_title: [] | null;
+  withAttachment: [] | null;
+  notes: [] | null;
+  items: {
+    description: [] | null;
+    amount: [] | null;
+    price: string[] | null;
+  }[];
+  participants: {
+    name: [] | null;
+    module: [] | null;
+    test_date: [] | null;
+  }[];
+  taxes: {
+    id: [] | null;
+    name: [] | null;
+    percent: [] | null;
+    type: [] | null;
+  }[];
+};
 
 const CreateBlankInvoice = () => {
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -29,10 +94,9 @@ const CreateBlankInvoice = () => {
   const [terbilangField, setTerbilangField] = useState<string>("");
   const [errors, setErrors] = useState<ErrorForm | null>(null);
 
-  const { me } = useSession();
   const navigate = useNavigate();
 
-  const forms = useForm<InvoiceValuesType>();
+  const forms = useForm<FormValues>();
   const {
     fields: itemFields,
     append: appendItem,
@@ -51,7 +115,7 @@ const CreateBlankInvoice = () => {
     name: "participants",
   });
 
-  const selectCompanies = async (inputValue: string) => {
+  const selectComanies = async (inputValue: string) => {
     let params = {
       q: inputValue,
     };
@@ -88,7 +152,7 @@ const CreateBlankInvoice = () => {
       getTaxes.push({
         name: `${tax.name} (${tax.percent}%)`,
         type: tax.type ?? "",
-        amount: Math.ceil(subTotal * (tax.percent / 100)),
+        amount: subTotal * (tax.percent / 100),
       });
     });
     setTaxes(getTaxes);
@@ -104,7 +168,7 @@ const CreateBlankInvoice = () => {
         countTaxes += t.amount;
       }
     });
-    setTotal(Math.ceil(subTotal + countTaxes));
+    setTotal(subTotal + countTaxes);
     setTerbilangField(`${terbilang(subTotal + countTaxes)} Rupiah`);
     forms.setValue("terbilang", `${terbilang(subTotal + countTaxes)} Rupiah`);
   };
@@ -118,9 +182,9 @@ const CreateBlankInvoice = () => {
         company_id: data.company_id?.id ?? "",
       };
       // console.log(payload);
-      const res = await request.post("/invoice", payload);
+      await request.post("/invoice", payload);
       forms.reset();
-      navigate(`/invoice/${res.data.data.invoice_number}`);
+      navigate("/invoice");
     } catch (err: any) {
       console.log(err);
       setErrors(err.response.data.errors);
@@ -159,7 +223,7 @@ const CreateBlankInvoice = () => {
                   control={forms.control}
                   name="company_id"
                   label="Pilih Perusahaan"
-                  loadOption={selectCompanies}
+                  loadOption={selectComanies}
                   optionLabel={(item: any) => item.name}
                   optionValue={(item: any) => item.id}
                   error={errors?.company_id}
@@ -421,7 +485,6 @@ const CreateBlankInvoice = () => {
                     <FormInput
                       name="signed_by_name"
                       label="Ditandatangani oleh"
-                      defaultValue={me?.name ?? ""}
                       control={forms.control}
                       error={errors?.signed_by_name}
                     />

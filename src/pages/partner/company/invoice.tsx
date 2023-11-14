@@ -86,8 +86,8 @@ const CompanyInvoice = () => {
     <Layout
       withPageTitle
       title={
-        <div className="leading-none">
-          <small className="text-base font-regular">Invoice dan Tagihan</small>{" "}
+        <div className="leading-6">
+          <small className="text-base font-light">Invoice dan Tagihan</small>{" "}
           <br /> <span>{company?.name}</span>
         </div>
       }

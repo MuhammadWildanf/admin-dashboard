@@ -1,5 +1,6 @@
 import {
   HiBriefcase,
+  HiCalculator,
   HiChartPie,
   HiClipboardList,
   HiCube,
@@ -91,19 +92,41 @@ const InvoiceMenu = {
   ],
 };
 
+const JournalMenu = {
+  label: "Jurnal Keuangan",
+  name: "journal",
+  icon: HiCalculator,
+  href: "#",
+  child: [
+    {
+      label: "Dasbor Jurnal",
+      name: "dasbor",
+      href: "/journal/dasbor",
+    },
+    {
+      label: "Uang Masuk",
+      name: "income",
+      href: "/journal/income",
+    },
+    {
+      label: "Invoice belum dibayar",
+      name: "debt",
+      href: "/journal/debt",
+    },
+    {
+      label: "Pajak",
+      name: "journal",
+      href: "/journal/journal",
+    },
+  ],
+};
+
 const TaxMenu = {
   label: "Pajak",
   name: "tax",
   icon: HiReceiptTax,
   href: "#",
-  child: [
-    { label: "Pengaturan", name: "setting", href: "/tax/setting" },
-    {
-      label: "Jurnal Pajak",
-      name: "journal",
-      href: "/tax/journal",
-    },
-  ],
+  child: [{ label: "Pengaturan", name: "setting", href: "/tax/setting" }],
 };
 
 export const menuSuperAdmin: Menu[] = [
@@ -114,6 +137,7 @@ export const menuSuperAdmin: Menu[] = [
   CompanyMenu,
   AsesmenMenu,
   InvoiceMenu,
+  JournalMenu,
   TaxMenu,
   userManagementMenu,
 ];

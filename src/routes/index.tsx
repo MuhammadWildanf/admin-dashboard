@@ -35,6 +35,8 @@ import EditInvoice from "../pages/invoice/edit";
 import InvoicePrint from "../pages/invoice/print";
 import CompanyInvoice from "../pages/partner/company/invoice";
 import AddCompanyInvoice from "../pages/partner/company/add-invoice";
+import CreateClientInvoice from "../pages/partner/company/create-invoice";
+import JournalIndex from "../pages/journal";
 
 export const routes = createBrowserRouter([
   {
@@ -230,6 +232,14 @@ export const routes = createBrowserRouter([
     ),
   },
   {
+    path: "/partner/company/:companyId/create-invoice",
+    element: (
+      <Private>
+        <CreateClientInvoice />
+      </Private>
+    ),
+  },
+  {
     path: "/tax",
     element: (
       <Private>
@@ -314,6 +324,22 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <InvoicePrint />
+      </Private>
+    ),
+  },
+  {
+    path: "/journal",
+    element: (
+      <Private>
+        <JournalIndex />
+      </Private>
+    ),
+  },
+  {
+    path: "/journal/dasbor",
+    element: (
+      <Private>
+        <JournalIndex />
       </Private>
     ),
   },

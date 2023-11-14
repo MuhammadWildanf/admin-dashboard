@@ -17,6 +17,19 @@ export const formatCurrencyValue = (value: string) => {
   return isNaN(parseFloat(formattedValue)) ? "NaN" : formattedValue;
 };
 
+export const formatToUnit = (num: number): string => {
+  const absNum = Math.abs(num);
+  if (absNum >= 1e9) {
+    return (num / 1e9).toFixed(1).replace(/\.0$/, "") + " m";
+  } else if (absNum >= 1e6) {
+    return (num / 1e6).toFixed(1).replace(/\.0$/, "") + " jt";
+  } else if (absNum >= 1e3) {
+    return (num / 1e3).toFixed(1).replace(/\.0$/, "") + " rb";
+  } else {
+    return num.toString();
+  }
+};
+
 export const terbilang = (angka: number): string => {
   const bilne: string[] = [
     "",

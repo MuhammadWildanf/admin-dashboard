@@ -24,6 +24,7 @@ request.interceptors.request.use(
     if (error.response.status === 401) {
       // window.location.reload();
     }
+
     return error;
   }
 );

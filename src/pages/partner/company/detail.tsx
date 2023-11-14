@@ -9,11 +9,18 @@ import BaseModal from "../../../components/modal/base";
 import { Spinner } from "flowbite-react";
 import { useAlert } from "../../../stores/alert";
 import { parseDate } from "../../../helper/date";
+import { currency } from "../../../helper/currency";
 
 const CompanyDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [modalApprove, setModalApprove] = useState<boolean>(false);
+  const [debt, setDebt] = useState<number>(0);
+  const [loadingDebt, setLoadingDebt] = useState<boolean>(false);
+  const [totalAsesmen, setTotalAsesmen] = useState<number>(0);
+  const [totalParticipants, setTotalParticipants] = useState<number>(0);
+  const [loadingTotalAsesmen, setLoadingTotalAsesmen] =
+    useState<boolean>(false);
 
   const { company, setCompany } = useCompany();
   const { companyId } = useParams();
@@ -40,11 +47,36 @@ const CompanyDetailPage = () => {
     setLoadingSubmit(false);
   };
 
+  const getDebt = async () => {
+    setLoadingDebt(true);
+    try {
+      const { data } = await request.get(`company/${companyId}/debt`);
+      return data.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getTotalAsesmen = async () => {
+    setLoadingTotalAsesmen(true);
+    try {
+      const { data } = await request.get(`company/${companyId}/total-asesmen`);
+      return data.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    Promise.all([getCompany()]).then((res) => {
+    Promise.all([getCompany(), getDebt(), getTotalAsesmen()]).then((res) => {
       setCompany(res[0]);
+      setDebt(res[1]);
+      setTotalAsesmen(res[2].assessments);
+      setTotalParticipants(res[2].participants);
     });
     setLoading(false);
+    setLoadingDebt(false);
+    setLoadingTotalAsesmen(false);
   }, [loadingSubmit]);
 
   return (
@@ -64,17 +96,23 @@ const CompanyDetailPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
         <div className="md:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-            <div className="bg-yellow-100 rounded-lg py-2 px-4">
+            <div className="bg-red-100 rounded-lg py-2 px-4">
               <small>Hutang Perusahaan</small> <br />
-              <span className="text-xl font-bold">Rp. 0</span>
+              <span className="text-xl font-bold">
+                {loadingDebt ? <Spinner /> : currency(debt)}
+              </span>
             </div>
-            <div className="bg-pink-100 rounded-lg py-2 px-4">
+            <div className="bg-yellow-100 border-yellow-700 rounded-lg py-2 px-4">
               <small>Total Pengajuan Asesmen</small> <br />
-              <span className="text-xl font-bold">0x</span>
+              <span className="text-xl font-bold">
+                {loadingTotalAsesmen ? <Spinner /> : totalAsesmen}x
+              </span>
             </div>
             <div className="bg-purple-100 rounded-lg py-2 px-4">
               <small>Total Peserta Asesmen</small> <br />
-              <span className="text-xl font-bold">0 Peserta</span>
+              <span className="text-xl font-bold">
+                {loadingTotalAsesmen ? <Spinner /> : totalParticipants} Peserta
+              </span>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">

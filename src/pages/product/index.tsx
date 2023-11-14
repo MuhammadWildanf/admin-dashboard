@@ -6,7 +6,7 @@ import { getData } from "../../api/get-data";
 import { useProduct } from "../../stores/product";
 import AddButton from "../../components/buttons/add";
 import { ModuleType } from "../../types/assessment-tools/module";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import Table from "../../components/tables/base";
 import { currency } from "../../helper/currency";
 import BaseModal from "../../components/modal/base";
@@ -57,8 +57,7 @@ const ProductIndex = () => {
   const [errors, setErrors] = useState<ErrorValues | null>(null);
 
   const { products, setProducts } = useProduct();
-  const { control, handleSubmit, reset, watch, setValue } =
-    useForm<FormValues>();
+  const forms = useForm<FormValues>();
   const { setMessage } = useAlert();
   const navigate = useNavigate();
 
@@ -89,20 +88,20 @@ const ProductIndex = () => {
 
   const handleEditForm = async (item: ProductType) => {
     await setSelected(item);
-    setValue("base_price", item?.base_price.toString() ?? "");
-    setValue("name", item.name ?? "");
-    setValue("sku", item.sku ?? "");
-    setValue("product_category", item.product_category ?? "");
-    setValue("product_type", item.product_type ?? "");
-    setValue("with_screening", item.with_screening ? "1" : "0");
-    setValue("modul_id", item.module ?? null);
-    setValue("screening_modul_id", item.screening_module ?? null);
+    forms.setValue("base_price", item?.base_price.toString() ?? "");
+    forms.setValue("name", item.name ?? "");
+    forms.setValue("sku", item.sku ?? "");
+    forms.setValue("product_category", item.product_category ?? "");
+    forms.setValue("product_type", item.product_type ?? "");
+    forms.setValue("with_screening", item.with_screening ? "1" : "0");
+    forms.setValue("modul_id", item.module ?? null);
+    forms.setValue("screening_modul_id", item.screening_module ?? null);
 
     setModalAdd(true);
     setModalMode("edit");
   };
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = forms.handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
       let payload = {
@@ -129,7 +128,7 @@ const ProductIndex = () => {
     setModalAdd(false);
     setSelected(null);
     setLoadingSubmit(false);
-    reset();
+    forms.reset();
   });
 
   const handleDelete = async () => {
@@ -209,7 +208,7 @@ const ProductIndex = () => {
         onClick={() => {
           setModalAdd(true);
           setModalMode("create");
-          reset();
+          forms.reset();
         }}
       />
 
@@ -265,10 +264,6 @@ const ProductIndex = () => {
                         <Table.Td>
                           <div className="flex justify-center items-center gap-2">
                             {item.prices.length}
-                            <HiPencil
-                              size={16}
-                              className="text-blue-600 cursor-pointer hover:text-blue-700"
-                            />
                           </div>
                         </Table.Td>
                         <Table.Td>
@@ -314,126 +309,130 @@ const ProductIndex = () => {
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
       >
-        <div className="grid grid-cols-3 gap-2">
-          <div className="col-span-2">
-            <FormInput
-              name="name"
-              label="Name"
-              control={control}
-              error={errors?.name}
-            />
-          </div>
-          <div className="">
-            <FormInput
-              name="sku"
-              label="SKU"
-              control={control}
-              error={errors?.sku}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="col-span-2">
-            <FormInputRadio
-              name="product_category"
-              label="Kategori Produk"
-              control={control}
-              display="flex"
-              defaultValue={selected?.product_category}
-              options={[
-                { label: "Perusahaan / Client", value: "company" },
-                { label: "Personal / Customer", value: "personal" },
-                { label: "Umum", value: "general" },
-              ]}
-              error={errors?.product_category}
-            />
-          </div>
-          <div className="">
-            <FormInputRadio
-              name="product_type"
-              label="Tipe Produk"
-              control={control}
-              display="flex"
-              defaultValue={selected?.product_type}
-              options={[
-                { label: "Asesmen", value: "asesmen" },
-                { label: "Konseling", value: "konseling" },
-              ]}
-              error={errors?.product_type}
-            />
-          </div>
-        </div>
+        <FormProvider {...forms}>
+          <form>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2">
+                <FormInput
+                  name="name"
+                  label="Name"
+                  control={forms.control}
+                  error={errors?.name}
+                />
+              </div>
+              <div className="">
+                <FormInput
+                  name="sku"
+                  label="SKU"
+                  control={forms.control}
+                  error={errors?.sku}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2">
+                <FormInputRadio
+                  name="product_category"
+                  label="Kategori Produk"
+                  control={forms.control}
+                  display="flex"
+                  defaultValue={selected?.product_category}
+                  options={[
+                    { label: "Perusahaan / Client", value: "company" },
+                    { label: "Personal / Customer", value: "personal" },
+                    { label: "Umum", value: "general" },
+                  ]}
+                  error={errors?.product_category}
+                />
+              </div>
+              <div className="">
+                <FormInputRadio
+                  name="product_type"
+                  label="Tipe Produk"
+                  control={forms.control}
+                  display="flex"
+                  defaultValue={selected?.product_type}
+                  options={[
+                    { label: "Asesmen", value: "asesmen" },
+                    { label: "Konseling", value: "konseling" },
+                  ]}
+                  error={errors?.product_type}
+                />
+              </div>
+            </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <FormInputCurrency
-            name="base_price"
-            label="Harga Produk"
-            control={control}
-            defaultValue={
-              selected?.base_price
-                ? selected?.base_price.toLocaleString("id-ID")
-                : null
-            }
-            error={errors?.base_price}
-          />
-
-          {watch("product_type") === "asesmen" && (
-            <FormSelectAsync
-              label="Pilih Modul"
-              name="modul_id"
-              control={control}
-              loadOption={selectModules}
-              defaultValue={selected?.module}
-              optionLabel={(option: ModuleType) => `${option.name}`}
-              optionValue={(option: ModuleType) => `${option.id}`}
-              error={errors?.modul_id}
-            />
-          )}
-
-          {watch("product_type") === "konseling" && (
-            <FormInputRadio
-              name="with_screening"
-              label="Perlu Screening?"
-              control={control}
-              display="flex"
-              defaultValue={selected?.with_screening ? "1" : "0"}
-              options={[
-                { label: "Iya", value: "1" },
-                { label: "Tidak", value: "0" },
-              ]}
-              error={errors?.with_screening}
-            />
-          )}
-
-          {watch("product_type") === "konseling" &&
-            watch("with_screening") === "1" && (
-              <FormSelectAsync
-                label="Pilih Modul Screening"
-                name="screening_modul_id"
-                control={control}
-                loadOption={selectModules}
-                defaultValue={selected?.screening_module}
-                optionLabel={(option: ModuleType) => `${option.name}`}
-                optionValue={(option: ModuleType) => `${option.id}`}
-                error={errors?.screening_modul_id}
+            <div className="grid grid-cols-2 gap-3">
+              <FormInputCurrency
+                name="base_price"
+                label="Harga Produk"
+                control={forms.control}
+                defaultValue={
+                  selected?.base_price
+                    ? selected?.base_price.toLocaleString("id-ID")
+                    : null
+                }
+                error={errors?.base_price}
               />
-            )}
-        </div>
 
-        <div className="flex justify-end">
-          <div className="flex items-center gap-2">
-            <Button
-              className="px-3"
-              variant="danger"
-              onClick={() => setModalAdd(false)}
-            >
-              Batal
-            </Button>
-            <Button className="px-8" onClick={onSubmit}>
-              {loadingSubmit ? <Spinner /> : "Simpan"}
-            </Button>
-          </div>
-        </div>
+              {forms.watch("product_type") === "asesmen" && (
+                <FormSelectAsync
+                  label="Pilih Modul"
+                  name="modul_id"
+                  control={forms.control}
+                  loadOption={selectModules}
+                  defaultValue={selected?.module}
+                  optionLabel={(option: ModuleType) => `${option.name}`}
+                  optionValue={(option: ModuleType) => `${option.id}`}
+                  error={errors?.modul_id}
+                />
+              )}
+
+              {forms.watch("product_type") === "konseling" && (
+                <FormInputRadio
+                  name="with_screening"
+                  label="Perlu Screening?"
+                  control={forms.control}
+                  display="flex"
+                  defaultValue={selected?.with_screening ? "1" : "0"}
+                  options={[
+                    { label: "Iya", value: "1" },
+                    { label: "Tidak", value: "0" },
+                  ]}
+                  error={errors?.with_screening}
+                />
+              )}
+
+              {forms.watch("product_type") === "konseling" &&
+                forms.watch("with_screening") === "1" && (
+                  <FormSelectAsync
+                    label="Pilih Modul Screening"
+                    name="screening_modul_id"
+                    control={forms.control}
+                    loadOption={selectModules}
+                    defaultValue={selected?.screening_module}
+                    optionLabel={(option: ModuleType) => `${option.name}`}
+                    optionValue={(option: ModuleType) => `${option.id}`}
+                    error={errors?.screening_modul_id}
+                  />
+                )}
+            </div>
+
+            <div className="flex justify-end">
+              <div className="flex items-center gap-2">
+                <Button
+                  className="px-3"
+                  variant="danger"
+                  onClick={() => setModalAdd(false)}
+                >
+                  Batal
+                </Button>
+                <Button className="px-8" onClick={onSubmit}>
+                  {loadingSubmit ? <Spinner /> : "Simpan"}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </FormProvider>
       </BaseModal>
 
       <ModalDeleteConfirmation

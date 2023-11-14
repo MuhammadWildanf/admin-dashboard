@@ -5,7 +5,7 @@ import { getData } from "../../../api/get-data";
 import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
 import AddButton from "../../../components/buttons/add";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../../../components/buttons";
 import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
 import BaseModal from "../../../components/modal/base";
@@ -14,7 +14,6 @@ import Table from "../../../components/tables/base";
 import { FormInput, FormInputPassword } from "../../../components/forms/input";
 import {
   FormSelect,
-  FormSelectAsync,
   FormSelectTimezone,
 } from "../../../components/forms/input-select";
 import { SelectOptionType } from "../../../types/form";
@@ -22,6 +21,7 @@ import { UserAdminType } from "../../../types/users";
 import { request } from "../../../api/config";
 import { Key, Pencil, Trash } from "@phosphor-icons/react";
 import { useAlert } from "../../../stores/alert";
+import moment from "moment";
 
 type FormValues = {
   name: string;
@@ -54,7 +54,11 @@ const UserAdmin = () => {
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<UserAdminType | null>(null);
 
-  const { control, setValue, reset, handleSubmit } = useForm<FormValues>();
+  const forms = useForm<FormValues>({
+    defaultValues: {
+      timezone: { label: moment.tz.guess(), value: moment.tz.guess() },
+    },
+  });
   const { setUserAdmins, userAdmins } = useUserAdmin();
   const { setMessage } = useAlert();
 
@@ -62,6 +66,7 @@ const UserAdmin = () => {
     { label: "Super Admin", value: "superadmin" },
     { label: "Admin", value: "admin" },
     { label: "Finance", value: "finance" },
+    { label: "QC", value: "qc" },
   ];
 
   const getUserAdmin = async (search?: string, searchMode: boolean = false) => {
@@ -95,7 +100,7 @@ const UserAdmin = () => {
     setPage(page - 1);
   };
 
-  const handleSave = handleSubmit(async (data) => {
+  const handleSave = forms.handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
       let payload = {
@@ -122,12 +127,12 @@ const UserAdmin = () => {
   const handleFormEdit = (item: UserAdminType) => {
     setSelected(item);
     setModalMode("edit");
-    setValue("name", item.name ?? "");
-    setValue(
+    forms.setValue("name", item.name ?? "");
+    forms.setValue(
       "role",
       roles.find((role) => role.value === item.role)
     );
-    setValue("email", item.email);
+    forms.setValue("email", item.email);
     setModalAdd(true);
   };
 
@@ -144,7 +149,7 @@ const UserAdmin = () => {
     setLoadingSubmit(false);
   };
 
-  const handleResetPassword = handleSubmit(async (data) => {
+  const handleResetPassword = forms.handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
       let payload = {
@@ -224,7 +229,7 @@ const UserAdmin = () => {
         onClick={() => {
           setModalAdd(true);
           setModalMode("create");
-          reset();
+          forms.reset();
         }}
       />
       <Table>
@@ -319,47 +324,50 @@ const UserAdmin = () => {
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
       >
-        <FormInput
-          name="name"
-          control={control}
-          label="Nama"
-          error={errors?.name}
-        />
-        <FormInput
-          name="email"
-          control={control}
-          label="Email"
-          error={errors?.email}
-        />
-        <>
-          {modalMode === "create" && (
-            <FormInputPassword
-              name="password"
-              control={control}
-              label="Password"
-              type="password"
-              error={errors?.password}
+        <FormProvider {...forms}>
+          <form>
+            <FormInput
+              name="name"
+              control={forms.control}
+              label="Nama"
+              error={errors?.name}
             />
-          )}
-        </>
-        <FormSelectTimezone
-          name="timezone"
-          control={control}
-          label="Zona Waktu"
-          defaultValue={selected?.timezone}
-          error={errors?.timezone}
-        />
-        <FormSelect
-          name="role"
-          control={control}
-          label="Role"
-          options={roles}
-        />
-        <div className="mt-3 flex items-center justify-end">
-          <Button className="px-8" onClick={handleSave}>
-            {loadingSubmit ? <Spinner /> : "Simpan"}
-          </Button>
-        </div>
+            <FormInput
+              name="email"
+              control={forms.control}
+              label="Email"
+              error={errors?.email}
+            />
+            <>
+              {modalMode === "create" && (
+                <FormInputPassword
+                  name="password"
+                  control={forms.control}
+                  label="Password"
+                  type="password"
+                  error={errors?.password}
+                />
+              )}
+            </>
+            <FormSelectTimezone
+              name="timezone"
+              control={forms.control}
+              label="Zona Waktu"
+              error={errors?.timezone}
+            />
+            <FormSelect
+              name="role"
+              control={forms.control}
+              label="Role"
+              options={roles}
+            />
+            <div className="mt-3 flex items-center justify-end">
+              <Button className="px-8" onClick={handleSave}>
+                {loadingSubmit ? <Spinner /> : "Simpan"}
+              </Button>
+            </div>
+          </form>
+        </FormProvider>
       </BaseModal>
 
       <BaseModal
@@ -367,13 +375,17 @@ const UserAdmin = () => {
         isOpen={modalReset}
         close={() => setModalReset(false)}
       >
-        <FormInput
-          name="password"
-          control={control}
-          label="Password"
-          defaultValue={randomString}
-          error={errors?.password}
-        />
+        <FormProvider {...forms}>
+          <form>
+            <FormInput
+              name="password"
+              control={forms.control}
+              label="Password"
+              defaultValue={randomString}
+              error={errors?.password}
+            />
+          </form>
+        </FormProvider>
         <div className="mt-3 flex items-center justify-end">
           <Button className="px-8" onClick={handleResetPassword}>
             {loadingSubmit ? <Spinner /> : "Simpan"}
