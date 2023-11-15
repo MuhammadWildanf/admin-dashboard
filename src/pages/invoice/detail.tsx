@@ -12,11 +12,11 @@ import { useAlert } from "../../stores/alert";
 import { Spinner } from "flowbite-react";
 import { HiPrinter, HiTrash } from "react-icons/hi";
 import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
-import { InvoiceType } from "../../types/invoice";
 import BaseModal from "../../components/modal/base";
 
 const InvoiceDetail = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingExport, setLoadingExport] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalConfirm, setModalConfirm] = useState<boolean>(false);
@@ -38,6 +38,36 @@ const InvoiceDetail = () => {
         return navigate("/not-found");
       }
     }
+  };
+
+  const handlePrint = async () => {
+    setLoadingExport(true);
+    try {
+      const response = await request.get(`invoice/${invoice?.id}/pdf`, {
+        responseType: "arraybuffer",
+      });
+
+      // Create a Blob from the raw data
+      const blob = new Blob([response.data], { type: "application/pdf" });
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Invoice #${invoiceId}.pdf`);
+
+      // Append the link to the document and trigger the download
+      document.body.appendChild(link);
+      link.click();
+
+      // Remove the link from the document
+      document.body.removeChild(link);
+    } catch (err: any) {
+      if (err.response.status === 404) {
+        return navigate("/not-found");
+      }
+    }
+    setLoadingExport(false);
   };
 
   const handleCreateXenditLink = async () => {
@@ -114,8 +144,17 @@ const InvoiceDetail = () => {
       pageTitleContent={
         <div className="flex items-center gap-1">
           <Button className="px-5">
-            <div className="flex items-center gap-2 text-sm">
-              <HiPrinter /> Print
+            <div
+              className="flex items-center gap-2 text-sm"
+              onClick={handlePrint}
+            >
+              {loadingExport ? (
+                <Spinner />
+              ) : (
+                <>
+                  <HiPrinter /> Print
+                </>
+              )}
             </div>
           </Button>
           <Button

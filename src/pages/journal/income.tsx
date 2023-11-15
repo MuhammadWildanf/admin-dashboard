@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { parseDate } from "../../helper/date";
 import Pagination from "../../components/tables/pagination";
+import { Spinner } from "flowbite-react";
 
 type FormValues = {
   start_at: Date;
@@ -22,6 +23,7 @@ const JournalIncome = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
+  const [loadingExport, setLoadingExport] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -47,6 +49,47 @@ const JournalIncome = () => {
       });
       return data;
     } catch {}
+  };
+
+  const handleExport = async () => {
+    setLoadingExport(true);
+    try {
+      const startAt = watch("start_at")
+        ? moment(watch("start_at")).format("YYYY-MM-DD")
+        : moment().subtract(1, "month").format("YYYY-MM-DD");
+      const endAt = watch("end_at")
+        ? moment(watch("end_at")).format("YYYY-MM-DD")
+        : moment().format("YYYY-MM-DD");
+      const response = await request.get("/journal/to-excel", {
+        params: {
+          start_at: startAt,
+          end_at: endAt,
+          status: "PAID",
+          type: "Pemasukan",
+        },
+        responseType: "arraybuffer",
+      });
+
+      // Create a Blob from the raw data
+      const blob = new Blob([response.data], { type: "application/pdf" });
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `rekapitulasi data tagihan belum dibayar tanggal #${startAt} - ${endAt}.xls`
+      );
+
+      // Append the link to the document and trigger the download
+      document.body.appendChild(link);
+      link.click();
+
+      // Remove the link from the document
+      document.body.removeChild(link);
+    } catch {}
+    setLoadingExport(false);
   };
 
   const handleFilter = handleSubmit(async (data) => {
@@ -123,9 +166,15 @@ const JournalIncome = () => {
           <h3 className="text-2xl">{currency(total)}</h3>
         </div>
         <div className="">
-          <Button className="bg-green-600">
+          <Button className="bg-green-600" onClick={handleExport}>
             <div className="flex gap-2 items-center px-3">
-              <HiOutlineDownload /> Export Excel
+              {loadingExport ? (
+                <Spinner />
+              ) : (
+                <>
+                  <HiOutlineDownload /> Export Excel
+                </>
+              )}
             </div>
           </Button>
         </div>

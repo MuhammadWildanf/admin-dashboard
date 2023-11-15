@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useInvoice } from "../../stores/invoice";
 import Layout from "../layout.tsx/app";
 import { request } from "../../api/config";
 import { DateRangeForm } from "../../components/forms/input-daterange";
@@ -9,7 +8,6 @@ import { currency } from "../../helper/currency";
 import { Button } from "../../components/buttons";
 import { HiOutlineDownload, HiSearch } from "react-icons/hi";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { parseDate } from "../../helper/date";
 import { useTax } from "../../stores/tax";
 import Pagination from "../../components/tables/pagination";
@@ -21,10 +19,12 @@ type FormValues = {
 
 const JournalTax = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingFilter, setLoadingFilter] = useState<boolean>(true);
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
+  const [selected, setSelected] = useState<number | undefined>(undefined);
 
-  const { setJournalTaxes, journalTaxes } = useTax();
+  const { setJournalTaxes, journalTaxes, taxes, setTaxes } = useTax();
 
   const { handleSubmit, control, watch } = useForm<FormValues>({
     defaultValues: {
@@ -33,7 +33,11 @@ const JournalTax = () => {
     },
   });
 
-  const getInvoices = async (start_at?: string, end_at?: string) => {
+  const getInvoices = async (
+    start_at?: string,
+    end_at?: string,
+    taxId?: number
+  ) => {
     setLoading(true);
     try {
       const { data } = await request.get("/journal/taxes", {
@@ -41,9 +45,17 @@ const JournalTax = () => {
           start_at:
             start_at ?? moment().subtract(1, "month").format("YYYY-MM-DD"),
           end_at: end_at ?? moment().format("YYYY-MM-DD"),
+          tax_id: taxId ?? null,
         },
       });
       return data;
+    } catch {}
+  };
+
+  const getTaxes = async () => {
+    try {
+      const { data } = await request.get("/tax");
+      return data.data;
     } catch {}
   };
 
@@ -51,12 +63,26 @@ const JournalTax = () => {
     setLoading(true);
     const res = await getInvoices(
       moment(data.start_at).format("YYYY-MM-DD"),
-      moment(data.end_at).format("YYYY-MM-DD")
+      moment(data.end_at).format("YYYY-MM-DD"),
+      selected
     );
     setJournalTaxes(res.data);
     setTotal(res.total);
     setLoading(false);
   });
+
+  const handleSelectTax = async (taxId: number | undefined) => {
+    setLoading(true);
+    setSelected(taxId);
+    const res = await getInvoices(
+      moment(watch("start_at")).format("YYYY-MM-DD"),
+      moment(watch("end_at")).format("YYYY-MM-DD"),
+      taxId
+    );
+    setJournalTaxes(res.data);
+    setTotal(res.total);
+    setLoading(false);
+  };
 
   const handleNext = () => {
     if (page === journalTaxes?.last_page) {
@@ -75,12 +101,13 @@ const JournalTax = () => {
   };
 
   useEffect(() => {
-    Promise.all([getInvoices()]).then((res) => {
+    Promise.all([getInvoices(), getTaxes()]).then((res) => {
       setJournalTaxes(res[0].data);
       setTotal(res[0].total);
+      setTaxes(res[1]);
     });
     setLoading(false);
-  }, []);
+  }, [loadingFilter]);
 
   return (
     <Layout
@@ -104,21 +131,48 @@ const JournalTax = () => {
       }
     >
       <div className="pb-3 flex items-center justify-between -mt-4">
-        <div className="py-3 px-4 rounded-lg bg-red-50">
-          <div className="leading-5">
-            <span className="font-semibold">Total Pemasukkan</span> <br />
-            <small>
-              Periode:{" "}
-              {watch("start_at")
-                ? moment(watch("start_at")).format("DD MMM YYYY")
-                : moment().subtract(1, "month").format("YYYY-MM-DD")}{" "}
-              -{" "}
-              {watch("end_at")
-                ? moment(watch("end_at")).format("DD MMM YYYY")
-                : moment().subtract(1, "month").format("YYYY-MM-DD")}{" "}
-            </small>
+        <div className="flex items-end gap-4">
+          <div className="py-3 px-4 rounded-lg bg-red-50">
+            <div className="leading-5">
+              <span className="font-semibold">Total Pemasukkan</span> <br />
+              <small>
+                Periode:{" "}
+                {watch("start_at")
+                  ? moment(watch("start_at")).format("DD MMM YYYY")
+                  : moment().subtract(1, "month").format("YYYY-MM-DD")}{" "}
+                -{" "}
+                {watch("end_at")
+                  ? moment(watch("end_at")).format("DD MMM YYYY")
+                  : moment().subtract(1, "month").format("YYYY-MM-DD")}{" "}
+              </small>
+            </div>
+            <h3 className="text-2xl">{currency(total)}</h3>
           </div>
-          <h3 className="text-2xl">{currency(total)}</h3>
+          <div className="flex items-center gap-2">
+            <Button
+              className={`${
+                selected === undefined
+                  ? "bg-purple-200 border hover:bg-purple-200 border-purple-600"
+                  : "bg-white border hover:bg-purple-200 border-purple-600"
+              } text-sm`}
+              onClick={() => handleSelectTax(undefined)}
+            >
+              <span className="text-purple-600">Semua</span>
+            </Button>
+            {taxes?.data?.map((item, key) => (
+              <Button
+                key={key}
+                className={`${
+                  selected === item.id
+                    ? "bg-purple-200 border hover:bg-gray-200 border-purple-600"
+                    : "bg-white border hover:bg-purple-200 border-purple-600"
+                } text-sm`}
+                onClick={() => handleSelectTax(item.id)}
+              >
+                <span className="text-purple-600">{item.name}</span>
+              </Button>
+            ))}
+          </div>
         </div>
         <div className="">
           <Button className="bg-green-600">

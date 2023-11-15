@@ -59,7 +59,10 @@ const SidebarItems = ({ className }: Props) => {
   const navigate = useNavigate();
 
   return (
-    <Sidebar className={`fixed h-screen top-0 ${className}`} theme={theme}>
+    <Sidebar
+      className={`fixed h-screen select-none top-0 ${className}`}
+      theme={theme}
+    >
       <Sidebar.Items className="pt-16">
         <Sidebar.ItemGroup>
           {me?.role === "superadmin" && (
@@ -95,9 +98,10 @@ const SidebarItems = ({ className }: Props) => {
                     >
                       {item.child.map((child, key) => (
                         <Sidebar.Item
-                          href={child.href}
+                          // href={child.href}
+                          onClick={() => navigate(child.href ?? "/")}
                           key={key}
-                          className="text-sm"
+                          className="text-sm cursor-pointer"
                           active={
                             child.name === pathname.split("/")[2] ? true : false
                           }
