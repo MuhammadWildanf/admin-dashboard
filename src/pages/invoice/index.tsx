@@ -11,6 +11,7 @@ import { HiSearch } from "react-icons/hi";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { parseDate } from "../../helper/date";
+import Pagination from "../../components/tables/pagination";
 
 type FormValues = {
   start_at: Date;
@@ -19,6 +20,7 @@ type FormValues = {
 
 const InvoiceIndex = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1);
 
   const navigate = useNavigate();
 
@@ -54,6 +56,22 @@ const InvoiceIndex = () => {
     setInvoices(res);
     setLoading(false);
   });
+
+  const handleNext = () => {
+    if (page === invoices?.last_page) {
+      return;
+    }
+
+    setPage(page + 1);
+  };
+
+  const handlePrevious = () => {
+    if (page === 1) {
+      return;
+    }
+
+    setPage(page - 1);
+  };
 
   useEffect(() => {
     Promise.all([getInvoices()]).then((res) => {
@@ -161,6 +179,13 @@ const InvoiceIndex = () => {
           )}
         </Table.Tbody>
       </Table>
+
+      <Pagination
+        currentPage={invoices?.current_page ?? 1}
+        totalPage={invoices?.last_page ?? 1}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+      />
     </Layout>
   );
 };

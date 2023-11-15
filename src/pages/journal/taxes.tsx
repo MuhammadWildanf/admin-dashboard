@@ -11,6 +11,7 @@ import { HiOutlineDownload, HiSearch } from "react-icons/hi";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { parseDate } from "../../helper/date";
+import { useTax } from "../../stores/tax";
 import Pagination from "../../components/tables/pagination";
 
 type FormValues = {
@@ -18,14 +19,12 @@ type FormValues = {
   end_at: Date;
 };
 
-const JournalIncome = () => {
+const JournalTax = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
 
-  const navigate = useNavigate();
-
-  const { setInvoices, invoices } = useInvoice();
+  const { setJournalTaxes, journalTaxes } = useTax();
 
   const { handleSubmit, control, watch } = useForm<FormValues>({
     defaultValues: {
@@ -37,12 +36,11 @@ const JournalIncome = () => {
   const getInvoices = async (start_at?: string, end_at?: string) => {
     setLoading(true);
     try {
-      const { data } = await request.get("/invoice", {
+      const { data } = await request.get("/journal/taxes", {
         params: {
           start_at:
             start_at ?? moment().subtract(1, "month").format("YYYY-MM-DD"),
           end_at: end_at ?? moment().format("YYYY-MM-DD"),
-          status: "PAID",
         },
       });
       return data;
@@ -55,13 +53,13 @@ const JournalIncome = () => {
       moment(data.start_at).format("YYYY-MM-DD"),
       moment(data.end_at).format("YYYY-MM-DD")
     );
-    setInvoices(res.data);
+    setJournalTaxes(res.data);
     setTotal(res.total);
     setLoading(false);
   });
 
   const handleNext = () => {
-    if (page === invoices?.last_page) {
+    if (page === journalTaxes?.last_page) {
       return;
     }
 
@@ -78,7 +76,7 @@ const JournalIncome = () => {
 
   useEffect(() => {
     Promise.all([getInvoices()]).then((res) => {
-      setInvoices(res[0].data);
+      setJournalTaxes(res[0].data);
       setTotal(res[0].total);
     });
     setLoading(false);
@@ -87,7 +85,7 @@ const JournalIncome = () => {
   return (
     <Layout
       withPageTitle
-      title={<div className="leading-none">Jurnal Pemasukan</div>}
+      title={<div className="leading-none">Jurnal Pajak</div>}
       pageTitleContent={
         <div className="flex items-center gap-1">
           <DateRangeForm
@@ -133,19 +131,18 @@ const JournalIncome = () => {
       <Table>
         <Table.Thead>
           <Table.Th>No.</Table.Th>
+          <Table.Th>Tanggal</Table.Th>
           <Table.Th>No. Invoice</Table.Th>
-          <Table.Th>Tgl. Invoice</Table.Th>
-          <Table.Th>Due Date</Table.Th>
           <Table.Th>Klien/Perusahaan</Table.Th>
-          <Table.Th>Grand Total</Table.Th>
-          <Table.Th className="text-center">Status</Table.Th>
+          <Table.Th>Jenis Pajak</Table.Th>
+          <Table.Th className="text-right">Total Pajak</Table.Th>
         </Table.Thead>
         <Table.Tbody>
           {loading ? (
             <Table.TrLoading cols={5} rows={4} />
           ) : (
             <>
-              {invoices?.data?.length === 0 ? (
+              {journalTaxes?.data?.length === 0 ? (
                 <Table.Tr>
                   <Table.Td cols={7} className="py-2 text-center">
                     Tidak ada data
@@ -153,51 +150,33 @@ const JournalIncome = () => {
                 </Table.Tr>
               ) : (
                 <>
-                  {invoices?.data?.map((item, key) => (
+                  {journalTaxes?.data?.map((item, key) => (
                     <Table.Tr
                       key={key}
                       className="hover:bg-gray-100 cursor-pointer"
-                      onClick={() =>
-                        navigate(`/invoice/${item.invoice_number}`)
-                      }
                     >
                       <Table.Td>
                         {(
                           key +
                           1 +
-                          invoices.per_page * (invoices.current_page - 1)
+                          journalTaxes.per_page *
+                            (journalTaxes.current_page - 1)
                         ).toString()}
                       </Table.Td>
-                      <Table.Td>{item.invoice_number}</Table.Td>
                       <Table.Td>
                         <>
                           {item.created_at ? parseDate(item.created_at) : "-"}
                         </>
                       </Table.Td>
                       <Table.Td>
-                        <>{item.due_date ? parseDate(item.due_date) : "-"}</>
+                        <>{item.invoice?.invoice_number ?? "-"}</>
                       </Table.Td>
                       <Table.Td>
-                        <>
-                          {item.payer_name}{" "}
-                          {item.payer_company && `/ ${item.payer_company}`}
-                        </>
+                        <>{item.invoice?.company?.name ?? "-"}</>
                       </Table.Td>
-                      <Table.Td>
-                        {item.grand_total ? currency(item.grand_total) : "-"}
-                      </Table.Td>
-                      <Table.Td className="text-center">
-                        <span
-                          className={`p-1 text-xs rounded ${
-                            item.status === "UNPAID" &&
-                            "bg-red-100 text-red-600"
-                          } ${
-                            item.status === "PAID" &&
-                            "bg-green-100 text-green-600"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
+                      <Table.Td>{item.tax.name ?? "-"}</Table.Td>
+                      <Table.Td className="text-right">
+                        {item.amount ? currency(item.amount) : "-"}
                       </Table.Td>
                     </Table.Tr>
                   ))}
@@ -208,8 +187,8 @@ const JournalIncome = () => {
         </Table.Tbody>
       </Table>
       <Pagination
-        currentPage={invoices?.current_page ?? 1}
-        totalPage={invoices?.last_page ?? 1}
+        currentPage={journalTaxes?.current_page ?? 1}
+        totalPage={journalTaxes?.last_page ?? 1}
         onNext={handleNext}
         onPrevious={handlePrevious}
       />
@@ -217,4 +196,4 @@ const JournalIncome = () => {
   );
 };
 
-export default JournalIncome;
+export default JournalTax;

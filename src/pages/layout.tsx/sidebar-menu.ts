@@ -115,8 +115,8 @@ const JournalMenu = {
     },
     {
       label: "Pajak",
-      name: "journal",
-      href: "/journal/journal",
+      name: "taxes",
+      href: "/journal/taxes",
     },
   ],
 };
