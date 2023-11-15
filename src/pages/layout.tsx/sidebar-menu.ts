@@ -85,6 +85,11 @@ const InvoiceMenu = {
   child: [
     { label: "List Invoice", name: "", href: "/invoice/" },
     {
+      label: "Invoice belum dibayar",
+      name: "unpaid",
+      href: "/invoice/unpaid",
+    },
+    {
       label: "Buat Invoice Kosongan",
       name: "create-blank",
       href: "/invoice/create-blank",
@@ -107,11 +112,6 @@ const JournalMenu = {
       label: "Uang Masuk",
       name: "income",
       href: "/journal/income",
-    },
-    {
-      label: "Invoice belum dibayar",
-      name: "debt",
-      href: "/journal/debt",
     },
     {
       label: "Pajak",

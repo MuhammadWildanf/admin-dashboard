@@ -37,6 +37,8 @@ import CompanyInvoice from "../pages/partner/company/invoice";
 import AddCompanyInvoice from "../pages/partner/company/add-invoice";
 import CreateClientInvoice from "../pages/partner/company/create-invoice";
 import JournalIndex from "../pages/journal";
+import InvoiceUnpaid from "../pages/invoice/unpaid";
+import JournalIncome from "../pages/journal/income";
 
 export const routes = createBrowserRouter([
   {
@@ -304,6 +306,14 @@ export const routes = createBrowserRouter([
     ),
   },
   {
+    path: "/invoice/unpaid",
+    element: (
+      <Private>
+        <InvoiceUnpaid />
+      </Private>
+    ),
+  },
+  {
     path: "/invoice/:invoiceId",
     element: (
       <Private>
@@ -340,6 +350,14 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <JournalIndex />
+      </Private>
+    ),
+  },
+  {
+    path: "/journal/income",
+    element: (
+      <Private>
+        <JournalIncome />
       </Private>
     ),
   },
