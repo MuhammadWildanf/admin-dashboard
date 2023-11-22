@@ -76,3 +76,17 @@ export type SellingsType = {
   updated_at: string;
   invoice: { id: string | number; invoice_number: string };
 };
+
+export type AsesmenConfirmationType = {
+  id: string;
+  confirmation_at: string | null;
+  foto_ktp: string | null;
+  foto_selfie: string | null;
+  created_at: string;
+  updated_at: string;
+  participant: {
+    id: number;
+    name: string;
+    test_date: string;
+  };
+};

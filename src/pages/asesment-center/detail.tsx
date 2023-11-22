@@ -13,6 +13,12 @@ import { useAsesmen } from "../../stores/asesmen";
 import { currency } from "../../helper/currency";
 import { FormInput } from "../../components/forms/input";
 import { Spinner } from "flowbite-react";
+import { Eye, Pencil } from "@phosphor-icons/react";
+import {
+  AsesmenConfirmationType,
+  AsesmentParticipantType,
+} from "../../types/asesmen";
+import { parseDate } from "../../helper/date";
 
 type FormValues = {
   meeting_link: string;
@@ -28,6 +34,18 @@ const DetailAsesmen = () => {
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [modalApprve, setModalApprove] = useState<boolean>(false);
+  const [modalConfirm, setModalConfirm] = useState<boolean>(false);
+  const [modalShowConfirmation, setModalShowConfirmation] =
+    useState<boolean>(false);
+  const [selected, setSelected] = useState<AsesmentParticipantType | undefined>(
+    undefined
+  );
+  const [confirmation, setConfirmation] = useState<
+    AsesmenConfirmationType | undefined
+  >(undefined);
+  const [loadingGetConfirmation, setLoadingGetConfirmation] =
+    useState<boolean>(false);
+  const [loadingConfirm, setLoadingConfirm] = useState<boolean>(false);
 
   const { handleSubmit, reset, control } = useForm<FormValues>();
 
@@ -51,6 +69,17 @@ const DetailAsesmen = () => {
     } catch {}
   };
 
+  const getConfirmation = async (participant: AsesmentParticipantType) => {
+    setSelected(participant);
+    setModalShowConfirmation(true);
+    setLoadingGetConfirmation(true);
+    try {
+      const data = await getData(`/asesmen-confirmation/${participant?.id}`);
+      setConfirmation(data);
+    } catch (err: any) {}
+    setLoadingGetConfirmation(false);
+  };
+
   const handleApprove = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
@@ -64,6 +93,21 @@ const DetailAsesmen = () => {
     setLoadingSubmit(false);
   });
 
+  const handleManualConfirm = async () => {
+    setLoadingConfirm(true);
+    try {
+      await request(
+        `/asesmen-confirmation/${selected?.id}/manual-confirm`
+      ).then(() => {
+        setModalConfirm(false);
+        setSelected(undefined);
+      });
+    } catch (err: any) {
+      console.log(err);
+    }
+    setLoadingConfirm(false);
+  };
+
   const handleDelete = () => {};
 
   useEffect(() => {
@@ -72,7 +116,7 @@ const DetailAsesmen = () => {
       setParticipants(res[1]);
     });
     setLoading(false);
-  }, [loadingSubmit]);
+  }, [loadingSubmit, loadingConfirm]);
 
   return (
     <Layout
@@ -212,13 +256,31 @@ const DetailAsesmen = () => {
                       <Table.Td>{item.activation_code ?? "-"}</Table.Td>
                       <Table.Td>
                         {item.confirmed_at ? (
-                          <span>
-                            {moment(item.confirmed_at).format(
-                              "DD MMMM YYYY, H:i"
-                            )}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span>
+                              {moment(item.confirmed_at).format(
+                                "DD MMM YYYY, HH:ss"
+                              )}
+                            </span>
+
+                            <Eye
+                              onClick={() => getConfirmation(item)}
+                              className="text-blue-600 cursor-pointer"
+                              size={16}
+                            />
+                          </div>
                         ) : (
-                          "Belum"
+                          <div className="flex items-center gap-2">
+                            <span>Belum</span>
+                            <Pencil
+                              size={16}
+                              onClick={() => {
+                                setSelected(item);
+                                setModalConfirm(true);
+                              }}
+                              className="cursor-pointer text-purple-600"
+                            />
+                          </div>
                         )}
                       </Table.Td>
                     </Table.Tr>
@@ -277,6 +339,93 @@ const DetailAsesmen = () => {
             </div>
           </div>
         </div>
+      </BaseModal>
+
+      <BaseModal
+        title={"Konfirmasi Manual"}
+        isOpen={modalConfirm}
+        close={() => setModalConfirm(false)}
+      >
+        <p>
+          Apakah anda yakin ingin mengkonfirmasi peserta{" "}
+          <strong>{selected?.name}</strong> secara manual?
+        </p>
+
+        <div className="mt-3 flex items-center justify-end gap-2">
+          <Button
+            variant="danger"
+            onClick={() => setModalConfirm(false)}
+            className="px-4"
+          >
+            Batal
+          </Button>
+          <Button className="px-12" onClick={handleManualConfirm}>
+            {loadingSubmit ? <Spinner /> : "Ok!"}
+          </Button>
+        </div>
+      </BaseModal>
+
+      <BaseModal
+        title={`Konfirmasi Peserta ${selected?.name}`}
+        isOpen={modalShowConfirmation}
+        close={() => {
+          setSelected(undefined);
+          setModalShowConfirmation(false);
+        }}
+      >
+        {loadingGetConfirmation ? (
+          <div
+            className="w-full flex justify-center items-center"
+            style={{ height: "300px" }}
+          >
+            <Spinner />
+          </div>
+        ) : (
+          <div className="">
+            <div className="py-2">
+              <label htmlFor="" className="text-sm">
+                Tanggal Konfirmasi:
+              </label>
+              <p>
+                {selected?.confirmed_at
+                  ? parseDate(selected?.confirmed_at)
+                  : "-"}
+              </p>
+            </div>
+
+            <div className="py-2">
+              <label htmlFor="" className="text-sm">
+                Foto KTP
+              </label>
+              {confirmation?.foto_ktp ? (
+                <img
+                  src={confirmation?.foto_ktp ?? ""}
+                  alt={`Foto KTP ${confirmation?.participant?.name}`}
+                />
+              ) : (
+                <div>
+                  <small>Tidak ada foto</small>
+                </div>
+              )}
+            </div>
+
+            <div className="py-2">
+              <label htmlFor="" className="text-sm">
+                Foto Selfie
+              </label>
+              {confirmation?.foto_selfie ? (
+                <img
+                  src={confirmation?.foto_selfie ?? ""}
+                  alt={`Foto KTP ${confirmation?.participant?.name}`}
+                />
+              ) : (
+                <div>
+                  <small>Tidak ada foto</small>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </BaseModal>
     </Layout>
   );
