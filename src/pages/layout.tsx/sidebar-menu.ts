@@ -141,3 +141,11 @@ export const menuSuperAdmin: Menu[] = [
   TaxMenu,
   userManagementMenu,
 ];
+
+export const menuFinance: Menu[] = [
+  dashboardMenu,
+  CompanyMenu,
+  InvoiceMenu,
+  JournalMenu,
+  TaxMenu,
+];
