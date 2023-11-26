@@ -4,11 +4,11 @@ import { HiPencil, HiPlus, HiSearch, HiTrash, HiX } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import { getData } from "../../api/get-data";
 import { useProduct } from "../../stores/product";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { request } from "../../api/config";
 import { useAlert } from "../../stores/alert";
 import { ProductPriceType } from "../../types/product";
-import { useParams } from "react-router-dom";
+import { Form, useParams } from "react-router-dom";
 import Table from "../../components/tables/base";
 import { Button } from "../../components/buttons";
 import { FormInputCurrency } from "../../components/forms/input";
@@ -47,7 +47,7 @@ const ProductDetail = () => {
   const { setMessage } = useAlert();
   const { productId } = useParams();
 
-  const { control, setValue, reset, handleSubmit } = useForm<FormValues>();
+  const form = useForm<FormValues>();
 
   const getProduct = async (search?: string, searchMode: boolean = false) => {
     setLoading(true);
@@ -126,13 +126,13 @@ const ProductDetail = () => {
     await setSelected(item);
     setModalMode("edit");
 
-    setValue("modul_id", item.module ?? null);
-    setValue("price", item.price.toString() ?? "");
+    form.setValue("modul_id", item.module ?? null);
+    form.setValue("price", item.price.toString() ?? "");
 
     setModalAdd(true);
   };
 
-  const handleSave = handleSubmit(async (data) => {
+  const handleSave = form.handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
       if (modalMode === "create") {
@@ -144,7 +144,7 @@ const ProductDetail = () => {
 
         await request.post(`/product/${product?.id}/add-price`, payload);
         setModalAdd(false);
-        reset();
+        form.reset();
       } else if (modalMode === "edit") {
         let payload = {
           ...data,
@@ -154,7 +154,7 @@ const ProductDetail = () => {
         await request.post(`/product/${selected?.id}/update-price`, payload);
         setModalAdd(false);
         setLoadingSubmit(false);
-        reset();
+        form.reset();
       }
       setErrors(null);
     } catch (err: any) {
@@ -401,54 +401,56 @@ const ProductDetail = () => {
           )
         }
       >
-        <>
-          {modalMode === "create" && (
-            <FormSelectAsync
-              control={control}
-              name="company_id"
-              label="Peruhsaan/Client"
-              loadOption={selectCompany}
-              optionLabel={(option: any) => option.name}
-              optionValue={(option: any) => option.id}
-              error={errors?.company_id}
-            />
-          )}
-        </>
+        <FormProvider {...form}>
+          <>
+            {modalMode === "create" && (
+              <FormSelectAsync
+                control={form.control}
+                name="company_id"
+                label="Peruhsaan/Client"
+                loadOption={selectCompany}
+                optionLabel={(option: any) => option.name}
+                optionValue={(option: any) => option.id}
+                error={errors?.company_id}
+              />
+            )}
+          </>
 
-        <FormSelectAsync
-          control={control}
-          name="modul_id"
-          label="Modul"
-          loadOption={selectModules}
-          optionLabel={(option: any) => option.name}
-          optionValue={(option: any) => option.id}
-          error={errors?.modul_id}
-        />
+          <FormSelectAsync
+            control={form.control}
+            name="modul_id"
+            label="Modul"
+            loadOption={selectModules}
+            optionLabel={(option: any) => option.name}
+            optionValue={(option: any) => option.id}
+            error={errors?.modul_id}
+          />
 
-        <FormInputCurrency
-          control={control}
-          name="price"
-          label="Harga"
-          defaultValue={
-            selected?.price ? selected?.price.toLocaleString("id-ID") : null
-          }
-          error={errors?.price}
-        />
+          <FormInputCurrency
+            control={form.control}
+            name="price"
+            label="Harga"
+            defaultValue={
+              selected?.price ? selected?.price.toLocaleString("id-ID") : null
+            }
+            error={errors?.price}
+          />
 
-        <div className="pt-2 flex items-center justify-end">
-          <div className="flex items-center gap-2">
-            <Button
-              className="px-3"
-              variant="danger"
-              onClick={() => setModalAdd(false)}
-            >
-              Batal
-            </Button>
-            <Button className="px-8" onClick={handleSave}>
-              {loadingSubmit ? <Spinner /> : "Simpan"}
-            </Button>
+          <div className="pt-2 flex items-center justify-end">
+            <div className="flex items-center gap-2">
+              <Button
+                className="px-3"
+                variant="danger"
+                onClick={() => setModalAdd(false)}
+              >
+                Batal
+              </Button>
+              <Button className="px-8" onClick={handleSave}>
+                {loadingSubmit ? <Spinner /> : "Simpan"}
+              </Button>
+            </div>
           </div>
-        </div>
+        </FormProvider>
       </BaseModal>
 
       <ModalDeleteConfirmation

@@ -76,7 +76,7 @@ const InvoiceIndex = () => {
   useEffect(() => {
     Promise.all([getInvoices()]).then((res) => {
       setInvoices(res[0]);
-      console.log(res);
+      // console.log(res);
     });
     setLoading(false);
   }, []);

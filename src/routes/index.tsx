@@ -40,6 +40,10 @@ import JournalIndex from "../pages/journal";
 import InvoiceUnpaid from "../pages/invoice/unpaid";
 import JournalIncome from "../pages/journal/income";
 import JournalTax from "../pages/journal/taxes";
+import AllAsesmen from "../pages/asesment-center/all";
+import UserPsikolog from "../pages/users/psikolog";
+import IndexReport from "../pages/report";
+import ShowReport from "../pages/report/detail";
 
 export const routes = createBrowserRouter([
   {
@@ -139,6 +143,14 @@ export const routes = createBrowserRouter([
     ),
   },
   {
+    path: "/users/psikolog",
+    element: (
+      <Private>
+        <UserPsikolog />
+      </Private>
+    ),
+  },
+  {
     path: "/product",
     element: (
       <Private>
@@ -159,6 +171,14 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <IndexAsesmen />
+      </Private>
+    ),
+  },
+  {
+    path: "/asesmen/all",
+    element: (
+      <Private>
+        <AllAsesmen />
       </Private>
     ),
   },
@@ -367,6 +387,22 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <JournalTax />
+      </Private>
+    ),
+  },
+  {
+    path: "/report",
+    element: (
+      <Private>
+        <IndexReport />
+      </Private>
+    ),
+  },
+  {
+    path: "/report/:code",
+    element: (
+      <Private>
+        <ShowReport />
       </Private>
     ),
   },

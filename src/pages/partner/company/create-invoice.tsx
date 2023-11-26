@@ -32,6 +32,7 @@ type ItemsType = {
 
 const CreateClientInvoice = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [items, setItems] = useState<ItemsType>([]);
   const [subTotal, setSubTotal] = useState<number>(0);
   const [taxes, setTaxes] = useState<
@@ -89,6 +90,7 @@ const CreateClientInvoice = () => {
     let updatedItems: ItemsType = [];
     const seenProductIds: Set<number> = new Set();
 
+    let attachments: any = [];
     participants?.forEach((participant) => {
       const productId = Number(participant.product.id);
 
@@ -110,7 +112,24 @@ const CreateClientInvoice = () => {
           });
         }
       }
+      attachments.push({
+        name: participant.name,
+        module: participant.product?.name,
+        test_date: participant.assessment.test_date,
+      });
     });
+    appendParticipant(attachments);
+
+    forms.setValue("withAttachment", true);
+    forms.setValue(
+      "company_id",
+      { id: company?.id ?? "", name: company?.name ?? "" } ?? []
+    );
+    forms.setValue("email", company?.email ?? "");
+    forms.setValue("bill_address", company?.address ?? "");
+    forms.setValue("phone", company?.phone ?? "");
+    forms.setValue("bill_to", company?.registered_by?.name ?? "");
+
     setItems(updatedItems);
   };
 
@@ -203,7 +222,8 @@ const CreateClientInvoice = () => {
   useEffect(() => {
     Promise.all([getParticipants(), getCompany()]).then((res) => {
       parseItems(res[0]?.data ?? null);
-      setParticipants(res[0] ?? null);
+      // setParticipants(res[0] ?? null);
+      // console.log(participants);
       setCompany(res[1]);
     });
     setLoading(false);
@@ -220,25 +240,22 @@ const CreateClientInvoice = () => {
     }
   }, [items]);
 
-  useEffect(() => {
-    if (participants) {
-      forms.setValue("withAttachment", true);
-      forms.setValue(
-        "company_id",
-        { id: company?.id ?? "", name: company?.name ?? "" } ?? []
-      );
-      forms.setValue("email", company?.email ?? "");
-      forms.setValue("bill_address", company?.address ?? "");
-      forms.setValue("phone", company?.phone ?? "");
-      forms.setValue("bill_to", company?.registered_by?.name ?? "");
-      let attachments = participants.data.map((item) => ({
-        name: item.name,
-        module: item.product?.name,
-        test_date: item.assessment.test_date,
-      }));
-      appendParticipant(attachments);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (participants) {
+  //     forms.setValue("withAttachment", true);
+  //     forms.setValue(
+  //       "company_id",
+  //       { id: company?.id ?? "", name: company?.name ?? "" } ?? []
+  //     );
+  //     forms.setValue("email", company?.email ?? "");
+  //     forms.setValue("bill_address", company?.address ?? "");
+  //     forms.setValue("phone", company?.phone ?? "");
+  //     forms.setValue("bill_to", company?.registered_by?.name ?? "");
+
+  //     console.log(participants);
+  //     // console.log(participants.data);
+  //   }
+  // }, []);
 
   useEffect(() => {
     handleCountSubTotal();

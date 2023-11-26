@@ -11,6 +11,16 @@ type Props = {
 };
 
 const BaseModal = ({ isOpen, close, title, size = "md", children }: Props) => {
+  let modalSize = "";
+
+  if (size === "4xl") modalSize = "max-w-4xl";
+  if (size === "3xl") modalSize = "max-w-3xl";
+  if (size === "2xl") modalSize = "max-w-2xl";
+  if (size === "xl") modalSize = "max-w-xl";
+  if (size === "lg") modalSize = "max-w-lg";
+  if (size === "md") modalSize = "max-w-md";
+  if (size === "sm") modalSize = "max-w-sm";
+
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -39,7 +49,7 @@ const BaseModal = ({ isOpen, close, title, size = "md", children }: Props) => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
-                  className={`w-full max-w-${size} transform 
+                  className={`w-full ${modalSize} transform 
                   rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all`}
                 >
                   <Dialog.Title

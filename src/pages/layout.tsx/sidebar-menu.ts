@@ -4,12 +4,12 @@ import {
   HiChartPie,
   HiClipboardList,
   HiCube,
+  HiDocumentReport,
   HiDocumentText,
   HiOutlineKey,
   HiReceiptTax,
   HiUserGroup,
 } from "react-icons/hi";
-import { useSession } from "../../stores/session";
 
 type Menu = {
   label: string;
@@ -42,7 +42,10 @@ const userManagementMenu = {
   name: "users",
   icon: HiUserGroup,
   href: "#",
-  child: [{ label: "Admin", name: "admin", href: "/users/admin" }],
+  child: [
+    { label: "Admin", name: "admin", href: "/users/admin" },
+    { label: "Psikolog", name: "psikolog", href: "/users/psikolog" },
+  ],
 };
 
 const activationCodeMenu = {
@@ -129,9 +132,17 @@ const TaxMenu = {
   child: [{ label: "Pengaturan", name: "setting", href: "/tax/setting" }],
 };
 
+const ReportMenu = {
+  label: "Laporan Asesmen",
+  name: "report",
+  icon: HiDocumentReport,
+  href: "/report",
+};
+
 export const menuSuperAdmin: Menu[] = [
   dashboardMenu,
   activationCodeMenu,
+  ReportMenu,
   testToolMenu,
   ProductMenu,
   CompanyMenu,
@@ -149,3 +160,5 @@ export const menuFinance: Menu[] = [
   JournalMenu,
   TaxMenu,
 ];
+
+export const menuQC: Menu[] = [dashboardMenu, ReportMenu];

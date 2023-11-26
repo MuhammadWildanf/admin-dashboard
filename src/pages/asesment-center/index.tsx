@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "../layout.tsx/app";
 import { getData } from "../../api/get-data";
-import { HiOutlineSearch, HiX } from "react-icons/hi";
+import { HiExclamation, HiOutlineSearch, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
 import Table from "../../components/tables/base";
 import Pagination from "../../components/tables/pagination";
@@ -25,6 +25,7 @@ const IndexAsesmen = () => {
       const { data } = await request.get("/asesmen", {
         params: {
           q: search ?? "",
+          is_weekly: 1,
           page: searchMode ? 1 : page ?? 1,
           with_paginate: 1,
         },
@@ -101,7 +102,7 @@ const IndexAsesmen = () => {
     >
       <div className="flex mb-4 items-center text-sm gap-1">
         <div className="px-6 bg-blue-100 rounded-lg py-2 font-semibold cursor-pointer hover:text-gray-800">
-          Semua
+          Weekly Mode
         </div>
         <div
           onClick={() => navigate("/asesmen/pending")}
@@ -109,10 +110,23 @@ const IndexAsesmen = () => {
         >
           Pending
         </div>
+        <div
+          onClick={() => navigate("/asesmen/all")}
+          className="px-6 cursor-pointer rounded-lg py-2 hover:bg-blue-100"
+        >
+          All
+        </div>
+      </div>
+      <div className="pb-4 flex items-center gap-3">
+        <HiExclamation className="text-yellow-400" size={20} />
+        <span className="text-gray-800 text-sm">
+          Hanya menampilkan data dengan tanggal tes seminggu kedepan
+        </span>
       </div>
       <Table>
         <Table.Thead>
           <Table.Th>#</Table.Th>
+          <Table.Th>Reg. ID</Table.Th>
           <Table.Th>Tanggal Tes</Table.Th>
           <Table.Th>Client</Table.Th>
           <Table.Th>Perusahaan</Table.Th>
@@ -146,6 +160,7 @@ const IndexAsesmen = () => {
                           asesmens.per_page * (asesmens.current_page - 1)
                         ).toString()}
                       </Table.Td>
+                      <Table.Td>{item.reg_id}</Table.Td>
                       <Table.Td>
                         {item.test_date
                           ? moment(item.test_date).format("DD MMM YYYY")

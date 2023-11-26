@@ -322,7 +322,7 @@ const AddCompanyInvoice = () => {
                             </Table.Td>
                             <Table.Td className="text-center">
                               <div className="flex items-center justify-center">
-                                {item.has_report ? (
+                                {item.has_invoice ? (
                                   <CheckCircle
                                     size={20}
                                     className="text-green-700"

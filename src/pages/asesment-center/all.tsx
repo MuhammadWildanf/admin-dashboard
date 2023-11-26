@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Layout from "../layout.tsx/app";
+import { getData } from "../../api/get-data";
 import { HiOutlineSearch, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
 import Table from "../../components/tables/base";
@@ -10,7 +11,7 @@ import { currency } from "../../helper/currency";
 import { request } from "../../api/config";
 import { useNavigate } from "react-router-dom";
 
-const PendingAsesmen = () => {
+const AllAsesmen = () => {
   const [q, setQ] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -25,7 +26,6 @@ const PendingAsesmen = () => {
         params: {
           q: search ?? "",
           page: searchMode ? 1 : page ?? 1,
-          is_pending: 1,
           with_paginate: 1,
         },
       });
@@ -102,17 +102,17 @@ const PendingAsesmen = () => {
       <div className="flex mb-4 items-center text-sm gap-1">
         <div
           onClick={() => navigate("/asesmen")}
-          className="px-6  py-2 rounded-lg cursor-pointer hover:bg-blue-100"
+          className="px-6 cursor-pointer rounded-lg py-2 hover:bg-blue-100"
         >
           Weekly Mode
         </div>
-        <div className="px-6  bg-blue-100 cursor-pointer py-2 rounded-lg font-semibold">
-          Pending
-        </div>
         <div
-          onClick={() => navigate("/asesmen/all")}
+          onClick={() => navigate("/asesmen/pending")}
           className="px-6 cursor-pointer rounded-lg py-2 hover:bg-blue-100"
         >
+          Pending
+        </div>
+        <div className="px-6 bg-blue-100 rounded-lg py-2 font-semibold cursor-pointer hover:text-gray-800">
           All
         </div>
       </div>
@@ -198,4 +198,4 @@ const PendingAsesmen = () => {
   );
 };
 
-export default PendingAsesmen;
+export default AllAsesmen;

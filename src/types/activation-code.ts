@@ -12,6 +12,12 @@ export type ActivationCodeType = {
   } | null;
   type: string;
   status: string | null;
+  report_status:
+    | "belum ada laporan"
+    | "laporan belum diverifikasi"
+    | "disetujui"
+    | "perlu direvisi"
+    | "sudah direvisi";
   created_at: string;
   updated_at: string;
 };
