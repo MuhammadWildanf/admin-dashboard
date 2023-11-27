@@ -3,6 +3,7 @@ import {
   HiCalculator,
   HiChartPie,
   HiClipboardList,
+  HiCog,
   HiCube,
   HiDocumentReport,
   HiDocumentText,
@@ -132,6 +133,14 @@ const TaxMenu = {
   child: [{ label: "Pengaturan", name: "setting", href: "/tax/setting" }],
 };
 
+const SettingMenu = {
+  label: "Setting & Log",
+  name: "setting",
+  icon: HiCog,
+  href: "#",
+  child: [{ label: "Email Log", name: "email", href: "/setting/email" }],
+};
+
 const ReportMenu = {
   label: "Laporan Asesmen",
   name: "report",
@@ -151,6 +160,7 @@ export const menuSuperAdmin: Menu[] = [
   JournalMenu,
   TaxMenu,
   userManagementMenu,
+  SettingMenu,
 ];
 
 export const menuFinance: Menu[] = [

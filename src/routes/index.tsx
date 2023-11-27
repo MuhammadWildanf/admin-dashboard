@@ -44,6 +44,7 @@ import AllAsesmen from "../pages/asesment-center/all";
 import UserPsikolog from "../pages/users/psikolog";
 import IndexReport from "../pages/report";
 import ShowReport from "../pages/report/detail";
+import SettingEmail from "../pages/settings/email";
 
 export const routes = createBrowserRouter([
   {
@@ -403,6 +404,14 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <ShowReport />
+      </Private>
+    ),
+  },
+  {
+    path: "/setting/email",
+    element: (
+      <Private>
+        <SettingEmail />
       </Private>
     ),
   },
