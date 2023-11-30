@@ -31,6 +31,10 @@ export type AsesmentParticipantType = {
     id: string;
     test_date: string;
   };
+  company: {
+    id: string;
+    name: string;
+  } | null;
   activation_code: string | null;
   confirmed_at: string | null;
   name: string;

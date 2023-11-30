@@ -111,9 +111,9 @@ const DetailActivationCode = () => {
                 <div className="w-32">Tes selesai</div>
                 <div>
                   :{" "}
-                  {detail?.activation_code.start_at
+                  {detail?.activation_code.finish_at
                     ? parseDate(detail.activation_code.finish_at)
-                    : "-"}
+                    : "Belum selesai"}
                 </div>
               </div>
             </div>
@@ -155,6 +155,83 @@ const DetailActivationCode = () => {
                 </div>
               </div>
             </div>
+
+            {detail?.activation_code?.asesmen_participant && (
+              <div className="mt-4">
+                <div className="py-2">
+                  <strong>Tambahan Data Peserta</strong>
+                </div>
+                <div className="py-2 border-t border-b grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex gap-2">
+                    <div className="w-32">Perusahaan</div>
+                    <div>
+                      :{" "}
+                      {
+                        detail?.activation_code.asesmen_participant?.company
+                          ?.name
+                      }
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-32">Assessment ID</div>
+                    <div>
+                      :{" "}
+                      {
+                        detail?.activation_code.asesmen_participant
+                          ?.assessment_id
+                      }
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-32">Jabatan</div>
+                    <div className="capitalize">
+                      : {detail?.activation_code.asesmen_participant?.role}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-32">Tujuan Asesmen</div>
+                    <div className="uppercase">
+                      : {detail?.activation_code.asesmen_participant?.purpose}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="py-2 border-b grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex gap-2">
+                    <div className="w-32">Deskripsi Pekerjaan</div>
+                    <div>
+                      :{" "}
+                      {detail?.activation_code.asesmen_participant?.job_desc ??
+                        "-"}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-32">Kompetensi</div>
+                    <div>
+                      :{" "}
+                      {detail?.activation_code.asesmen_participant?.kompetensi}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-32">Jabatan saat ini</div>
+                    <div className="capitalize">
+                      :{" "}
+                      {detail?.activation_code.asesmen_participant
+                        ?.current_position ?? "-"}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-32">Jabatan dituju</div>
+                    <div className="uppercase">
+                      :{" "}
+                      {detail?.activation_code.asesmen_participant
+                        ?.next_position ?? "-"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="mt-3">
               {detail?.result.map((item, key) => {
                 switch (item.alias) {

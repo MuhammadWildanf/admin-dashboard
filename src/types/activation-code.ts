@@ -1,3 +1,5 @@
+import { AsesmentParticipantType } from "./asesmen";
+
 export type ActivationCodeType = {
   id: number;
   code: string;
@@ -31,6 +33,7 @@ export type ActivationCodeDetailType = {
       gender: "male" | "female" | null;
       education: string;
     } | null;
+    asesmen_participant: AsesmentParticipantType | null;
     module: {
       id: string | number;
       name: string;

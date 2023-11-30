@@ -18,10 +18,10 @@ const ISTResult = ({ data }: Props) => {
             <Table.Tr>
               <Table.Td>{item.name}</Table.Td>
               <Table.Td className="text-center" style={{ width: "10%" }}>
-                {item.result}
+                {item.result ?? "-"}
               </Table.Td>
               <Table.Td className="text-center" style={{ width: "10%" }}>
-                {item.norma}
+                {item.norma ?? "-"}
               </Table.Td>
             </Table.Tr>
           ))}
