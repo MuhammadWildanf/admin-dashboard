@@ -10,6 +10,7 @@ import { Spinner } from "flowbite-react";
 import { useAlert } from "../../../stores/alert";
 import { parseDate } from "../../../helper/date";
 import { currency } from "../../../helper/currency";
+import Table from "../../../components/tables/base";
 
 const CompanyDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -125,6 +126,38 @@ const CompanyDetailPage = () => {
             >
               Tagihan dan Invoice
             </div>
+          </div>
+
+          <div className="mt-8">
+            <span className=" font-bold">List Klien</span>
+            <Table className="mt-2">
+              <Table.Thead>
+                <Table.Th>#</Table.Th>
+                <Table.Th>Nama Klien</Table.Th>
+                <Table.Th>Email</Table.Th>
+                <Table.Th>No. HP</Table.Th>
+                <Table.Th>Tgl Join</Table.Th>
+              </Table.Thead>
+              <Table.Tbody>
+                {company?.clients?.map((item, key) => (
+                  <Table.Tr>
+                    <Table.Td>
+                      <>{key + 1}</>
+                    </Table.Td>
+                    <Table.Td>{item.name}</Table.Td>
+                    <Table.Td>{item.email}</Table.Td>
+                    <Table.Td>{item.phone}</Table.Td>
+                    <Table.Td>
+                      <>
+                        {item.pivot.joined_at
+                          ? parseDate(item.pivot.joined_at)
+                          : "-"}
+                      </>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
           </div>
         </div>
         <div className="md:col-span-2">
