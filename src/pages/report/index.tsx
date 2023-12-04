@@ -25,6 +25,7 @@ const IndexReport = () => {
       q: q ?? "",
       page: page ?? 1,
       is_finished: 1,
+      has_draft_report: 1,
     };
     try {
       const data = await getDataWithParams("/activation-code", params);

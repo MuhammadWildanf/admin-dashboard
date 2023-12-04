@@ -4,7 +4,9 @@ import "moment-timezone";
 export const parseDate = (date: string, format?: string) => {
   let dateTz = moment.utc(date).tz(moment.tz.guess());
   if (dateTz) {
-    return dateTz.format(format ?? "DD MMM YYYY, HH:mm");
+    return `${dateTz.format(
+      format ?? "DD MMM YYYY, HH:mm"
+    )} GMT ${dateTz.format("Z")}`;
   }
 
   return false;

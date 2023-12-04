@@ -8,20 +8,21 @@ import Pagination from "../../../components/tables/pagination";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import AddButton from "../../../components/buttons/add";
 import BaseModal from "../../../components/modal/base";
-import { FormInput } from "../../../components/forms/input";
+import { FormInput, FormInputCurrency } from "../../../components/forms/input";
 import { TestType } from "../../../types/assessment-tools/test";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { FormSelectAsync } from "../../../components/forms/input-select";
 import { FormTextArea } from "../../../components/forms/input-textarea";
 import { Button } from "../../../components/buttons";
 import { Spinner } from "flowbite-react";
-import { error } from "console";
 import { ModuleType } from "../../../types/assessment-tools/module";
 import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
 import { useAlert } from "../../../stores/alert";
+import { currency } from "../../../helper/currency";
 
 type FormValues = {
   name: string;
+  psikolog_fee: number;
   test: TestType[] | [];
   notes: string;
 };
@@ -30,6 +31,7 @@ type ErrorForm = {
   name: [] | null;
   test: [] | null;
   notes: [] | null;
+  psikolog_fee: [] | null;
 };
 
 const IndexModule = () => {
@@ -48,7 +50,7 @@ const IndexModule = () => {
   );
 
   const { modules, setModules } = useTestModules();
-  const { control, handleSubmit, setValue, reset } = useForm<FormValues>();
+  const forms = useForm<FormValues>();
   const { setMessage } = useAlert();
 
   const getModules = async (q?: string, searchMode: boolean = false) => {
@@ -100,7 +102,7 @@ const IndexModule = () => {
     return data.data.data;
   };
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = forms.handleSubmit(async (data) => {
     setLoadingSubmit(true);
     if (modalMode === "create") {
       try {
@@ -145,9 +147,10 @@ const IndexModule = () => {
   const handleFormEdit = (item: ModuleType) => {
     setModuleSelected(item);
     setModalMode("edit");
-    setValue("name", item.name ?? "");
-    setValue("notes", item.notes ?? "");
-    setValue("test", item.detail.map((item) => item.test) ?? []);
+    forms.setValue("name", item.name ?? "");
+    forms.setValue("notes", item.notes ?? "");
+    forms.setValue("test", item.detail.map((item) => item.test) ?? []);
+    forms.setValue("psikolog_fee", item.psikolog_fee ?? "");
     setModalAdd(true);
   };
 
@@ -183,7 +186,7 @@ const IndexModule = () => {
         onClick={() => {
           setModalAdd(true);
           setModalMode("create");
-          reset();
+          forms.reset();
         }}
       />
       <div className="w-full bg-white rounded-lg">
@@ -192,11 +195,15 @@ const IndexModule = () => {
             <Table.Th>#</Table.Th>
             <Table.Th>Nama Modul</Table.Th>
             <Table.Th>List Alat Test</Table.Th>
+            <Table.Th>Psikolog Fee</Table.Th>
             <Table.Th className="text-center">Opsi</Table.Th>
           </Table.Thead>
           <Table.Tbody>
             {loading ? (
               <Table.Tr>
+                <Table.Td>
+                  <Table.Loading />
+                </Table.Td>
                 <Table.Td>
                   <Table.Loading />
                 </Table.Td>
@@ -235,6 +242,11 @@ const IndexModule = () => {
                       </div>
                     </Table.Td>
                     <Table.Td>
+                      <>
+                        {item?.psikolog_fee ? currency(item.psikolog_fee) : "-"}
+                      </>
+                    </Table.Td>
+                    <Table.Td>
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleFormEdit(item)}
@@ -268,38 +280,50 @@ const IndexModule = () => {
       </div>
 
       <BaseModal
-        title="Tambah Modul"
+        title={`${modalMode === "create" ? "Tambah Modul" : "Edit Modul"}`}
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
         size="xl"
       >
-        <FormInput
-          label="Nama Modul"
-          name="name"
-          control={control}
-          error={errors?.name}
-        />
-        <FormSelectAsync
-          label="Pilih Alat Test"
-          name="test"
-          control={control}
-          loadOption={selectTest}
-          multiple={true}
-          optionLabel={(option: TestType) => `${option.name}`}
-          optionValue={(option: TestType) => `${option.id}`}
-          error={errors?.test}
-        />
-        <FormTextArea
-          label="Catatan"
-          name="notes"
-          control={control}
-          error={errors?.notes}
-        />
-        <div className="mt-3 flex items-center justify-end">
-          <Button className="px-6" disabled={loadingSubmit} onClick={onSubmit}>
-            {loadingSubmit ? <Spinner /> : "Simpan"}
-          </Button>
-        </div>
+        <FormProvider {...forms}>
+          <FormInput
+            label="Nama Modul"
+            name="name"
+            control={forms.control}
+            error={errors?.name}
+          />
+          <FormSelectAsync
+            label="Pilih Alat Test"
+            name="test"
+            control={forms.control}
+            loadOption={selectTest}
+            multiple={true}
+            optionLabel={(option: TestType) => `${option.name}`}
+            optionValue={(option: TestType) => `${option.id}`}
+            error={errors?.test}
+          />
+          <FormInputCurrency
+            label="Psikolog Fee"
+            name="psikolog_fee"
+            control={forms.control}
+            error={errors?.psikolog_fee}
+          />
+          <FormTextArea
+            label="Catatan"
+            name="notes"
+            control={forms.control}
+            error={errors?.notes}
+          />
+          <div className="mt-3 flex items-center justify-end">
+            <Button
+              className="px-6"
+              disabled={loadingSubmit}
+              onClick={onSubmit}
+            >
+              {loadingSubmit ? <Spinner /> : "Simpan"}
+            </Button>
+          </div>
+        </FormProvider>
       </BaseModal>
 
       <ModalDeleteConfirmation

@@ -6,7 +6,7 @@ import { Button } from "../../components/buttons";
 import BaseModal from "../../components/modal/base";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormTextArea } from "../../components/forms/input-textarea";
-import { Spinner } from "flowbite-react";
+import { FileInput, Label, Spinner } from "flowbite-react";
 import { useReport } from "../../stores/report";
 import { request } from "../../api/config";
 import { Check, Clock, FilePdf, WarningCircle } from "@phosphor-icons/react";
@@ -16,6 +16,7 @@ import { ReportType } from "../../types/report";
 
 type FormValues = {
   notes: string;
+  file: FileList;
 };
 
 type ErrorForms = {
@@ -56,21 +57,30 @@ const ShowReport = () => {
     setLoadingSubmit(false);
   });
 
-  const handleApprove = async () => {
+  const handleApprove = forms.handleSubmit(async (data) => {
     setLoadingSubmit(true);
+    let payload = {
+      file: data.file[0],
+    };
     try {
-      await request.post(`/report/${selected?.id}/approve`).then(() => {
-        setMessage("Berhasil menerima laporan", "success");
-        setModalApprove(false);
-        setSelected(undefined);
-        forms.reset();
-      });
+      await request
+        .post(`/report/${selected?.id}/approve`, payload, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(() => {
+          setMessage("Berhasil menerima laporan", "success");
+          setModalApprove(false);
+          setSelected(undefined);
+          forms.reset();
+        });
     } catch (err: any) {
       setErrors(err.response.data.errors);
       setMessage("Oops, ada yang error nih", "error");
     }
     setLoadingSubmit(false);
-  };
+  });
 
   const getReport = async () => {
     setLoading(true);
@@ -135,6 +145,7 @@ const ShowReport = () => {
                           </small>
                         </div>
                       </div>
+
                       <div>
                         {!item.revised_at && !item.approved_at && (
                           <div className="flex items-center gap-2 text-yellow-500">
@@ -164,6 +175,36 @@ const ShowReport = () => {
                         )}
                       </div>
                     </div>
+
+                    {item.approved_file && (
+                      <div className="mt-4 bg-green-50 py-2 px-4 rounded-lg">
+                        <small className="text-green-700">
+                          File laporan yang sudah disetujui
+                        </small>
+                        <div className="flex items-center gap-2">
+                          <div className="w-9">
+                            <FilePdf size={32} />
+                          </div>
+                          <div className="leading-5">
+                            <a
+                              href={item.approved_file ?? "-"}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="hover:underline hover:text-blue-700"
+                            >
+                              {item.approved_filename ?? "-"}
+                            </a>{" "}
+                            <br />
+                            <small>
+                              Tgl Upload:{" "}
+                              {item.updated_at
+                                ? parseDate(item.updated_at)
+                                : "-"}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="mt-4 ">
                       <small>Catatan Psikolog:</small> <br />
@@ -286,23 +327,51 @@ const ShowReport = () => {
         }}
       >
         <h1 className="text-xl">Yakin ingin menerima laporan ini?</h1>
-        <div className="mt-4 flex items-center gap-2 justify-end">
-          <Button
-            className="px-3"
-            variant="danger"
-            onClick={() => {
-              setModalApprove(false);
-              setSelected(undefined);
-            }}
-          >
-            Batal
-          </Button>
-          <Button
-            className="px-12 bg-green-600 hover:bg-green-700"
-            onClick={handleApprove}
-          >
-            {loadingSubmit ? <Spinner /> : "Iya!"}
-          </Button>
+        <div className="mt-5">
+          <div className="mb-3">
+            <span className="text-sm">
+              Untuk menerima laporan, anda harus mengupload file format laporan
+              berbentuk PDF, format ini akan dikirim secara langsung ke klien
+              melalui dasbor klien
+            </span>
+          </div>
+          <FormProvider {...forms}>
+            <div id="fileUpload" className="mb-4">
+              <div className="mb-2 block">
+                <Label htmlFor="file" value="Upload Dokumen" />
+              </div>
+              <FileInput
+                {...forms.register("file")}
+                id="file"
+                helperText="Format dokumen yang didukung hanya PDF atau .docx"
+                className="w-full"
+                accept=".pdf"
+              />
+              {errors?.file && (
+                <small className="text-red-600">
+                  <>{errors.file}</>
+                </small>
+              )}
+            </div>
+            <div className="mt-4 flex items-center gap-2 justify-end">
+              <Button
+                className="px-3"
+                variant="danger"
+                onClick={() => {
+                  setModalApprove(false);
+                  setSelected(undefined);
+                }}
+              >
+                Batal
+              </Button>
+              <Button
+                className="px-12 bg-green-600 hover:bg-green-700"
+                onClick={handleApprove}
+              >
+                {loadingSubmit ? <Spinner /> : "Iya!"}
+              </Button>
+            </div>
+          </FormProvider>
         </div>
       </BaseModal>
     </Layout>

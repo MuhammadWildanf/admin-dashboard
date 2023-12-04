@@ -75,7 +75,7 @@ const CompanyMenu = {
 };
 
 const AsesmenMenu = {
-  label: "Assessment Center",
+  label: "Pendaftaran Asesmen",
   name: "asesmen",
   icon: HiClipboardList,
   href: "/asesmen",

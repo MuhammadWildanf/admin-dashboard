@@ -254,6 +254,7 @@ const IndexActivationCode = () => {
           <Table.Th>Kode Aktivasi</Table.Th>
           <Table.Th>Modul</Table.Th>
           <Table.Th>Peserta</Table.Th>
+          <Table.Th>Perusahaan</Table.Th>
           <Table.Th>Psikolog</Table.Th>
           <Table.Th>Tgl. Aktif</Table.Th>
           <Table.Th>Status</Table.Th>
@@ -298,6 +299,7 @@ const IndexActivationCode = () => {
                       </Table.Td>
                       <Table.Td>{item.module_name ?? "-"}</Table.Td>
                       <Table.Td>{item.participant ?? "-"}</Table.Td>
+                      <Table.Td>{item.company_name ?? "-"}</Table.Td>
                       <Table.Td>
                         <div className="flex items-center gap-2">
                           {item.psikolog?.name ?? "-"}

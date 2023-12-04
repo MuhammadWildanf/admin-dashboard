@@ -2,6 +2,8 @@ export type ReportType = {
   id: string;
   file: string;
   filename: string;
+  approved_file: string;
+  approved_filename: string;
   activation_code: string;
   notes: string;
   approved_at: string | null;

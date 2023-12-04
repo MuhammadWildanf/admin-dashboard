@@ -4,6 +4,7 @@ export type ModuleType = {
   id: number;
   name: string;
   price: number;
+  psikolog_fee: number;
   notes: string | null;
   deleted_at: string | null;
   created_at: string;
