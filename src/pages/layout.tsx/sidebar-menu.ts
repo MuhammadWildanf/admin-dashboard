@@ -171,4 +171,4 @@ export const menuFinance: Menu[] = [
   TaxMenu,
 ];
 
-export const menuQC: Menu[] = [dashboardMenu, ReportMenu];
+export const menuQC: Menu[] = [dashboardMenu, activationCodeMenu, ReportMenu];
