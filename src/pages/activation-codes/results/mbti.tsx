@@ -10,7 +10,7 @@ type Props = {
   };
 };
 
-const MinatResult = ({ data }: Props) => {
+const MbtiResult = ({ data }: Props) => {
   return (
     <>
       <div className="w-full flex items-center justify-between py-2">
@@ -34,7 +34,7 @@ const MinatResult = ({ data }: Props) => {
                   className="bg-blue-600 px-3 py-1 text-white rounded ml-3"
                   style={{ fontSize: "12pt" }}
                 >
-                  {key}
+                  {value}
                 </span>
               ))}
             </>
@@ -45,4 +45,4 @@ const MinatResult = ({ data }: Props) => {
   );
 };
 
-export default MinatResult;
+export default MbtiResult;

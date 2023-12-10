@@ -24,6 +24,7 @@ import DocsResult from "./results/docs";
 import TiuResult from "./results/tiu";
 import { Button } from "../../components/buttons";
 import { Printer } from "@phosphor-icons/react";
+import MbtiResult from "./results/mbti";
 
 const DetailActivationCode = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -182,6 +183,20 @@ const DetailActivationCode = () => {
                       }
                     </div>
                   </div>
+
+                  <div className="flex gap-2">
+                    <div className="w-32">Email</div>
+                    <div>
+                      : {detail?.activation_code.asesmen_participant?.email}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-32">No Telefon</div>
+                    <div>
+                      : {detail?.activation_code.asesmen_participant.phone}
+                    </div>
+                  </div>
+
                   <div className="flex gap-2">
                     <div className="w-32">Jabatan</div>
                     <div className="capitalize">
@@ -273,6 +288,9 @@ const DetailActivationCode = () => {
 
                   case "minat":
                     return <MinatResult key={key} data={item} />;
+
+                  case "mbti":
+                    return <MbtiResult key={key} data={item} />;
 
                   case "grafis":
                     return <GrafisResult key={key} data={item} />;
