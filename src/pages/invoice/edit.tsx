@@ -246,10 +246,7 @@ const EditInvoice = () => {
     forms.setValue("signed_by_name", invoice?.signed_by.name ?? "");
     forms.setValue("signed_by_title", invoice?.signed_by.title ?? "");
     forms.setValue("notes", invoice?.notes ?? "");
-    forms.setValue(
-      "withAttachment",
-      invoice?.attachment?.length !== 0 ? true : false
-    );
+    forms.setValue("withAttachment", invoice?.attachment ? true : false);
     appendParticipant(
       invoice?.attachment?.map((item) => ({
         name: item.name,
