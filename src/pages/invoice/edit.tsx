@@ -586,7 +586,7 @@ const EditInvoice = () => {
                       id="withParticipant"
                       name="withAttachment"
                       value="1"
-                      defaultChecked={invoice?.attachment?.length !== 0}
+                      defaultChecked={invoice?.attachment ? true : false}
                     />
                   )}
                 />
