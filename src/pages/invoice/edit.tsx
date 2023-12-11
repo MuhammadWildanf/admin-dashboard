@@ -248,10 +248,10 @@ const EditInvoice = () => {
     forms.setValue("notes", invoice?.notes ?? "");
     forms.setValue(
       "withAttachment",
-      invoice?.attachment.length !== 0 ? true : false
+      invoice?.attachment?.length !== 0 ? true : false
     );
     appendParticipant(
-      invoice?.attachment.map((item) => ({
+      invoice?.attachment?.map((item) => ({
         name: item.name,
         module: item.module,
         test_date: item.test_date,
@@ -589,7 +589,7 @@ const EditInvoice = () => {
                       id="withParticipant"
                       name="withAttachment"
                       value="1"
-                      defaultChecked={invoice?.attachment.length !== 0}
+                      defaultChecked={invoice?.attachment?.length !== 0}
                     />
                   )}
                 />
