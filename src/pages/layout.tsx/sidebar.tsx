@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { HiOutlineMinusSm, HiOutlinePlusSm } from "react-icons/hi";
 import { useMenu } from "../../stores/menu";
 import { useSession } from "../../stores/session";
-import { menuFinance, menuQC, menuSuperAdmin } from "./sidebar-menu";
+import { menuAdmin, menuFinance, menuQC, menuSuperAdmin } from "./sidebar-menu";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -72,6 +72,10 @@ const SidebarItems = ({ className }: Props) => {
   useEffect(() => {
     if (me?.role === "superadmin") {
       setMenus(menuSuperAdmin);
+    }
+
+    if (me?.role === "admin") {
+      setMenus(menuAdmin);
     }
 
     if (me?.role === "finance") {

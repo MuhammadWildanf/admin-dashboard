@@ -65,6 +65,8 @@ export type InvoiceType = {
   signed_by: { name: string; title: string };
   attachment: AttachmentType[];
   xenditPayment: XenditPaymentType;
+  transfer_proof: string | null;
+  pph_proof: string | null;
   created_at: string;
   updated_at: string;
 };

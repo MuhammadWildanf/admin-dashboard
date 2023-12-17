@@ -45,6 +45,8 @@ import UserPsikolog from "../pages/users/psikolog";
 import IndexReport from "../pages/report";
 import ShowReport from "../pages/report/detail";
 import SettingEmail from "../pages/settings/email";
+import IndexPsikologFee from "../pages/psikolog-fee";
+import PsikologFeeHistory from "../pages/psikolog-fee/history";
 
 export const routes = createBrowserRouter([
   {
@@ -148,6 +150,30 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <UserPsikolog />
+      </Private>
+    ),
+  },
+  {
+    path: "/psikolog-fee",
+    element: (
+      <Private>
+        <IndexPsikologFee />
+      </Private>
+    ),
+  },
+  {
+    path: "/psikolog-fee/run",
+    element: (
+      <Private>
+        <IndexPsikologFee />
+      </Private>
+    ),
+  },
+  {
+    path: "/psikolog-fee/history",
+    element: (
+      <Private>
+        <PsikologFeeHistory />
       </Private>
     ),
   },

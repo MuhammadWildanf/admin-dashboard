@@ -7,6 +7,7 @@ import {
   HiCube,
   HiDocumentReport,
   HiDocumentText,
+  HiLightningBolt,
   HiOutlineKey,
   HiReceiptTax,
   HiUserGroup,
@@ -133,6 +134,17 @@ const TaxMenu = {
   child: [{ label: "Pengaturan", name: "setting", href: "/tax/setting" }],
 };
 
+const PsikologFeeMenu = {
+  label: "Psikolog Fee",
+  name: "psikolog-fee",
+  icon: HiLightningBolt,
+  href: "#",
+  child: [
+    { label: "Atur Pembayaran", name: "run", href: "/psikolog-fee/run" },
+    { label: "Riwayat", name: "history", href: "/psikolog-fee/history" },
+  ],
+};
+
 const SettingMenu = {
   label: "Setting & Log",
   name: "setting",
@@ -158,14 +170,31 @@ export const menuSuperAdmin: Menu[] = [
   AsesmenMenu,
   InvoiceMenu,
   JournalMenu,
+  PsikologFeeMenu,
   TaxMenu,
   userManagementMenu,
+  SettingMenu,
+];
+
+export const menuAdmin: Menu[] = [
+  dashboardMenu,
+  activationCodeMenu,
+  ReportMenu,
+  testToolMenu,
+  ProductMenu,
+  CompanyMenu,
+  AsesmenMenu,
+  InvoiceMenu,
+  JournalMenu,
+  TaxMenu,
   SettingMenu,
 ];
 
 export const menuFinance: Menu[] = [
   dashboardMenu,
   CompanyMenu,
+  testToolMenu,
+  PsikologFeeMenu,
   InvoiceMenu,
   JournalMenu,
   TaxMenu,

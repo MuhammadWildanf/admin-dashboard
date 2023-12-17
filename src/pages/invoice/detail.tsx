@@ -13,6 +13,7 @@ import { Spinner } from "flowbite-react";
 import { HiPrinter, HiTrash } from "react-icons/hi";
 import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
 import BaseModal from "../../components/modal/base";
+import { File } from "@phosphor-icons/react";
 
 const InvoiceDetail = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -344,17 +345,53 @@ const InvoiceDetail = () => {
         </div>
 
         <div>
-          <strong>Catatan:</strong>
-          <div className="bg-gray-50 p-3 rounded-lg mt-2">
-            <div
-              dangerouslySetInnerHTML={{ __html: invoice?.notes ?? "" }}
-            ></div>
+          <div>
+            <strong>Bukti Pembayaran</strong>
+            {(!invoice?.transfer_proof || !invoice?.pph_proof) && (
+              <div className="py-2">
+                Belum ada bukti transfer ataupun potongan PPh
+              </div>
+            )}
+            <div className="mt-2">
+              {invoice?.transfer_proof && (
+                <a
+                  href={invoice?.transfer_proof ?? "#"}
+                  rel="noreferrer"
+                  target="_blank"
+                  className="p-1 mb-2 hover:bg-gray-100 cursor-pointer rounded border border-gray-200 flex items-center text-sm gap-3"
+                >
+                  <File size={18} /> <span>File bukti transfer</span>
+                </a>
+              )}
+              {invoice?.pph_proof && (
+                <a
+                  href={invoice?.pph_proof ?? "#"}
+                  rel="noreferrer"
+                  target="_blank"
+                  className="p-1 mb-2 hover:bg-gray-100 cursor-pointer rounded border border-gray-200 flex items-center text-sm gap-3"
+                >
+                  <File size={18} /> <span>File bukti potongan PPh</span>
+                </a>
+              )}
+            </div>
           </div>
-          <div className="mt-5">
-            <strong className="text-sm">Mengetahui:</strong> <br />
-            <span>
-              {invoice?.signed_by.name} - {invoice?.signed_by.title}
-            </span>
+          <div className="mt-3">
+            <strong>Catatan:</strong>
+            <div className="bg-gray-50 p-3 rounded-lg mt-2">
+              {invoice?.notes ? (
+                <div
+                  dangerouslySetInnerHTML={{ __html: invoice?.notes ?? "" }}
+                ></div>
+              ) : (
+                <span className="italic text-sm">Tidak ada catatan</span>
+              )}
+            </div>
+            <div className="mt-5">
+              <strong className="text-sm">Mengetahui:</strong> <br />
+              <span>
+                {invoice?.signed_by.name} - {invoice?.signed_by.title}
+              </span>
+            </div>
           </div>
         </div>
 
