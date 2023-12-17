@@ -16,6 +16,7 @@ import Table from "../../components/tables/base";
 import { FormInputCurrency } from "../../components/forms/input";
 import { useAlert } from "../../stores/alert";
 import { useNavigate } from "react-router-dom";
+import { Check, X } from "@phosphor-icons/react";
 
 type GetValues = {
   is_all: boolean | null;
@@ -23,6 +24,7 @@ type GetValues = {
   start_at: string;
   end_at: string;
   status: "all" | "finish" | "has_report" | null;
+  payment_status: "all" | "paid" | "unpaid";
 };
 
 type FormValues = {
@@ -56,7 +58,8 @@ const IndexPsikologFee = () => {
       is_all: true,
       start_at: initialDate[0].startDate,
       end_at: initialDate[0].endDate,
-      status: "all",
+      status: "has_report",
+      payment_status: "unpaid",
     },
   });
 
@@ -191,7 +194,6 @@ const IndexPsikologFee = () => {
                           id="status_all"
                           name="status"
                           value="all"
-                          defaultChecked={true}
                         />
                       )}
                     />
@@ -221,11 +223,62 @@ const IndexPsikologFee = () => {
                           {...field}
                           id="status_has_report"
                           name="status"
-                          value="finish"
+                          value="has_report"
+                          defaultChecked={true}
                         />
                       )}
                     />
                     <Label htmlFor="status_has_report">Laporan Diterima</Label>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-5">
+                  <div className="py-1">Status Pembayaran</div>
+                  <div className="flex items-center gap-2 py-3">
+                    <Controller
+                      name="payment_status"
+                      control={forms.control}
+                      render={({ field }) => (
+                        <Radio
+                          {...field}
+                          id="status_payment_all"
+                          name="payment_status"
+                          value="all"
+                        />
+                      )}
+                    />
+                    <Label htmlFor="status_payment_all">Semua Status</Label>
+                  </div>
+                  <div className="flex items-center gap-2 py-3">
+                    <Controller
+                      name="payment_status"
+                      control={forms.control}
+                      render={({ field }) => (
+                        <Radio
+                          {...field}
+                          id="status_paid"
+                          name="payment_status"
+                          value="paid"
+                        />
+                      )}
+                    />
+                    <Label htmlFor="status_paid">Sudah Dibayar</Label>
+                  </div>
+                  <div className="flex items-center gap-2 py-3">
+                    <Controller
+                      name="payment_status"
+                      control={forms.control}
+                      render={({ field }) => (
+                        <Radio
+                          {...field}
+                          id="status_unpaid"
+                          name="payment_status"
+                          value="unpaid"
+                          defaultChecked={true}
+                        />
+                      )}
+                    />
+                    <Label htmlFor="status_unpaid">Belum dibayar</Label>
                   </div>
                 </div>
 
@@ -261,94 +314,127 @@ const IndexPsikologFee = () => {
                     <Table.Th>Modul</Table.Th>
                     <Table.Th>Perusahaan</Table.Th>
                     <Table.Th>Peserta</Table.Th>
-                    <Table.Th>Status</Table.Th>
+                    <Table.Th>Status Tes</Table.Th>
+                    <Table.Th>Status Pembayaran</Table.Th>
                     <Table.Th>Fee</Table.Th>
                   </Table.Thead>
                   <Table.Tbody>
-                    {initials?.map((item, key) => (
-                      <Table.Tr>
-                        <Table.Td>
-                          <>{key + 1}</>
-                        </Table.Td>
-                        <Table.Td>
-                          <>
-                            {item.activation_code}
-                            <Controller
-                              control={formSubmit.control}
-                              name={`psikolog_fees.${key}.activation_code`}
-                              defaultValue={item.activation_code}
-                              render={({ field }) => (
-                                <input type="hidden" {...field} />
-                              )}
-                            />
-                          </>
-                        </Table.Td>
-                        <Table.Td>
-                          <>
-                            {item.psikolog_name}
-                            <Controller
-                              control={formSubmit.control}
-                              name={`psikolog_fees.${key}.psikolog_id`}
-                              defaultValue={item.psikolog_id}
-                              render={({ field }) => (
-                                <input type="hidden" {...field} />
-                              )}
-                            />
-                          </>
-                        </Table.Td>
-                        <Table.Td>{item.company_name ?? "-"}</Table.Td>
-                        <Table.Td>{item.participant?.name ?? "-"}</Table.Td>
-                        <Table.Td>{item.module_name ?? "-"}</Table.Td>
-                        <Table.Td>
-                          <>
-                            {item.status === "not_finish" && (
-                              <span className="text-red-600">
-                                Belum selesai
-                              </span>
-                            )}
-
-                            {item.status === "finish" && (
-                              <span className="text-blue-700">Tes selesai</span>
-                            )}
-
-                            {item.status === "has_report" && (
-                              <span className="text-green-700">
-                                Sudah ada laporan
-                              </span>
-                            )}
-                          </>
-                        </Table.Td>
-                        <Table.Td>
-                          <Controller
-                            control={formSubmit.control}
-                            name={`psikolog_fees.${key}.psikolog_fee`}
-                            defaultValue={item.psikolog_fee}
-                            render={({ field }) => (
-                              <FormInputCurrency
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value.replace(/\./g, "")
-                                  )
-                                }
-                                label=""
+                    <>
+                      {initials?.length === 0 && (
+                        <Table.Tr>
+                          <Table.Td cols={9} className="py-4 text-center">
+                            Tidak ada data
+                          </Table.Td>
+                        </Table.Tr>
+                      )}
+                    </>
+                    <>
+                      {initials?.map((item, key) => (
+                        <Table.Tr>
+                          <Table.Td>
+                            <>{key + 1}</>
+                          </Table.Td>
+                          <Table.Td>
+                            <>
+                              {item.activation_code}
+                              <Controller
+                                control={formSubmit.control}
+                                name={`psikolog_fees.${key}.activation_code`}
+                                defaultValue={item.activation_code}
+                                render={({ field }) => (
+                                  <input type="hidden" {...field} />
+                                )}
                               />
-                            )}
-                          />
-                        </Table.Td>
-                      </Table.Tr>
-                    ))}
+                            </>
+                          </Table.Td>
+                          <Table.Td>
+                            <>
+                              {item.psikolog_name}
+                              <Controller
+                                control={formSubmit.control}
+                                name={`psikolog_fees.${key}.psikolog_id`}
+                                defaultValue={item.psikolog_id}
+                                render={({ field }) => (
+                                  <input type="hidden" {...field} />
+                                )}
+                              />
+                            </>
+                          </Table.Td>
+                          <Table.Td>{item.company_name ?? "-"}</Table.Td>
+                          <Table.Td>{item.participant?.name ?? "-"}</Table.Td>
+                          <Table.Td>{item.module_name ?? "-"}</Table.Td>
+                          <Table.Td>
+                            <>
+                              {item.status === "not_finish" && (
+                                <span className="text-red-600">
+                                  Belum selesai
+                                </span>
+                              )}
+
+                              {item.status === "finish" && (
+                                <span className="text-blue-700">
+                                  Tes selesai
+                                </span>
+                              )}
+
+                              {item.status === "has_report" && (
+                                <span className="text-green-700">
+                                  Sudah ada laporan
+                                </span>
+                              )}
+                            </>
+                          </Table.Td>
+                          <Table.Td className="flex align-middle justify-center">
+                            <>
+                              {item.psikolog_fee_count > 0 ? (
+                                <Check
+                                  className="text-green-700"
+                                  size={18}
+                                  weight="bold"
+                                />
+                              ) : (
+                                <X
+                                  className="text-blue-700"
+                                  size={18}
+                                  weight="bold"
+                                />
+                              )}
+                            </>
+                          </Table.Td>
+                          <Table.Td>
+                            <Controller
+                              control={formSubmit.control}
+                              name={`psikolog_fees.${key}.psikolog_fee`}
+                              defaultValue={item.psikolog_fee}
+                              render={({ field }) => (
+                                <FormInputCurrency
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value.replace(/\./g, "")
+                                    )
+                                  }
+                                  label=""
+                                />
+                              )}
+                            />
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                    </>
                   </Table.Tbody>
                 </Table>
-                <div className="py-2 flex items-center justify-end">
-                  <Button
-                    disabled={loadingSubmit}
-                    onClick={handleSubmit}
-                    className="px-12"
-                  >
-                    {loadingSubmit ? <Spinner /> : "Lanjutkan"}
-                  </Button>
-                </div>
+                {initials && initials?.length > 0 && (
+                  <div className="py-2 flex items-center justify-end">
+                    <Button
+                      disabled={loadingSubmit}
+                      onClick={handleSubmit}
+                      className="px-12"
+                    >
+                      {loadingSubmit ? <Spinner /> : "Lanjutkan"}
+                    </Button>
+                  </div>
+                )}
               </div>
             </FormProvider>
           )}

@@ -16,6 +16,7 @@ export type PsikologFeeIndexType = {
   finish_at: string;
   test_session_details_count: number;
   final_report_draft_count: number;
+  psikolog_fee_count: number;
   status: "not_finish" | "finish" | "has_report";
 };
 

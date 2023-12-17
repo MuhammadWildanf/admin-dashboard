@@ -29,6 +29,7 @@ type FormFilterPsikolog = {
 
 const PsikologFeeHistory = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [show, setShow] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -49,9 +50,9 @@ const PsikologFeeHistory = () => {
   const formFilterPsikolog = useForm<FormFilterPsikolog>();
 
   const handleNext = () => {
-    // if (page === invoices?.last_page) {
-    //   return;
-    // }
+    if (page === psikologFees?.last_page) {
+      return;
+    }
 
     setPage(page + 1);
   };
@@ -81,7 +82,7 @@ const PsikologFeeHistory = () => {
           psikolog_ids: psikologIds,
         },
       });
-      return data.data;
+      return data;
     } catch (err: any) {
       console.log(err);
     }
@@ -103,7 +104,8 @@ const PsikologFeeHistory = () => {
       moment(data.start_at).format("YYYY-MM-DD"),
       moment(data.end_at).format("YYYY-MM-DD")
     );
-    setPsikologFees(res);
+    setPsikologFees(res.data);
+    setTotal(res.total);
     setLoading(false);
   });
 
@@ -117,7 +119,8 @@ const PsikologFeeHistory = () => {
       moment(formFilterDate.watch("end_at") ?? new Date()).format("YYYY-MM-DD"),
       data.psikolog_ids?.map((item: any) => item.id)
     );
-    setPsikologFees(res);
+    setPsikologFees(res.data);
+    setTotal(res.total);
     setLoading(false);
   });
 
@@ -133,7 +136,8 @@ const PsikologFeeHistory = () => {
 
   useEffect(() => {
     Promise.all([getHistory()]).then((res) => {
-      setPsikologFees(res[0]);
+      setPsikologFees(res[0].data);
+      setTotal(res[0].total);
       setLoading(false);
     });
   }, [page, loadingSubmit]);
@@ -163,22 +167,44 @@ const PsikologFeeHistory = () => {
         }
       >
         <div className="w-full">
-          <div className="flex items-center gap-2 w-full">
-            <div className="w-full">
-              <FormSelectAsync
-                className="w-full"
-                control={formFilterPsikolog.control}
-                name="psikolog_ids"
-                multiple={true}
-                loadOption={selectPsikolog}
-                optionLabel={(option: PsikologType) => `${option.fullname}`}
-                optionValue={(option: PsikologType) => `${option.id}`}
-                label=""
-              />
+          <div className="w-full items-end flex mb-3 gap-2">
+            <div className="py-3 px-4 rounded-lg bg-purple-100 w-96">
+              <div className="leading-5">
+                <span className="font-semibold">Total Pembayaran</span> <br />
+                <small>
+                  Periode:{" "}
+                  {formFilterDate.watch("start_at")
+                    ? moment(formFilterDate.watch("start_at")).format(
+                        "DD MMM YYYY"
+                      )
+                    : moment().subtract(1, "month").format("YYYY-MM-DD")}{" "}
+                  -{" "}
+                  {formFilterDate.watch("end_at")
+                    ? moment(formFilterDate.watch("end_at")).format(
+                        "DD MMM YYYY"
+                      )
+                    : moment().subtract(1, "month").format("YYYY-MM-DD")}{" "}
+                </small>
+              </div>
+              <h3 className="text-2xl">{currency(total)}</h3>
             </div>
-            <Button className="mb-3 py-3 px-3" onClick={handleFilterPsikolog}>
-              <HiSearch size={16} />
-            </Button>
+            <div className="flex items-center gap-2 w-full">
+              <div className="w-full">
+                <FormSelectAsync
+                  className="w-full"
+                  control={formFilterPsikolog.control}
+                  name="psikolog_ids"
+                  multiple={true}
+                  loadOption={selectPsikolog}
+                  optionLabel={(option: PsikologType) => `${option.fullname}`}
+                  optionValue={(option: PsikologType) => `${option.id}`}
+                  label=""
+                />
+              </div>
+              <Button className="mb-3 py-3 px-3" onClick={handleFilterPsikolog}>
+                <HiSearch size={16} />
+              </Button>
+            </div>
           </div>
           <Table>
             <Table.Thead>
