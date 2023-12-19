@@ -25,6 +25,7 @@ import TiuResult from "./results/tiu";
 import { Button } from "../../components/buttons";
 import { Printer } from "@phosphor-icons/react";
 import MbtiResult from "./results/mbti";
+import Test16PFResult from "./results/16pf";
 
 const DetailActivationCode = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -300,6 +301,12 @@ const DetailActivationCode = () => {
 
                   case "tiu":
                     return <TiuResult key={key} data={item} />;
+
+                  case "16pf":
+                    return <Test16PFResult key={key} data={item} />;
+
+                  case "mmpi":
+                    return <Test16PFResult key={key} data={item} />;
                 }
                 return <></>;
               })}
