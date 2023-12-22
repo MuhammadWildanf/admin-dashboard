@@ -103,7 +103,7 @@ const CompanyPage = () => {
           Semua
         </div>
         <div
-          onClick={() => navigate("/partner/company/pending")}
+          onClick={() => navigate("/company/pending")}
           className="px-6 cursor-pointer rounded-lg py-2 hover:bg-blue-100"
         >
           Pending
@@ -138,7 +138,7 @@ const CompanyPage = () => {
                           ? "bg-red-50 hover:bg-red-100"
                           : "hover:bg-blue-50"
                       }`}
-                      onClick={() => navigate(`/partner/company/${item.id}`)}
+                      onClick={() => navigate(`/company/${item.id}`)}
                     >
                       <Table.Td>
                         {(

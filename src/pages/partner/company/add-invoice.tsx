@@ -111,7 +111,7 @@ const AddCompanyInvoice = () => {
 
   const handleNext = async () => {
     if (selected.length === 0) {
-      navigate(`/partner/company/${companyId}/create-invoice?participantIds=`);
+      navigate(`/company/${companyId}/create-invoice?participantIds=`);
     } else {
       setLoadingSubmit(true);
       try {

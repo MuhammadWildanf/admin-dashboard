@@ -7,6 +7,7 @@ import {
   HiCube,
   HiDocumentReport,
   HiDocumentText,
+  HiIdentification,
   HiLightningBolt,
   HiOutlineKey,
   HiReceiptTax,
@@ -18,7 +19,13 @@ type Menu = {
   icon: any | null;
   href: string | null;
   name: string | null;
-  child?: { label: string; name: string; href: string }[];
+  notif?: number | string;
+  child?: {
+    label: string;
+    name: string;
+    href: string;
+    notif?: number | string;
+  }[];
 };
 
 const dashboardMenu = {
@@ -64,15 +71,29 @@ const ProductMenu = {
   href: "/product",
 };
 
+// const CompanyMenu = {
+//   label: "Perusahaan & Klien",
+//   name: "partner",
+//   icon: HiBriefcase,
+//   href: "#",
+//   child: [
+//     { label: "Klien", name: "client", href: "/partner/client" },
+//     { label: "Perusahaan", name: "company", href: "/company" },
+//   ],
+// };
+
+const ClientMenu = {
+  label: "Klien / HRD",
+  name: "client",
+  icon: HiIdentification,
+  href: "/client",
+};
+
 const CompanyMenu = {
-  label: "Perusahaan & Klien",
-  name: "partner",
+  label: "Perusahaan",
+  name: "company",
   icon: HiBriefcase,
-  href: "#",
-  child: [
-    { label: "Klien", name: "client", href: "/partner/client" },
-    { label: "Perusahaan", name: "company", href: "/partner/company" },
-  ],
+  href: "/company",
 };
 
 const AsesmenMenu = {
@@ -167,6 +188,7 @@ export const menuSuperAdmin: Menu[] = [
   testToolMenu,
   ProductMenu,
   CompanyMenu,
+  ClientMenu,
   AsesmenMenu,
   InvoiceMenu,
   JournalMenu,
@@ -183,6 +205,7 @@ export const menuAdmin: Menu[] = [
   testToolMenu,
   ProductMenu,
   CompanyMenu,
+  ClientMenu,
   AsesmenMenu,
   InvoiceMenu,
   JournalMenu,

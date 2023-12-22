@@ -8,3 +8,8 @@ export type GetMeType = {
   timezone: string;
   setting: {} | null;
 };
+
+export type NotificationType = {
+  new_assessment: number;
+  new_companies: number;
+};

@@ -19,7 +19,6 @@ import ProductDetail from "../pages/product/detail";
 import IndexAsesmen from "../pages/asesment-center";
 import PendingAsesmen from "../pages/asesment-center/pending";
 import DetailAsesmen from "../pages/asesment-center/detail";
-import PartnerPage from "../pages/partner";
 import ClientPage from "../pages/partner/client";
 import CompanyPage from "../pages/partner/company";
 import CompanyPendingPage from "../pages/partner/company/pending";
@@ -226,15 +225,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/partner",
-    element: (
-      <Private>
-        <PartnerPage />
-      </Private>
-    ),
-  },
-  {
-    path: "/partner/client",
+    path: "/client",
     element: (
       <Private>
         <ClientPage />
@@ -242,7 +233,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/partner/company",
+    path: "/company",
     element: (
       <Private>
         <CompanyPage />
@@ -250,7 +241,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/partner/company/pending",
+    path: "/company/pending",
     element: (
       <Private>
         <CompanyPendingPage />
@@ -258,7 +249,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/partner/company/:companyId",
+    path: "/company/:companyId",
     element: (
       <Private>
         <CompanyDetailPage />
@@ -266,7 +257,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/partner/company/:companyId/invoice",
+    path: "/company/:companyId/invoice",
     element: (
       <Private>
         <CompanyInvoice />
@@ -274,7 +265,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/partner/company/:companyId/add-invoice",
+    path: "/company/:companyId/add-invoice",
     element: (
       <Private>
         <AddCompanyInvoice />
@@ -282,7 +273,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/partner/company/:companyId/create-invoice",
+    path: "/company/:companyId/create-invoice",
     element: (
       <Private>
         <CreateClientInvoice />

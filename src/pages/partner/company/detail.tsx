@@ -40,6 +40,7 @@ const CompanyDetailPage = () => {
     setLoadingSubmit(true);
     try {
       await request.post(`/company/${companyId}/approve`);
+      window.location.reload();
     } catch (err: any) {
       console.log(err);
       setMessage("Oops, something went wrong!", "error");
@@ -121,7 +122,7 @@ const CompanyDetailPage = () => {
               Permintaan Asesmen
             </div>
             <div
-              onClick={() => navigate(`/partner/company/${companyId}/invoice`)}
+              onClick={() => navigate(`/company/${companyId}/invoice`)}
               className="bg-green-100 rounded-lg p-4 text-green-700 font-semibold text-lg cursor-pointer hover:bg-green-200"
             >
               Tagihan dan Invoice

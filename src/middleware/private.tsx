@@ -12,7 +12,7 @@ type Props = {
 const Private = ({ children }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { setGetMe } = useSession();
+  const { setGetMe, setNotification } = useSession();
 
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -31,6 +31,7 @@ const Private = ({ children }: Props) => {
     setLoading(true);
     Promise.all([checkSession()]).then((res) => {
       setGetMe(res[0].user);
+      setNotification(res[0].notification);
       setLoading(false);
     });
   }, []);

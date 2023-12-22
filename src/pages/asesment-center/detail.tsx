@@ -86,6 +86,7 @@ const DetailAsesmen = () => {
       await request.post(`/asesmen/${asesmenId}/approve`, data);
       setModalApprove(false);
       reset();
+      window.location.reload();
     } catch (err: any) {
       console.log(err);
       setErrors(err.response.data.errors);

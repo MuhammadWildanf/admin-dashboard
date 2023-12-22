@@ -38,12 +38,18 @@ type MenuType = {
   icon: any | null;
   href: string | null;
   name: string | null;
-  child?: { label: string; name: string; href: string }[];
+  notif?: number | string;
+  child?: {
+    label: string;
+    name: string;
+    href: string;
+    notif?: number | string;
+  }[];
 };
 
 const SidebarItems = ({ className }: Props) => {
   const [menus, setMenus] = useState<MenuType[] | null>(null);
-
+  const { notification } = useSession();
   const theme = {
     root: {
       base: "h-full",
@@ -132,7 +138,9 @@ const SidebarItems = ({ className }: Props) => {
                           child.name === pathname.split("/")[2] ? true : false
                         }
                       >
-                        {child.label}
+                        <div className="flex items-center gap-3">
+                          <div>{child.label}</div>
+                        </div>
                       </Sidebar.Item>
                     ))}
                   </Sidebar.Collapse>
@@ -150,7 +158,22 @@ const SidebarItems = ({ className }: Props) => {
                         : false
                     }
                   >
-                    {item.label}
+                    <div className="flex items-center justify-between gap-3">
+                      <div>{item.label}</div>
+                      {item.name === "asesmen" &&
+                        notification.new_assessment > 0 && (
+                          <div className="px-1 font-semibold text-sm bg-pink-600 rounded text-white">
+                            {notification.new_assessment}
+                          </div>
+                        )}
+
+                      {item.name === "company" &&
+                        notification.new_companies > 0 && (
+                          <div className="px-1 font-semibold text-sm bg-pink-600 rounded text-white">
+                            {notification.new_companies}
+                          </div>
+                        )}
+                    </div>
                   </Sidebar.Item>
                 )}
               </>

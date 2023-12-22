@@ -109,7 +109,7 @@ const CompanyInvoice = () => {
       }
     >
       <AddButton
-        onClick={() => navigate(`/partner/company/${companyId}/add-invoice`)}
+        onClick={() => navigate(`/company/${companyId}/add-invoice`)}
       />
       <Table>
         <Table.Thead>

@@ -101,7 +101,7 @@ const CompanyPendingPage = () => {
     >
       <div className="flex mb-4 items-center gap-1 text-sm">
         <div
-          onClick={() => navigate("/partner/company")}
+          onClick={() => navigate("/company")}
           className="px-6 hover:bg-blue-100 rounded-lg py-2 cursor-pointer hover:text-gray-800"
         >
           Semua
@@ -135,7 +135,7 @@ const CompanyPendingPage = () => {
                     <Table.Tr
                       key={key}
                       className="cursor-pointer hover:bg-blue-50"
-                      onClick={() => navigate(`/partner/company/${item.id}`)}
+                      onClick={() => navigate(`/company/${item.id}`)}
                     >
                       <Table.Td>
                         {(
