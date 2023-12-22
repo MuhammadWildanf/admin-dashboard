@@ -211,6 +211,7 @@ const DetailAsesmen = () => {
           <Table.Th>#</Table.Th>
           <Table.Th>NIK</Table.Th>
           <Table.Th>Nama</Table.Th>
+          <Table.Th>Email / Phone</Table.Th>
           <Table.Th>Jns. Asesmen</Table.Th>
           <Table.Th>Tujuan</Table.Th>
           <Table.Th>Kode Aktivasi</Table.Th>
@@ -241,6 +242,11 @@ const DetailAsesmen = () => {
                       </Table.Td>
                       <Table.Td>{item.nik}</Table.Td>
                       <Table.Td>{item.name}</Table.Td>
+                      <Table.Td>
+                        <>
+                          {item.email} / {item.phone}
+                        </>
+                      </Table.Td>
                       <Table.Td>{item.product?.name ?? "-"}</Table.Td>
                       <Table.Td>
                         {item.purpose
