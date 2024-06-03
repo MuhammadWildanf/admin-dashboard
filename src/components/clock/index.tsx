@@ -29,10 +29,10 @@ const Clock = () => {
 
   return (
     <div className="text-center leading-4 flex gap-2 items-center">
-      <div className="text-2xl font-semibold leading-none w-28 pr-2 border-r">
+      <div className="text-2xl font-semibold text-white leading-none w-28 pr-2 border-r">
         {formattedTime}
       </div>
-      <div className="leading-none text-blue-800">{timezone}</div>
+      <div className="leading-none text-white">{timezone}</div>
     </div>
   );
 };

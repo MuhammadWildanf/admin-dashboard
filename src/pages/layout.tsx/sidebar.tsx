@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { HiOutlineMinusSm, HiOutlinePlusSm } from "react-icons/hi";
 import { useMenu } from "../../stores/menu";
 import { useSession } from "../../stores/session";
-import { menuAdmin, menuFinance, menuQC, menuSuperAdmin } from "./sidebar-menu";
+import { menuAdmin, menuSuperAdmin } from "./sidebar-menu";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -58,7 +58,7 @@ const SidebarItems = ({ className }: Props) => {
         off: "w-64",
       },
       // inner: `h-full overflow-y-auto overflow-x-hidden rounded bg-white md:bg-gray-50 py-4 px-3 dark:bg-gray-800`,
-      inner: `h-full overflow-y-auto overflow-x-hidden rounded bg-white py-4 px-3`,
+      inner: `h-full overflow-y-auto overflow-x-hidden rounded bg-blue-600 py-4 px-3`,
     },
     item: {
       base: "text-gray-500",
@@ -84,13 +84,6 @@ const SidebarItems = ({ className }: Props) => {
       setMenus(menuAdmin);
     }
 
-    if (me?.role === "finance") {
-      setMenus(menuFinance);
-    }
-
-    if (me?.role === "qc") {
-      setMenus(menuQC);
-    }
   }, []);
 
   return (
@@ -108,7 +101,7 @@ const SidebarItems = ({ className }: Props) => {
                     key={key}
                     icon={item.icon}
                     label={item.label}
-                    className="text-sm"
+                    className="text-sm text-white font-semibold"
                     open={item.name === pathname.split("/")[1] ? true : false}
                     renderChevronIcon={(theme, open) => {
                       const IconComponent = open
@@ -120,8 +113,8 @@ const SidebarItems = ({ className }: Props) => {
                           className={
                             theme?.label?.icon?.open
                               ? twMerge(
-                                  theme?.label?.icon?.open[open ? "on" : "off"]
-                                )
+                                theme?.label?.icon?.open[open ? "on" : "off"]
+                              )
                               : ""
                           }
                         />
@@ -150,10 +143,10 @@ const SidebarItems = ({ className }: Props) => {
                     // href={item.href}
                     onClick={() => navigate(item.href ?? "/")}
                     icon={item.icon}
-                    className={`cursor-pointer text-sm`}
+                    className={`cursor-pointer text-sm text-white font-semibold`}
                     active={
                       (item.name === "dashboard" && !pathname.split("/")[1]) ||
-                      item.name === pathname.split("/")[1]
+                        item.name === pathname.split("/")[1]
                         ? true
                         : false
                     }

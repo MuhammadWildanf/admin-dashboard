@@ -190,9 +190,7 @@ const UserAdmin = () => {
   }, [page, loadingSubmit]);
 
   return (
-    <Layout
-      withPageTitle
-      title="Manajemen Admin"
+    <Layout withPageTitle title="Manajemen Admin"
       pageTitleContent={
         <div className="flex items-center">
           <input

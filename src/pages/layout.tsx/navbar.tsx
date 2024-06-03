@@ -21,14 +21,14 @@ const NavbarLayout = () => {
   };
 
   return (
-    <Navbar fluid className="shadow-lg z-50 w-full fixed top-0">
+    <Navbar fluid className="shadow-lg z-50 w-full fixed top-0 bg-blue-600"> {/* Mengubah warna background navbar menjadi biru */}
       <div className="flex items-center gap-2">
         <button
           data-drawer-target="logo-sidebar"
           data-drawer-toggle="logo-sidebar"
           aria-controls="logo-sidebar"
           onClick={() => setOpen(open ? false : true)}
-          className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          className="inline-flex items-center p-2 text-sm text-white rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-black-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         >
           <span className="sr-only">Open sidebar</span>
           <svg
@@ -45,13 +45,13 @@ const NavbarLayout = () => {
             ></path>
           </svg>
         </button>
-        <Navbar.Brand href="/">
+        <Navbar.Brand href="/" className="w-64 h-full flex items-center"> {/* Mengatur lebar dan tinggi logo */}
           <img
             alt="Flowbite React Logo"
-            className="mr-3 h-8"
+            className="mr-3 h-8 bg-white"
             src="/images/logo.png"
           />
-        </Navbar.Brand>
+        </Navbar.Brand> {/* Menambahkan kelas bg-white untuk mengubah warna latar belakang logo menjadi putih */}
       </div>
       <div className="hidden md:block">
         <Clock />
@@ -61,7 +61,7 @@ const NavbarLayout = () => {
           arrowIcon={false}
           inline
           label={
-            <div className="w-10 h-10 bg-gray-300 rounded-full flex justify-center items-center">
+            <div className="w-10 h-10 bg-white rounded-full flex justify-center items-center">
               <User size={30} className="text-gray-600" />
             </div>
           }

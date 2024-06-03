@@ -27,7 +27,7 @@ const Login = () => {
 
   const bgstyle = {
     background:
-      "linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/images/wall2.jpg)",
+      "linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/images/wall2.png)",
     backgroundPosition: "center",
     backgroundSize: "cover",
   };
@@ -36,6 +36,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       await request.post("auth/login", data).then(({ data }) => {
+        console.log(data, "<<<<<<<");
         setAccessToken(data.accessToken);
         navigate("/");
       });

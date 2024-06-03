@@ -31,6 +31,7 @@ request.interceptors.request.use(
 
 request.interceptors.response.use(
   (response) => {
+    console.log('Data dari API:', response.data);
     // You can do any post-response actions here if needed
     return response;
   },
