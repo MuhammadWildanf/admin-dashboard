@@ -21,7 +21,7 @@ const NavbarLayout = () => {
   };
 
   return (
-    <Navbar fluid className="shadow-lg z-50 w-full fixed top-0 bg-blue-600"> {/* Mengubah warna background navbar menjadi biru */}
+    <Navbar fluid className="shadow-lg z-50 w-full fixed top-0 bg-blue-600">
       <div className="flex items-center gap-2">
         <button
           data-drawer-target="logo-sidebar"
@@ -45,13 +45,13 @@ const NavbarLayout = () => {
             ></path>
           </svg>
         </button>
-        <Navbar.Brand href="/" className="w-64 h-full flex items-center"> {/* Mengatur lebar dan tinggi logo */}
+        <Navbar.Brand href="/" className="w-64 h-full flex items-center">
           <img
             alt="Flowbite React Logo"
             className="mr-3 h-8 bg-white"
             src="/images/logo.png"
           />
-        </Navbar.Brand> {/* Menambahkan kelas bg-white untuk mengubah warna latar belakang logo menjadi putih */}
+        </Navbar.Brand>
       </div>
       <div className="hidden md:block">
         <Clock />
@@ -68,7 +68,7 @@ const NavbarLayout = () => {
           className="w-44"
         >
           <Dropdown.Header>
-            <span className="block text-sm">{me?.name}</span>
+            <span className="block text-sm">{me?.fullname}</span>
             <span className="block truncate text-sm font-medium">
               {me?.role}
             </span>

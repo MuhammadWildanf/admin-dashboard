@@ -37,7 +37,7 @@ const Login = () => {
     try {
       await request.post("auth/login", data).then(({ data }) => {
         console.log(data, "<<<<<<<");
-        setAccessToken(data.accessToken);
+        setAccessToken(data.token);
         navigate("/");
       });
     } catch (err: any) {

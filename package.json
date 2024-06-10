@@ -21,6 +21,7 @@
     "flowbite": "^1.8.1",
     "flowbite-react": "^0.6.1",
     "localforage": "^1.10.0",
+    "lucide-react": "^0.394.0",
     "match-sorter": "^6.3.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",

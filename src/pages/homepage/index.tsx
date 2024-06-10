@@ -7,7 +7,7 @@ const Homepage = () => {
   return (
     <Layout withPageTitle title="Dashboard">
       <div>
-        <h1 className="text-2xl md:text-3xl font-semibold">Hai, {me?.name}</h1>
+        <h1 className="text-2xl md:text-3xl font-semibold">Hai, {me?.fullname}</h1>
         <span className="font-light">Selamat Datang di Panel Admin</span>
 
         <div className="mt-6 w-full max-w-5xl mx-auto py-6 md:flex gap-2 items-center">

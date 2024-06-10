@@ -20,6 +20,7 @@ const Private = ({ children }: Props) => {
   const checkSession = async () => {
     try {
       const { data } = await request.get("/auth/me");
+      // console.log(data, 'dari auth/me psikolog log><><><><><>');
       return data;
     } catch {
       cookies.remove("accessToken", { path: "/" });
@@ -30,7 +31,7 @@ const Private = ({ children }: Props) => {
   useEffect(() => {
     setLoading(true);
     Promise.all([checkSession()]).then((res) => {
-      setGetMe(res[0].user);
+      setGetMe(res[0].psikolog);
       setNotification(res[0].notification);
       setLoading(false);
     });

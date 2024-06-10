@@ -83,9 +83,9 @@ const ProfilePage = () => {
           <div className="py-3 px-4">
             <FormInput
               control={control}
-              name="name"
+              name="fullname"
               label="Nama"
-              defaultValue={me?.name}
+              defaultValue={me?.fullname}
               error={errors?.name}
             />
             <FormInput

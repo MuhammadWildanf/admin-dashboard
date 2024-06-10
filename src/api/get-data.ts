@@ -22,9 +22,9 @@ export const getData = async (
     const { data } = await request.get(url);
     return data.data;
   } catch (err: any) {
-    if (err.response.status === 404) {
-      window.location.href = "/not-found";
-    }
+    // if (err.response.status === 404) {
+    //   window.location.href = "/not-found";
+    // }
     console.log(err);
   }
 };

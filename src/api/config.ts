@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getAccessToken } from "../services/auth";
-
+console.log("Base URL:", process.env.REACT_APP_API_URL);
 export const request = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   timeout: 100000,
@@ -8,9 +8,6 @@ export const request = axios.create({
 
 request.interceptors.request.use(
   (config) => {
-    // if (!config.headers) {
-    //   config.headers = {}
-    // }
 
     const token = getAccessToken();
 
@@ -31,7 +28,7 @@ request.interceptors.request.use(
 
 request.interceptors.response.use(
   (response) => {
-    console.log('Data dari API:', response.data);
+    // console.log('Data dari API:', response.data);
     // You can do any post-response actions here if needed
     return response;
   },

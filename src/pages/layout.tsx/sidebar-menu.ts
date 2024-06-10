@@ -1,7 +1,12 @@
 import {
   HiChartPie,
   HiUserGroup,
+  HiClock 
 } from "react-icons/hi";
+
+import { MdOutlineDashboard } from "react-icons/md";  
+
+import { FiMessageSquare, FiFolder, FiShoppingCart } from "react-icons/fi";
 
 type Menu = {
   label: string;
@@ -20,31 +25,59 @@ type Menu = {
 const dashboardMenu = {
   label: "Dasbor",
   name: "dashboard",
-  icon: HiChartPie,
+  icon: MdOutlineDashboard,
   href: "/",
 };
 
-const userManagementMenu = {
-  label: "Manajemen User",
-  name: "users",
-  icon: HiUserGroup,
-  href: "#",
-  child: [
-    { label: "Admin", name: "admin", href: "/users/admin" },
-    { label: "Psikolog", name: "psikolog", href: "/users/psikolog" },
-  ],
+
+
+
+const ManagementCounselingServicesMenu = {
+  label: "Counseling Services",
+  name: "CounselingService",
+  icon: FiFolder,
+  href: "/manage-counseling",
+};
+const timeSlotManagementMenu = {
+  label: "Time Slot",
+  name: "timeslot",
+  icon: HiClock,
+  href: "/time-slot-management",
+};
+
+const bookingMenu = {
+  label: "Booking",
+  name: "booking",
+  icon: HiChartPie,
+  href: "/manage-request",
 };
 
 
+export const menuUser: Menu[] = [
+  dashboardMenu,
+  ManagementCounselingServicesMenu,
+  timeSlotManagementMenu,
+  bookingMenu,
+];
 
-
+export const menuPsikolog: Menu[] = [
+  dashboardMenu,
+  ManagementCounselingServicesMenu,
+  timeSlotManagementMenu,
+  bookingMenu,
+];
 export const menuSuperAdmin: Menu[] = [
   dashboardMenu,
-  userManagementMenu,
+  ManagementCounselingServicesMenu,
+  timeSlotManagementMenu,
+  bookingMenu,
 ];
 
 export const menuAdmin: Menu[] = [
   dashboardMenu,
+  ManagementCounselingServicesMenu,
+  timeSlotManagementMenu,
+  bookingMenu,
 ];
 
 
