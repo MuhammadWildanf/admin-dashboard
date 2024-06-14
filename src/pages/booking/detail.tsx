@@ -58,14 +58,11 @@ const DetailBooking = () => {
             withPageTitle
             title="Manage Counseling Request"
         >
-            <h5>detail</h5>
             {detail ? (
                 <div>
                     <h6>Status: {detail.status.label}</h6>
                     <h6>User: {detail.user.fullname}</h6>
-                    <img src={detail.user.avatar} alt="User Avatar" />
                     <h6>Psikolog: {detail.psikolog.fullname}</h6>
-                    <img src={detail.psikolog.avatar} alt="Psikolog Avatar" />
                     <h6>Counseling Service: {detail.counseling_service.name}</h6>
                     <h6>Date: {detail.date}</h6>
                     <h6>Session Time: {detail.session.start_at} - {detail.session.end_at}</h6>

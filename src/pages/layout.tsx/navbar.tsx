@@ -21,7 +21,7 @@ const NavbarLayout = () => {
   };
 
   return (
-    <Navbar fluid className="shadow-lg z-50 w-full fixed top-0 bg-blue-600">
+    <Navbar fluid className="shadow-lg z-50 w-full fixed top-0 bg-white">
       <div className="flex items-center gap-2">
         <button
           data-drawer-target="logo-sidebar"
