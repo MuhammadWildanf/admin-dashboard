@@ -4,10 +4,7 @@ import Login from "../pages/auth/login";
 import Homepage from "../pages/homepage";
 import NotFound from "../pages/404";
 import ProfilePage from "../pages/profile";
-import IndexTimeSLot from "../pages/timeslot";
-import IndexBooking from "../pages/booking";
-import DetailBooking from "../pages/booking/detail";
-import IndexCounseling from "../pages/counseling";
+import IndexPsikolog from "../pages/psikolog/index";
 import { createBrowserRouter } from "react-router-dom";
 
 export const routes = createBrowserRouter([
@@ -36,34 +33,10 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path:"/manage-counseling",
+    path:"/psikolog",
     element:(
       <Private>
-        <IndexCounseling />  
-      </Private>
-    )
-  },
-  {
-    path:"/time-slot-management",
-    element:(
-      <Private>
-        <IndexTimeSLot />  
-      </Private>
-    )
-  },
-  {
-    path:"/manage-request",
-    element:(
-      <Private>
-        <IndexBooking />  
-      </Private>
-    )
-  },
-  {
-    path:"/manage-request/:id",
-    element:(
-      <Private>
-        <DetailBooking />  
+        <IndexPsikolog />  
       </Private>
     )
   },

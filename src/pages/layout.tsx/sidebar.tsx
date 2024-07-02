@@ -1,7 +1,7 @@
 import { useSession } from "../../stores/session";
 import { User } from "@phosphor-icons/react";
 import { MoreVertical } from "lucide-react";
-import { HiMenuAlt3} from "react-icons/hi";
+import { HiMenuAlt3 } from "react-icons/hi";
 import { menuAdmin, menuSuperAdmin, menuPsikolog, menuUser } from "./sidebar-menu";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
@@ -25,11 +25,12 @@ const SidebarLayout = () => {
     setLoading(false);
     navigate('/login');
   };
-
+  
   return (
-    <div className={`bg-blue-800 min-h-screen ${open ? "w-64" : "w-16"} duration-500 text-gray-100 px-4 flex flex-col`}>
+    <div className={`bg-blue-800 min-h-screen ${open ? "w-64" : "w-16"} duration-300 text-gray-100 px-4 flex flex-col`}>
       <div className="py-3 flex justify-end">
-        <HiMenuAlt3 size={26} className="cursor-pointer ml-3" onClick={() => setOpen(!open)} />
+        <HiMenuAlt3 size={26} className={`cursor-pointer w-7 ${!open && "rotate-180"}`}
+          onClick={() => setOpen(!open)} />
       </div>
       <div className="mt-4 flex flex-col gap-4 relative">
         {menus?.map((menu, i) => (
