@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-// import { useUserAdmin } from "../../../stores/users/admins";
 import Layout from "../layout.tsx/app";
 import { getData } from "../../api/get-data";
 import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
-// import AddButton from "../../components/buttons/add";
+import AddButton from "../../components/buttons/add";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../../components/buttons";
 import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
@@ -17,12 +16,12 @@ import {
   FormSelectTimezone,
 } from "../../components/forms/input-select";
 import { SelectOptionType } from "../../types/form";
-import { UserPsikologType } from "../../types/users";
+import { CategoryType } from "../../types/category";
 import { request } from "../../api/config";
 import { Key, Pencil, Trash } from "@phosphor-icons/react";
 import { useAlert } from "../../stores/alert";
 import moment from "moment";
-import { useUserPsikolog } from "../../stores/psikolog";
+import { useCategories } from "../../stores/category";
 
 type FormValues = {
   name: string;
@@ -45,69 +44,44 @@ const UserPsikolog = () => {
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [q, setQ] = useState<string | undefined>(undefined);
   const [page, setPage] = useState<number>(1);
+  const [modalAdd, setModalAdd] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
     undefined
   );
+  const [modalReset, setModalReset] = useState<boolean>(false);
+  const [randomString, setRandomString] = useState<string | null>(null);
   const [errors, setErrors] = useState<ErrorForm | null>(null);
-  const [selected, setSelected] = useState<UserPsikologType | null>(null);
+  const [modalDelete, setModalDelete] = useState<boolean>(false);
+  const [selected, setSelected] = useState<CategoryType | null>(null);
 
   const forms = useForm<FormValues>({
     defaultValues: {
       timezone: { label: moment.tz.guess(), value: moment.tz.guess() },
     },
   });
-  const { setUserPsikologs, userPsikologs } = useUserPsikolog();
+  const { setCategories, getCategories } = useCategories();
   const { setMessage } = useAlert();
 
-  const getUserPsikolog = async (
+  const getCategory = async (
     search?: string,
     searchMode: boolean = false
   ) => {
     setLoading(true);
     try {
-      const data = await getData("/psikolog/?type=psikolog", page, search, searchMode);
-      console.log('ini data getUserPsikolog ==>>>', data)
+      const data = await getData("/categories-artikel", page , search , searchMode);
       return data;
     } catch { }
   };
 
-
-  const handleApprove = async (id: string) => {
-    try {
-      await request.patch(`/psikolog/${id}/approve`);
-      // Refresh data setelah approve
-      const updatedData = await getUserPsikolog();
-      setUserPsikologs(updatedData);
-      setMessage("Psikolog berhasil diapprove", "success");
-    } catch (error) {
-      console.error("Error approving psikolog:", error);
-      setMessage("Gagal melakukan approve psikolog", "error");
-    }
-  };
-
-  const handleUnapprove = async (id: string) => {
-    try {
-      await request.patch(`/psikolog/${id}/unapprove`);
-      // Refresh data setelah unapprove
-      const updatedData = await getUserPsikolog();
-      setUserPsikologs(updatedData);
-      setMessage("Psikolog berhasil diunapprove", "success");
-    } catch (error) {
-      console.error("Error unapproving psikolog:", error);
-      setMessage("Gagal melakukan unapprove psikolog", "error");
-    }
-  };
-
-
   const handleSearch = async (input: string | undefined) => {
     setQ(input);
-    const data = await getUserPsikolog(input ?? "", true);
-    setUserPsikologs(data);
+    const data = await getCategory(input ?? "", true);
+    setCategories(data);
     setLoading(false);
   };
 
   const handleNext = () => {
-    if (page === userPsikologs?.last_page) {
+    if (page === getCategories?.last_page) {
       return;
     }
 
@@ -122,29 +96,59 @@ const UserPsikolog = () => {
     setPage(page - 1);
   };
 
+  const handleSave = forms.handleSubmit(async (data) => {
+    setLoadingSubmit(true);
+    try {
+      let payload = {
+        ...data,
+      };
+      if (modalMode === "create") {
+        await request.post("/categories-artikel/create", payload);
+      } else {
+        await request.post(`/categories-artikel/${selected?.id}`, payload);
+      }
+      setModalAdd(false);
+      setModalMode(undefined);
+      setMessage("Category saved!", "success");
+    } catch (err: any) {
+      setErrors(err.response.data.errors);
+      console.log(err);
+    }
+    setErrors(null);
+    setLoadingSubmit(false);
+  });
+
+  const handleFormEdit = (item: CategoryType) => {
+    setSelected(item);
+    setModalMode("edit");
+    forms.setValue("name", item.name ?? "");
+    setModalAdd(true);
+  };
+
+  const handleDelete = async () => {
+    setLoadingSubmit(true);
+    try {
+      await request.delete(`/categories-artikel/${selected?.id}`);
+      setSelected(null);
+      setModalDelete(false);
+      setMessage("Category deleted", "success");
+    } catch (err: any) {
+      setErrors(err.response.data.errors);
+    }
+    setLoadingSubmit(false);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Menandakan sedang memuat data
-
-      try {
-        const res = await getUserPsikolog();
-        console.log(res, 'ini tanpa menggunakan res.data datanya muncul'); // Mengambil data dari API
-        setUserPsikologs(res); // Mengatur data ke state setelah berhasil diambil
-        setLoading(false); // Menghentikan loading setelah data selesai dimuat
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false); // Menghentikan loading jika terjadi kesalahan
-      }
-    };
-
-    fetchData(); // Memanggil fungsi fetchData untuk memulai pengambilan data
+    Promise.all([getCategory()]).then((res) => {
+      setCategories(res[0]);
+      setLoading(false);
+    });
   }, [page, loadingSubmit]);
 
   return (
     <Layout
       withPageTitle
-      title="Manajemen User Psikolog"
+      title="Manajemen Kategori Artikel"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -165,8 +169,8 @@ const UserPsikolog = () => {
           )}
           <button
             className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
@@ -176,14 +180,17 @@ const UserPsikolog = () => {
         </div>
       }
     >
+      <AddButton
+        onClick={() => {
+          setModalAdd(true);
+          setModalMode("create");
+          forms.reset();
+        }}
+      />
       <Table>
         <Table.Thead>
           <Table.Th>#</Table.Th>
           <Table.Th>Nama</Table.Th>
-          <Table.Th>Email</Table.Th>
-          {/* <Table.Th>Role</Table.Th> */}
-          <Table.Th>Zona waktu</Table.Th>
-          <Table.Th>Status</Table.Th>
           <Table.Th className="text-center">Opsi</Table.Th>
         </Table.Thead>
         <Table.Tbody>
@@ -191,7 +198,7 @@ const UserPsikolog = () => {
             <Table.TrLoading cols={7} rows={4} />
           ) : (
             <>
-              {userPsikologs?.data.length === 0 ? (
+              {getCategories?.data.length === 0 ? (
                 <Table.Tr>
                   <Table.Td cols={8} className="text-center py-3">
                     Tidak ada data ditemukan!
@@ -199,50 +206,30 @@ const UserPsikolog = () => {
                 </Table.Tr>
               ) : (
                 <>
-                  {userPsikologs?.data.map((item, key) => (
+                  {getCategories?.data.map((item, key) => (
                     <Table.Tr key={key}>
                       <Table.Td>
                         {(
                           key +
                           1 +
-                          userPsikologs.per_page *
-                          (userPsikologs.current_page - 1)
+                          getCategories.per_page *
+                          (getCategories.current_page - 1)
                         ).toString()}
                       </Table.Td>
-                      <Table.Td>{item.fullname ?? ""}</Table.Td>
-                      <Table.Td>{item.email ?? ""}</Table.Td>
-                      {/* <Table.Td>{item.role ?? ""}</Table.Td> */}
-                      <Table.Td>{item.timezone ?? ""}</Table.Td>
-                      <Table.Td>
-                        {item.is_active ? (
-                          <span className="text-xs py-1 px-3 rounded text-green-50 bg-green-600">
-                            Aktif
-                          </span>
-                        ) : (
-                          (
-                            <span className="text-xs py-1 px-3 rounded text-red-50 bg-red-600">
-                              Tidak Aktif
-                            </span>
-                          ) ?? ""
-                        )}
-                      </Table.Td>
+                      <Table.Td>{item.name ?? ""}</Table.Td>
                       <Table.Td>
                         <div className="flex items-center gap-1">
-                          {item.is_active ? (
-                            <Button
-                              onClick={() => handleUnapprove(item.id)}
-                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                            >
-                              Unapprove
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={() => handleApprove(item.id)}
-                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
-                            >
-                              Approve
-                            </Button>
-                          )}
+                          <Trash
+                            className="text-red-600 text-xl cursor-pointer"
+                            onClick={() => {
+                              setSelected(item);
+                              setModalDelete(true);
+                            }}
+                          />
+                          <Pencil
+                            className="text-blue-600 text-xl cursor-pointer"
+                            onClick={() => handleFormEdit(item)}
+                          />
                         </div>
                       </Table.Td>
                     </Table.Tr>
@@ -254,10 +241,41 @@ const UserPsikolog = () => {
         </Table.Tbody>
       </Table>
       <Pagination
-        currentPage={userPsikologs?.current_page ?? 1}
-        totalPage={userPsikologs?.last_page ?? 1}
+        currentPage={getCategories?.current_page ?? 1}
+        totalPage={getCategories?.last_page ?? 1}
         onNext={handleNext}
         onPrevious={handlePrevious}
+      />
+
+      <BaseModal
+        title={modalMode === "create" ? "Tambah Kategori" : "Edit Kategori"}
+        isOpen={modalAdd}
+        close={() => setModalAdd(false)}
+      >
+        <FormProvider {...forms}>
+          <form>
+            <FormInput
+              name="name"
+              control={forms.control}
+              label="Nama"
+              error={errors?.name}
+            />
+            <div className="mt-3 flex items-center justify-end">
+              <Button className="px-8" onClick={handleSave}>
+                {loadingSubmit ? <Spinner /> : "Simpan"}
+              </Button>
+            </div>
+          </form>
+        </FormProvider>
+      </BaseModal>
+
+      <ModalDeleteConfirmation
+        isOpen={modalDelete}
+        close={() => setModalDelete(false)}
+        subTitle="Kategori"
+        name={selected?.name ?? ""}
+        loading={loadingSubmit}
+        action={handleDelete}
       />
     </Layout>
   );

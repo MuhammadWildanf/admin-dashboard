@@ -35,7 +35,7 @@ const Login = () => {
   const onSubmit = handleSubmit(async (data) => {
     setIsLoading(true);
     try {
-      await request.post("auth/login", data).then(({ data }) => {
+      await request.post("login", data).then(({ data }) => {
         console.log(data, "<<<<<<<");
         setAccessToken(data.token);
         navigate("/");

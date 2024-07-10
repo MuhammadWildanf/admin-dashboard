@@ -33,7 +33,7 @@ const Layout = ({
                     <div className="flex items-center gap-2">
                       <img
                         alt="Flowbite React Logo"
-                        className="mr-3 h-8 block md:hidden"
+                        className="mr-3 h-5 block md:hidden"
                         src="/images/favicon.png"
                       />
                       <img
