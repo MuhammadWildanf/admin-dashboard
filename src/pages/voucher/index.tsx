@@ -34,6 +34,7 @@ type FormValues = {
   usage_limit: string;
   claim_type: SelectOptionType | undefined;
   usage_count: string;
+  image: FileList | null;
 };
 
 type ErrorForm = {
@@ -50,6 +51,7 @@ type ErrorForm = {
   usage_limit: [] | null;
   claim_type: [] | null;
   usage_count: [] | null;
+  image: [] | null;
 };
 
 const UserPsikolog = () => {
@@ -64,11 +66,10 @@ const UserPsikolog = () => {
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<VoucherType | null>(null);
-
-
   const { setVouchers, getVouchers } = useVoucher();
   const { setMessage } = useAlert();
   const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
 
   const discountTypes = [
@@ -124,16 +125,29 @@ const UserPsikolog = () => {
   const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
-      let payload = {
-        ...data,
-        discount_type: data.discount_type?.value,
-        claim_type: data.claim_type?.value,
-        user_type: data.user_type?.value,
-      };
+      const formData = new FormData();
+      formData.append('code', data.code);
+      formData.append('description', data.description);
+      formData.append('amount', data.amount);
+      formData.append('discount_type', String(data.discount_type?.value ?? ''));
+      formData.append('expiry_date', data.expiry_date);
+      formData.append('user_type', String(data.user_type?.value ?? ''));
+      formData.append('max_discount', data.max_discount);
+      formData.append('min_purchase', data.min_purchase);
+      formData.append('terms_conditions', data.terms_conditions);
+      formData.append('for', data.for);
+      formData.append('usage_limit', data.usage_limit);
+      formData.append('claim_type', String(data.claim_type?.value ?? ''));
+      formData.append('usage_count', data.usage_count);
+
+      if (data.image?.[0]) {
+        formData.append('image', data.image[0]);
+      }
+
       if (modalMode === "create") {
-        await request.post("/voucher/create", payload);
+        await request.post("/voucher/create", formData);
       } else {
-        await request.put(`/voucher/update/${selected?.id}`, payload);
+        await request.put(`/voucher/update/${selected?.id}`, formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
@@ -145,6 +159,25 @@ const UserPsikolog = () => {
     setErrors(null);
     setLoadingSubmit(false);
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Convert File to FileList
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      setValue("image", dataTransfer.files);
+    } else {
+      setImagePreview(null);
+      setValue("image", null);
+    }
+  };
 
   const handleFormEdit = (item: VoucherType) => {
     setSelected(item);
@@ -171,6 +204,7 @@ const UserPsikolog = () => {
       claimTypes.find((type) => type.value === item.claim_type) ?? undefined
     );
     setValue("usage_count", item.usage_count.toString() ?? "");
+    setImagePreview(item.image ?? null);
     setModalAdd(true);
   };
 
@@ -394,6 +428,29 @@ const UserPsikolog = () => {
             label="Usage Count"
             error={errors?.usage_count}
           />
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              onChange={handleImageChange}
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-40 w-auto object-contain"
+                />
+              </div>
+            )}
+            {errors?.image && (
+              <p className="mt-2 text-sm text-red-600">{errors.image}</p>
+            )}
+          </div>
           <div className="mt-3 flex items-center justify-end">
             <Button className="px-8" onClick={handleSave}>
               {loadingSubmit ? <Spinner /> : "Simpan"}

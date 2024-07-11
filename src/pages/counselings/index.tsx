@@ -27,7 +27,7 @@ type FormValues = {
   name: string;
   description: string;
   slug: string;
-  image: string;
+  image: FileList | null;
   notes: string;
 };
 
@@ -53,20 +53,11 @@ const Counseling = () => {
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<CounselingType | null>(null);
+  const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const forms = useForm<FormValues>({
-    defaultValues: {
-    },
-  });
   const { setCounselings, GetCounselings } = useCounseling();
   const { setMessage } = useAlert();
-
-  const roles = [
-    { label: "Super Admin", value: "superadmin" },
-    { label: "Admin", value: "admin" },
-    { label: "Finance", value: "finance" },
-    { label: "QC", value: "qc" },
-  ];
 
   const getCounseling = async (
     search?: string,
@@ -74,7 +65,7 @@ const Counseling = () => {
   ) => {
     setLoading(true);
     try {
-      const data = await getData("/counselings" , page, search, searchMode);
+      const data = await getData("/counselings", page, search, searchMode);
       return data;
     } catch { }
   };
@@ -102,16 +93,21 @@ const Counseling = () => {
     setPage(page - 1);
   };
 
-  const handleSave = forms.handleSubmit(async (data) => {
+  const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
-      let payload = {
-        ...data,
-      };
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("description", data.description);
+      formData.append("slug", data.slug);
+      formData.append("notes", data.notes);
+      if (data.image) {
+        formData.append("image", data.image[0]);
+      }
       if (modalMode === "create") {
-        await request.post("/counselings/create", payload);
+        await request.post("/counselings/create", formData);
       } else {
-        await request.post(`/counselings/${selected?.id}/update`, payload);
+        await request.post(`/counselings/${selected?.id}`, formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
@@ -124,21 +120,40 @@ const Counseling = () => {
     setLoadingSubmit(false);
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Convert File to FileList
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      setValue("image", dataTransfer.files);
+    } else {
+      setImagePreview(null);
+      setValue("image", null);
+    }
+  };
+
   const handleFormEdit = (item: CounselingType) => {
     setSelected(item);
     setModalMode("edit");
-    forms.setValue("name", item.name ?? "");
-    forms.setValue("description", item.description ?? "");
-    forms.setValue("slug", item.slug ?? "");
-    forms.setValue("image", item.image ?? "");
-    forms.setValue("notes", item.notes ?? "");
+    setValue("name", item.name ?? "");
+    setValue("description", item.description ?? "");
+    setValue("slug", item.slug ?? "");
+    setImagePreview(item.image ?? null);
+    setValue("notes", item.notes ?? "");
     setModalAdd(true);
   };
 
   const handleDelete = async () => {
     setLoadingSubmit(true);
     try {
-      await request.delete(`/counselings/${selected?.id}/destroy`);
+      await request.delete(`/counselings/${selected?.id}`);
       setSelected(null);
       setModalDelete(false);
       setMessage("Counseling deleted", "success");
@@ -179,8 +194,8 @@ const Counseling = () => {
           )}
           <button
             className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-                ? "bg-blue-500 text-white cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-blue-500 text-white cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
@@ -194,7 +209,7 @@ const Counseling = () => {
         onClick={() => {
           setModalAdd(true);
           setModalMode("create");
-          forms.reset();
+          reset();
         }}
       />
       <Table>
@@ -203,8 +218,8 @@ const Counseling = () => {
           <Table.Th>Name</Table.Th>
           <Table.Th>Description</Table.Th>
           <Table.Th>Slug</Table.Th>
-          <Table.Th>Image</Table.Th>
           <Table.Th>Notes</Table.Th>
+          <Table.Th>Image</Table.Th>
           <Table.Th className="text-center">Opsi</Table.Th>
         </Table.Thead>
         <Table.Tbody>
@@ -233,8 +248,16 @@ const Counseling = () => {
                       <Table.Td>{item.name ?? ""}</Table.Td>
                       <Table.Td>{item.description ?? ""}</Table.Td>
                       <Table.Td>{item.slug ?? ""}</Table.Td>
-                      <Table.Td>{item.image ?? ""}</Table.Td>
                       <Table.Td>{item.notes ?? ""}</Table.Td>
+                      <Table.Td>
+                        {item.image && (
+                          <img
+                            src={item.image}
+                            alt="Image"
+                            className="h-10 w-10 object-cover"
+                          />
+                        )}
+                      </Table.Td>
                       <Table.Td>
                         <div className="flex items-center gap-1">
                           <Trash
@@ -270,45 +293,60 @@ const Counseling = () => {
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
       >
-        <FormProvider {...forms}>
-          <form>
-            <FormInput
-              name="name"
-              control={forms.control}
-              label="Nama"
-              error={errors?.name}
+        <form>
+          <FormInput
+            name="name"
+            control={control}
+            label="Nama"
+            error={errors?.name}
+          />
+          <FormInput
+            name="description"
+            control={control}
+            label="Description"
+            error={errors?.description}
+          />
+          <FormInput
+            name="slug"
+            control={control}
+            label="Slug"
+            error={errors?.slug}
+          />
+          <FormInput
+            name="notes"
+            control={control}
+            label="Notes"
+            error={errors?.notes}
+          />
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              onChange={handleImageChange}
             />
-            <FormInput
-              name="description"
-              control={forms.control}
-              label="Description"
-              error={errors?.description}
-            />
-            <FormInput
-              name="slug"
-              control={forms.control}
-              label="Slug"
-              error={errors?.slug}
-            />
-            <FormInput
-              name="image"
-              control={forms.control}
-              label="Image"
-              error={errors?.image}
-            />
-            <FormInput
-              name="notes"
-              control={forms.control}
-              label="Notes"
-              error={errors?.notes}
-            />
-            <div className="mt-3 flex items-center justify-end">
-              <Button className="px-8" onClick={handleSave}>
-                {loadingSubmit ? <Spinner /> : "Simpan"}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-40 w-auto object-contain"
+                />
+              </div>
+            )}
+            {errors?.image && (
+              <p className="mt-2 text-sm text-red-600">{errors.image}</p>
+            )}
+          </div>
+          <div className="mt-3 flex items-center justify-end">
+            <Button className="px-8" onClick={handleSave}>
+              {loadingSubmit ? <Spinner /> : "Simpan"}
+            </Button>
+          </div>
+        </form>
       </BaseModal>
 
       <ModalDeleteConfirmation

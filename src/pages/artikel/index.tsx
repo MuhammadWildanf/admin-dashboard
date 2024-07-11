@@ -4,13 +4,13 @@ import { getData } from "../../api/get-data";
 import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
 import AddButton from "../../components/buttons/add";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "../../components/buttons";
 import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
 import BaseModal from "../../components/modal/base";
 import Pagination from "../../components/tables/pagination";
 import Table from "../../components/tables/base";
-import { FormInput, FormInputPassword } from "../../components/forms/input";
+import { FormInput } from "../../components/forms/input";
 import {
   FormSelect,
   FormSelectTimezone,
@@ -23,23 +23,27 @@ import { useAlert } from "../../stores/alert";
 import moment from "moment";
 import { useArticles } from "../../stores/articles";
 
+
 type FormValues = {
-  name: string;
+  title: string;
   author: string;
-  timezone: SelectOptionType | undefined;
-  role: SelectOptionType | undefined;
-  password: string;
+  categories_id: string;
+  date: string;
+  image: FileList | null;
+  link: string;
 };
 
 type ErrorForm = {
-  name: [] | null;
-  email: [] | null;
-  timezone: [] | null;
-  role: [] | null;
-  password: [] | null;
+  title: [] | null;
+  author: [] | null;
+  categories_id: [] | null;
+  date: [] | null;
+  image: [] | null;
+  link: [] | null;
+  categories: [] | null;
 };
 
-const UserPsikolog = () => {
+const IndexArticle = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [q, setQ] = useState<string | undefined>(undefined);
@@ -48,26 +52,15 @@ const UserPsikolog = () => {
   const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
     undefined
   );
-  const [modalReset, setModalReset] = useState<boolean>(false);
-  const [randomString, setRandomString] = useState<string | null>(null);
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<ArticleType | null>(null);
+  const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const forms = useForm<FormValues>({
-    defaultValues: {
-      timezone: { label: moment.tz.guess(), value: moment.tz.guess() },
-    },
-  });
   const { setArticles, GetArticles } = useArticles();
   const { setMessage } = useAlert();
 
-  const roles = [
-    { label: "Super Admin", value: "superadmin" },
-    { label: "Admin", value: "admin" },
-    { label: "Finance", value: "finance" },
-    { label: "QC", value: "qc" },
-  ];
 
   const GetAllArticle = async (
     search?: string,
@@ -103,22 +96,26 @@ const UserPsikolog = () => {
     setPage(page - 1);
   };
 
-  const handleSave = forms.handleSubmit(async (data) => {
+  const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
-      let payload = {
-        ...data,
-        role: data.role?.value ?? "",
-        timezone: data.timezone?.value ?? "",
-      };
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("author", data.author);
+      formData.append("categories_id", data.categories_id);
+      formData.append("date", data.date);
+      formData.append("link", data.link);
+      if (data.image) {
+        formData.append("image", data.image[0]);
+      }
       if (modalMode === "create") {
-        await request.post("/artikel/create", payload);
+        await request.post("/artikel/create", formData);
       } else {
-        await request.post(`/artikel/${selected?.id}`, payload);
+        await request.post(`/artikel/${selected?.id}`, formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
-      setMessage("Admin user saved!", "success");
+      setMessage("Article saved!", "success");
     } catch (err: any) {
       setErrors(err.response.data.errors);
       console.log(err);
@@ -127,11 +124,34 @@ const UserPsikolog = () => {
     setLoadingSubmit(false);
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Convert File to FileList
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      setValue("image", dataTransfer.files);
+    } else {
+      setImagePreview(null);
+      setValue("image", null);
+    }
+  };
+
   const handleFormEdit = (item: ArticleType) => {
     setSelected(item);
     setModalMode("edit");
-    forms.setValue("name", item.title ?? "");
-    forms.setValue("author", item.author);
+    setValue("title", item.title);
+    setValue("author", item.author);
+    setValue("categories_id", item.categories_id);
+    setValue("date", item.date);
+    setValue("link", item.link);
+    setImagePreview(item.image ?? null);
     setModalAdd(true);
   };
 
@@ -141,44 +161,11 @@ const UserPsikolog = () => {
       await request.delete(`/artikel/${selected?.id}`);
       setSelected(null);
       setModalDelete(false);
-      setMessage("User psikolog deleted", "success");
+      setMessage("Article deleted", "success");
     } catch (err: any) {
       setErrors(err.response.data.errors);
     }
     setLoadingSubmit(false);
-  };
-
-  const handleResetPassword = forms.handleSubmit(async (data) => {
-    setLoadingSubmit(true);
-    try {
-      let payload = {
-        password: data.password,
-      };
-      await request.post(
-        `/users/psikolog/${selected?.id}/updatePassword`,
-        payload
-      );
-      setSelected(null);
-      setModalReset(false);
-      setMessage("Password changed!", "success");
-    } catch (err: any) {
-      console.log(err);
-      setErrors(err.response.data.errors);
-    }
-    setLoadingSubmit(false);
-  });
-
-  const generateRandomString = (length: number) => {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      result += characters.charAt(randomIndex);
-    }
-
-    return result;
   };
 
   useEffect(() => {
@@ -212,8 +199,8 @@ const UserPsikolog = () => {
           )}
           <button
             className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-                ? "bg-blue-500 text-white cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-blue-500 text-white cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
@@ -227,7 +214,7 @@ const UserPsikolog = () => {
         onClick={() => {
           setModalAdd(true);
           setModalMode("create");
-          forms.reset();
+          reset();
         }}
       />
       <Table>
@@ -235,9 +222,9 @@ const UserPsikolog = () => {
           <Table.Th>#</Table.Th>
           <Table.Th>Title</Table.Th>
           <Table.Th>Author</Table.Th>
-          <Table.Th>Category</Table.Th>
           <Table.Th>Date</Table.Th>
           <Table.Th>LInk</Table.Th>
+          <Table.Th>Image</Table.Th>
           <Table.Th className="text-center">Opsi</Table.Th>
         </Table.Thead>
         <Table.Tbody>
@@ -265,9 +252,17 @@ const UserPsikolog = () => {
                       </Table.Td>
                       <Table.Td>{item.title ?? ""}</Table.Td>
                       <Table.Td>{item.author ?? ""}</Table.Td>
-                      <Table.Td>{item.categories_id ?? ""}</Table.Td>
                       <Table.Td>{item.date ?? ""}</Table.Td>
                       <Table.Td>{item.link ?? ""}</Table.Td>
+                      <Table.Td>
+                        {item.image && (
+                          <img
+                            src={item.image}
+                            alt="Image"
+                            className="h-10 w-10 object-cover"
+                          />
+                        )}
+                      </Table.Td>
                       <Table.Td>
                         <div className="flex items-center gap-1">
                           <Trash
@@ -299,83 +294,61 @@ const UserPsikolog = () => {
       />
 
       <BaseModal
-        title={modalMode === "create" ? "Tambah User Admin" : "Edit User Admin"}
+        title={modalMode === "create" ? "Tambah Artikel" : "Edit Artikel"}
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
       >
-        <FormProvider {...forms}>
-          <form>
-            <FormInput
-              name="name"
-              control={forms.control}
-              label="Nama"
-              error={errors?.name}
+        <form>
+          <FormInput
+            name="title"
+            control={control}
+            label="Title"
+            error={errors?.title}
+          />
+          <FormInput
+            name="author"
+            control={control}
+            label="Author"
+            error={errors?.author}
+          />
+          <FormInput name="categories_id" control={control} label="Category" error={errors?.categories_id} />
+          <FormInput name="date" type="date" control={control} label="Date" error={errors?.date} />
+          <FormInput name="link" control={control} label="Link" error={errors?.link} />
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              onChange={handleImageChange}
             />
-            <FormInput
-              name="email"
-              control={forms.control}
-              label="Email"
-              error={errors?.email}
-            />
-            <>
-              {modalMode === "create" && (
-                <FormInputPassword
-                  name="password"
-                  control={forms.control}
-                  label="Password"
-                  type="password"
-                  error={errors?.password}
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-40 w-auto object-contain"
                 />
-              )}
-            </>
-            <FormSelectTimezone
-              name="timezone"
-              control={forms.control}
-              label="Zona Waktu"
-              error={errors?.timezone}
-            />
-            <FormSelect
-              name="role"
-              control={forms.control}
-              label="Role"
-              options={roles}
-            />
-            <div className="mt-3 flex items-center justify-end">
-              <Button className="px-8" onClick={handleSave}>
-                {loadingSubmit ? <Spinner /> : "Simpan"}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
-      </BaseModal>
+              </div>
+            )}
+            {errors?.image && (
+              <p className="mt-2 text-sm text-red-600">{errors.image}</p>
+            )}
+          </div>
 
-      <BaseModal
-        title={`Reset Password untuk ${selected?.title}`}
-        isOpen={modalReset}
-        close={() => setModalReset(false)}
-      >
-        <FormProvider {...forms}>
-          <form>
-            <FormInput
-              name="password"
-              control={forms.control}
-              label="Password"
-              defaultValue={randomString}
-              error={errors?.password}
-            />
-          </form>
-        </FormProvider>
-        <div className="mt-3 flex items-center justify-end">
-          <Button className="px-8" onClick={handleResetPassword}>
-            {loadingSubmit ? <Spinner /> : "Simpan"}
-          </Button>
-        </div>
+          <div className="mt-3 flex items-center justify-end">
+            <Button className="px-8" onClick={handleSave}>
+              {loadingSubmit ? <Spinner /> : "Simpan"}
+            </Button>
+          </div>
+        </form>
       </BaseModal>
 
       <ModalDeleteConfirmation
         isOpen={modalDelete}
         close={() => setModalDelete(false)}
-        subTitle="Nama"
         name={selected?.title ?? ""}
         loading={loadingSubmit}
         action={handleDelete}
@@ -384,4 +357,4 @@ const UserPsikolog = () => {
   );
 };
 
-export default UserPsikolog;
+export default IndexArticle;

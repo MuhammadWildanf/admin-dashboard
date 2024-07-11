@@ -25,9 +25,9 @@ import { useYouTube } from "../../stores/youtube";
 
 type FormValues = {
   title: string;
-  categories_id: number;
+  categories_id: string;
   link: string;
-  image: string;
+  image: FileList | null;
 };
 
 type ErrorForm = {
@@ -37,7 +37,7 @@ type ErrorForm = {
   image: [] | null;
 };
 
-const Counseling = () => {
+const IndexYoutube = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [q, setQ] = useState<string | undefined>(undefined);
@@ -51,12 +51,10 @@ const Counseling = () => {
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<YoutubeType | null>(null);
+  const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const forms = useForm<FormValues>({
-    defaultValues: {
-      
-    },
-  });
+
   const { setYouTubeVideos, youTubeVideos } = useYouTube();
   const { setMessage } = useAlert();
 
@@ -66,7 +64,7 @@ const Counseling = () => {
   ) => {
     setLoading(true);
     try {
-      const data = await getData("/youtube" , page, search, searchMode);
+      const data = await getData("/youtube", page, search, searchMode);
       return data;
     } catch { }
   };
@@ -94,16 +92,20 @@ const Counseling = () => {
     setPage(page - 1);
   };
 
-  const handleSave = forms.handleSubmit(async (data) => {
+  const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
-      let payload = {
-        ...data,
-      };
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("categories_id", data.categories_id);
+      formData.append("link", data.link);
+      if (data.image) {
+        formData.append("image", data.image[0]);
+      }
       if (modalMode === "create") {
-        await request.post("/youtube/create", payload);
+        await request.post("/youtube/create", formData);
       } else {
-        await request.post(`/youtube/${selected?.id}/update`, payload);
+        await request.post(`/youtube/${selected?.id}/update`, formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
@@ -116,20 +118,39 @@ const Counseling = () => {
     setLoadingSubmit(false);
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Convert File to FileList
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      setValue("image", dataTransfer.files);
+    } else {
+      setImagePreview(null);
+      setValue("image", null);
+    }
+  };
+
   const handleFormEdit = (item: YoutubeType) => {
     setSelected(item);
     setModalMode("edit");
-    forms.setValue("title", item.title ?? "");
-    forms.setValue("categories_id", item.categories_id);
-    forms.setValue("link", item.link);
-    forms.setValue("image", item.image);
+    setValue("title", item.title ?? "");
+    setValue("categories_id", item.categories_id.toString());
+    setValue("link", item.link);
+    setImagePreview(item.image ?? null);
     setModalAdd(true);
   };
 
   const handleDelete = async () => {
     setLoadingSubmit(true);
     try {
-      await request.delete(`/youtube/${selected?.id}/destroy`);
+      await request.delete(`/youtube/${selected?.id}`);
       setSelected(null);
       setModalDelete(false);
       setMessage("Youtube deleted", "success");
@@ -170,8 +191,8 @@ const Counseling = () => {
           )}
           <button
             className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-                ? "bg-blue-500 text-white cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-blue-500 text-white cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
@@ -185,7 +206,7 @@ const Counseling = () => {
         onClick={() => {
           setModalAdd(true);
           setModalMode("create");
-          forms.reset();
+          reset();
         }}
       />
       <Table>
@@ -223,7 +244,15 @@ const Counseling = () => {
                       <Table.Td>{item.title ?? ""}</Table.Td>
                       <Table.Td>{item.categories_id?.toString() ?? ""}</Table.Td>
                       <Table.Td>{item.link ?? ""}</Table.Td>
-                      <Table.Td>{item.image ?? ""}</Table.Td>
+                      <Table.Td>
+                        {item.image && (
+                          <img
+                            src={item.image}
+                            alt="Image"
+                            className="h-10 w-10 object-cover"
+                          />
+                        )}
+                      </Table.Td>
                       <Table.Td>
                         <div className="flex items-center gap-1">
                           <Trash
@@ -259,39 +288,54 @@ const Counseling = () => {
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
       >
-        <FormProvider {...forms}>
-          <form>
-            <FormInput
-              name="title"
-              control={forms.control}
-              label="Title"
-              error={errors?.title}
+        <form>
+          <FormInput
+            name="title"
+            control={control}
+            label="Title"
+            error={errors?.title}
+          />
+          <FormInput
+            name="categories_id"
+            control={control}
+            label="Categories"
+            error={errors?.categories_id}
+          />
+          <FormInput
+            name="link"
+            control={control}
+            label="Link"
+            error={errors?.link}
+          />
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              onChange={handleImageChange}
             />
-            <FormInput
-              name="categories_id"
-              control={forms.control}
-              label="Categories"
-              error={errors?.categories_id}
-            />
-            <FormInput
-              name="link"
-              control={forms.control}
-              label="Link"
-              error={errors?.link}
-            />
-            <FormInput
-              name="image"
-              control={forms.control}
-              label="Image"
-              error={errors?.image}
-            />
-            <div className="mt-3 flex items-center justify-end">
-              <Button className="px-8" onClick={handleSave}>
-                {loadingSubmit ? <Spinner /> : "Simpan"}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-40 w-auto object-contain"
+                />
+              </div>
+            )}
+            {errors?.image && (
+              <p className="mt-2 text-sm text-red-600">{errors.image}</p>
+            )}
+          </div>
+          <div className="mt-3 flex items-center justify-end">
+            <Button className="px-8" onClick={handleSave}>
+              {loadingSubmit ? <Spinner /> : "Simpan"}
+            </Button>
+          </div>
+        </form>
       </BaseModal>
 
       <ModalDeleteConfirmation
@@ -305,4 +349,4 @@ const Counseling = () => {
   );
 };
 
-export default Counseling;
+export default IndexYoutube;

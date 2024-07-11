@@ -3,7 +3,7 @@ export type CounselingType = {
     name: string | null;
     description: string | null;
     slug: string | null;
-    image: string | null;
+    image: string;
     notes: string | null;
     created_at: string;
     updated_at: string;

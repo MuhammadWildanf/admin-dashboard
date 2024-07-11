@@ -27,8 +27,10 @@ type FormValues = {
   title: string;
   limit_peserta: number;
   author: string;
-  image: string;
+  image: FileList | null;
   date: string;
+  time_start: string;
+  time_end: string;
   media_layanan: string;
   harga_sertifikat: string;
   link: string;
@@ -40,12 +42,14 @@ type ErrorForm = {
   author: [] | null;
   image: [] | null;
   date: [] | null;
+  time_start: [] | null;
+  time_end: [] | null;
   media_layanan: [] | null;
   harga_sertifikat: [] | null;
   link: [] | null;
 };
 
-const Counseling = () => {
+const Webinar = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [q, setQ] = useState<string | undefined>(undefined);
@@ -59,13 +63,10 @@ const Counseling = () => {
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<WebinarType | null>(null);
-
-  const forms = useForm<FormValues>({
-    defaultValues: {
-    },
-  });
   const { setWebinars, webinars } = useWebinar();
   const { setMessage } = useAlert();
+  const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
+
 
 
   const getWebinar = async (
@@ -74,7 +75,7 @@ const Counseling = () => {
   ) => {
     setLoading(true);
     try {
-      const data = await getData("/webinar" , page, search, searchMode);
+      const data = await getData("/webinar", page, search, searchMode);
       return data;
     } catch { }
   };
@@ -102,16 +103,26 @@ const Counseling = () => {
     setPage(page - 1);
   };
 
-  const handleSave = forms.handleSubmit(async (data) => {
+  const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
-      let payload = {
-        ...data,
-      };
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("limit_peserta", data.limit_peserta.toString());
+      formData.append("author", data.author);
+      formData.append("date", data.date);
+      formData.append("time_start", data.time_start);
+      formData.append("time_end", data.time_end);
+      formData.append("media_layanan", data.media_layanan);
+      formData.append("harga_sertifikat", data.harga_sertifikat);
+      formData.append("link", data.link);
+      if (data.image) {
+        formData.append("image", data.image[0]);
+      }
       if (modalMode === "create") {
-        await request.post("/webinar/create", payload);
+        await request.post("/webinar/create", formData);
       } else {
-        await request.post(`/webinar/${selected?.id}/update`, payload);
+        await request.post(`/webinar/${selected?.id}/update`, formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
@@ -127,14 +138,15 @@ const Counseling = () => {
   const handleFormEdit = (item: WebinarType) => {
     setSelected(item);
     setModalMode("edit");
-    forms.setValue("title", item.title ?? "");
-    forms.setValue("limit_peserta", item.limit_peserta);
-    forms.setValue("author", item.author);
-    forms.setValue("image", item.image);
-    forms.setValue("date", item.date);
-    forms.setValue("media_layanan", item.media_layanan);
-    forms.setValue("harga_sertifikat", item.harga_sertifikat);
-    forms.setValue("link", item.link);
+    setValue("title", item.title ?? "");
+    setValue("limit_peserta", item.limit_peserta);
+    setValue("author", item.author);
+    setValue("date", item.date);
+    setValue("time_start", item.time_start);
+    setValue("time_end", item.time_end);
+    setValue("media_layanan", item.media_layanan);
+    setValue("harga_sertifikat", item.harga_sertifikat);
+    setValue("link", item.link);
     setModalAdd(true);
   };
 
@@ -182,8 +194,8 @@ const Counseling = () => {
           )}
           <button
             className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-                ? "bg-blue-500 text-white cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-blue-500 text-white cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
@@ -197,7 +209,7 @@ const Counseling = () => {
         onClick={() => {
           setModalAdd(true);
           setModalMode("create");
-          forms.reset();
+          reset();
         }}
       />
       <Table>
@@ -277,63 +289,86 @@ const Counseling = () => {
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
       >
-        <FormProvider {...forms}>
-          <form>
-            <FormInput
-              name="title"
-              control={forms.control}
-              label="Title"
-              error={errors?.title}
+        <form>
+          <FormInput
+            name="title"
+            control={control}
+            label="Title"
+            error={errors?.title}
+          />
+          <FormInput
+            name="limit_peserta"
+            control={control}
+            label="Limit Peserta"
+            error={errors?.limit_peserta}
+          />
+          <FormInput
+            name="author"
+            control={control}
+            label="Author"
+            error={errors?.author}
+          />
+          <FormInput
+            name="date"
+            type="date"
+            control={control}
+            label="Date"
+            error={errors?.date}
+          />
+          <FormInput
+            name="time_start"
+            type="time"
+            control={control}
+            label="Time Start"
+            error={errors?.time_start}
+          />
+          <FormInput
+            name="time_end"
+            type="time"
+            control={control}
+            label="Time End"
+            error={errors?.time_end}
+          />
+          <FormInput
+            name="media_layanan"
+            control={control}
+            label="Media Layanan"
+            error={errors?.media_layanan}
+          />
+          <FormInput
+            name="harga_sertifikat"
+            control={control}
+            label="Harga Sertifikat"
+            error={errors?.harga_sertifikat}
+          />
+          <FormInput
+            name="link"
+            control={control}
+            label="Link"
+            error={errors?.link}
+          />
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              onChange={(e) =>
+                setValue("image", e.target.files ? e.target.files : null)
+              }
             />
-            <FormInput
-              name="limit_peserta"
-              control={forms.control}
-              label="Limit Peserta"
-              error={errors?.limit_peserta}
-            />
-            <FormInput
-              name="author"
-              control={forms.control}
-              label="Author"
-              error={errors?.author}
-            />
-            <FormInput
-              name="image"
-              control={forms.control}
-              label="Image"
-              error={errors?.image}
-            />
-            <FormInput
-              name="date"
-              control={forms.control}
-              label="Date"
-              error={errors?.date}
-            />
-            <FormInput
-              name="media_layanan"
-              control={forms.control}
-              label="Media Layanan"
-              error={errors?.media_layanan}
-            />
-            <FormInput
-              name="harga_sertifikat"
-              control={forms.control}
-              label="Harga Sertifikat"
-              error={errors?.harga_sertifikat}
-            />
-            <FormInput
-              name="link"
-              control={forms.control}
-              label="Link"
-              error={errors?.link}
-            />
-            <div className="mt-3 flex items-center justify-end">
-              <Button className="px-8" onClick={handleSave}>
-                {loadingSubmit ? <Spinner /> : "Simpan"}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
+            {errors?.image && (
+              <p className="mt-2 text-sm text-red-600">{errors.image}</p>
+            )}
+          </div>
+          <div className="mt-3 flex items-center justify-end">
+            <Button className="px-8" onClick={handleSave}>
+              {loadingSubmit ? <Spinner /> : "Simpan"}
+            </Button>
+          </div>
+        </form>
       </BaseModal>
 
       <ModalDeleteConfirmation
@@ -347,4 +382,4 @@ const Counseling = () => {
   );
 };
 
-export default Counseling;
+export default Webinar;
