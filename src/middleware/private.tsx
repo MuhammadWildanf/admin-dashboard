@@ -12,7 +12,7 @@ type Props = {
 const Private = ({ children }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { setGetMe, setNotification } = useSession();
+  const { setGetMe} = useSession();
 
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -20,19 +20,19 @@ const Private = ({ children }: Props) => {
   const checkSession = async () => {
     try {
       const { data } = await request.get("/auth/me");
-      // console.log(data, 'dari auth/me psikolog log><><><><><>');
+      // console.log(data, 'dari auth/me><><><><><>');
       return data;
     } catch {
       cookies.remove("accessToken", { path: "/" });
-      navigate("/auth/login");
+      navigate("/login");
     }
   };
 
   useEffect(() => {
     setLoading(true);
     Promise.all([checkSession()]).then((res) => {
-      setGetMe(res[0].psikolog);
-      setNotification(res[0].notification);
+      setGetMe(res[0].data);
+      console.log(res , 'dari ress')
       setLoading(false);
     });
   }, []);

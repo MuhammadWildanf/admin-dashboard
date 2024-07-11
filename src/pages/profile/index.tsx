@@ -85,7 +85,7 @@ const ProfilePage = () => {
               control={control}
               name="fullname"
               label="Nama"
-              defaultValue={me?.fullname}
+              defaultValue={me?.name}
               error={errors?.name}
             />
             <FormInput

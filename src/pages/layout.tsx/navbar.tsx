@@ -68,7 +68,7 @@ const NavbarLayout = () => {
           className="w-44"
         >
           <Dropdown.Header>
-            <span className="block text-sm">{me?.fullname}</span>
+            <span className="block text-sm">{me?.name}</span>
             <span className="block truncate text-sm font-medium">
               {me?.role}
             </span>

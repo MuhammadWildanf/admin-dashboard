@@ -1,6 +1,6 @@
 export type GetMeType = {
   id: string;
-  fullname: string;
+  name: string;
   email: string;
   avatar: string;
   email_verified_at: string;

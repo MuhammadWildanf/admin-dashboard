@@ -25,7 +25,7 @@ const SidebarLayout = () => {
     setLoading(false);
     navigate('/login');
   };
-  
+
   return (
     <div className={`bg-blue-800 min-h-screen ${open ? "w-64" : "w-16"} duration-300 text-gray-100 px-4 flex flex-col`}>
       <div className="py-3 flex justify-end">
@@ -60,38 +60,40 @@ const SidebarLayout = () => {
           {me?.avatar ? (
             <img src={me.avatar} alt="User Avatar" className="w-full h-full rounded-full object-cover border-2 border-white" />
           ) : (
-            <User size={30} className="text-gray-600" />
+            <User size={30} className=" text-white" />
           )}
         </div>
         {open && (
           <>
             <div className="flex flex-col ml-3">
-              <h4 className="font-semibold text-sm">{me?.fullname}</h4>
+              <h4 className="font-semibold text-sm">{me?.name}</h4>
               <span className="text-xs text-white">{me?.email}</span>
             </div>
-            <Dropdown
-              arrowIcon={false}
-              inline
-              label={
-                <div className="ml-auto">
-                  <MoreVertical size={30} />
-                </div>
-              }
-              className="w-44"
-            >
-              <Dropdown.Item onClick={() => navigate("/profile")}>
-                Profil
-              </Dropdown.Item>
-              <Dropdown.Item onClick={handleLogout}>
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <Spinner /> Logging out...
+            <div className="ml-auto">
+              <Dropdown
+                arrowIcon={false}
+                inline
+                label={
+                  <div className="ml-auto">
+                    <MoreVertical size={30} />
                   </div>
-                ) : (
-                  "Logout"
-                )}
-              </Dropdown.Item>
-            </Dropdown>
+                }
+                className="w-44"
+              >
+                <Dropdown.Item onClick={() => navigate("/profile")}>
+                  Profil
+                </Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner /> Logging out...
+                    </div>
+                  ) : (
+                    "Logout"
+                  )}
+                </Dropdown.Item>
+              </Dropdown>
+            </div>
           </>
         )}
       </div>

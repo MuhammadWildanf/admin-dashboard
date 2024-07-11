@@ -38,7 +38,7 @@ const Layout = ({
                       />
                       <img
                         alt="Flowbite React Logo"
-                        className="mr-3 h-10 hidden md:block"
+                        className="mr-3 h-8 hidden md:block"
                         src="/images/logo.png"
                       />
                     </div>
