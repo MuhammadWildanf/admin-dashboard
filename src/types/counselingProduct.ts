@@ -3,7 +3,7 @@ export type CounselingProductType = {
     name: string;
     description: string | null;
     slug: string;
-    image: string | null;
+    image: string;
     with_screening: number;
     with_emergency: number;
     counseling_id: string;
