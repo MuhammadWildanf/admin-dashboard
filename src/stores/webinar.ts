@@ -5,6 +5,8 @@ import { WebinarType } from "../types/webinar";
 type Store = {
     webinars: PaginationType<WebinarType> | null;
     setWebinars: (data: PaginationType<WebinarType>) => void;
+    detail: WebinarType | null;
+    setDetail: (data: WebinarType | null) => void;
 };
 
 export const useWebinar = create<Store>()((set) => ({
@@ -12,5 +14,10 @@ export const useWebinar = create<Store>()((set) => ({
     setWebinars: (data: PaginationType<WebinarType>) =>
         set((state) => ({
             webinars: data,
+        })),
+    detail: null,
+    setDetail: (data: WebinarType | null) =>
+        set((state) => ({
+            detail: data,
         })),
 }));

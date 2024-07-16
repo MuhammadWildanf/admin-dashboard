@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import Layout from "../layout.tsx/app";
 import { getData } from "../../api/get-data";
 import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
@@ -53,9 +53,9 @@ const Counseling = () => {
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<CounselingType | null>(null);
-  const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
+  const { setValue, reset, handleSubmit, control, watch } = useForm<FormValues>();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  const name = watch('name');
   const { setCounselings, GetCounselings } = useCounseling();
   const { setMessage } = useAlert();
 
@@ -169,6 +169,22 @@ const Counseling = () => {
       setLoading(false);
     });
   }, [page, loadingSubmit]);
+
+  useEffect(() => {
+    if (name !== undefined) {
+      if (name.trim() === "") {
+        setValue("slug", "");
+      } else {
+        const slug = name
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        setValue('slug', slug);
+      }
+    }
+  }, [name, setValue]);
 
   return (
     <Layout

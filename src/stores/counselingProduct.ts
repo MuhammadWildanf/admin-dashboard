@@ -5,6 +5,8 @@ import { CounselingProductType } from "../types/counselingProduct";
 type Store = {
   GetcounselingProduct: PaginationType<CounselingProductType> | null;
   setCounselingProduct: (data: PaginationType<CounselingProductType>) => void;
+  detail: CounselingProductType | null;
+  setDetail: (data: CounselingProductType | null) => void;
 };
 
 export const useCounselingProduct = create<Store>()((set) => ({
@@ -12,5 +14,10 @@ export const useCounselingProduct = create<Store>()((set) => ({
   setCounselingProduct: (data: PaginationType<CounselingProductType>) =>
     set((state) => ({
       GetcounselingProduct: data,
+    })),
+  detail: null,
+  setDetail: (data: CounselingProductType | null) =>
+    set((state) => ({
+      detail: data,
     })),
 }));
