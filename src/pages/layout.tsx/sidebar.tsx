@@ -21,7 +21,7 @@ const SidebarLayout = () => {
 
   const handleLogout = async () => {
     setLoading(true);
-    await logout();
+    logout();
     setLoading(false);
     navigate('/login');
   };

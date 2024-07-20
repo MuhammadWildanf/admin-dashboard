@@ -24,7 +24,7 @@ const Private = ({ children }: Props) => {
       return data;
     } catch {
       cookies.remove("accessToken", { path: "/" });
-      navigate("/login");
+      navigate("/auth/login");
     }
   };
 
