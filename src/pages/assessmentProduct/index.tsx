@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "../../components/buttons";
 import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
 import BaseModal from "../../components/modal/base";
-import { FormSelectAsync} from "../../components/forms/input-select";
+import { FormSelectAsync } from "../../components/forms/input-select";
 import Pagination from "../../components/tables/pagination";
 import Table from "../../components/tables/base";
 import { FormInput } from "../../components/forms/input";
@@ -23,14 +23,14 @@ import { useAssessmentProduct } from "../../stores/assessmentProduct";
 type FormValues = {
   name: string;
   description: string;
-  modul: moduleType;
+  modul_id: moduleType;
   image: FileList | null;
 };
 
 type ErrorForm = {
   name: [] | null;
   description: [] | null;
-  modul: [] | null;
+  modul_id: [] | null;
   image: [] | null;
 };
 
@@ -96,7 +96,7 @@ const AssessmentProduct = () => {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);
-      formData.append("modul", data.modul.id);
+      formData.append("modul_id", data.modul_id.id);
       if (data.image) {
         formData.append("image", data.image[0]);
       }
@@ -140,7 +140,7 @@ const AssessmentProduct = () => {
     setModalMode("edit");
     setValue("name", item.name ?? "");
     setValue("description", item.description ?? "");
-    setValue("modul", item.modul.id ?? "");
+    
     setImagePreview(item.image ?? null);
     setModalAdd(true);
   };
@@ -297,12 +297,12 @@ const AssessmentProduct = () => {
           />
           <FormSelectAsync
             label="Pilih Modul"
-            name="modul"
+            name="modul_id"
             control={control}
             loadOption={selectModules}
             optionLabel={(option: moduleType) => `${option.name}`}
             optionValue={(option: moduleType) => `${option.id}`}
-            error={errors?.modul}
+            error={errors?.modul_id}
           />
           <FormInput
             name="description"

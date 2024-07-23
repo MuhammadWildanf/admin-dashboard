@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent, useRef } from "react";
 import Layout from "../layout.tsx/app";
 import { getData } from "../../api/get-data";
 import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
@@ -13,6 +13,7 @@ import Table from "../../components/tables/base";
 import { FormInput } from "../../components/forms/input";
 import {
   FormSelect,
+  FormSelectAsync,
   FormSelectTimezone,
 } from "../../components/forms/input-select";
 import { SelectOptionType } from "../../types/form";
@@ -22,6 +23,7 @@ import { Key, Pencil, Trash } from "@phosphor-icons/react";
 import { useAlert } from "../../stores/alert";
 import moment from "moment";
 import { useArticles } from "../../stores/articles";
+import { CategoryType } from "../../types/category";
 
 
 type FormValues = {
@@ -31,6 +33,12 @@ type FormValues = {
   date: string;
   image: FileList | null;
   link: string;
+  categories: {
+    id: number;
+    name: string;
+    created_at: string;
+    updated_at: string;
+  }[];
 };
 
 type ErrorForm = {
@@ -56,8 +64,10 @@ const IndexArticle = () => {
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<ArticleType | null>(null);
   const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  const imagePreviewRef = useRef<HTMLDivElement | null>(null);
+  const [fileName, setFileName] = useState<string>("");
   const { setArticles, GetArticles } = useArticles();
   const { setMessage } = useAlert();
 
@@ -71,6 +81,16 @@ const IndexArticle = () => {
       const data = await getData("/artikel", page, search, searchMode);
       return data;
     } catch { }
+  };
+
+  const selectCategory = async (inputValue: string) => {
+    let params = {
+      q: inputValue,
+    };
+    const { data } = await request.get("/categories-artikel", {
+      params: params,
+    });
+    return data.data.data;
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -124,22 +144,29 @@ const IndexArticle = () => {
     setLoadingSubmit(false);
   });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClick = () => {
+    if (uploadInputRef.current) {
+      uploadInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        setPreviewSrc(reader.result as string);
       };
       reader.readAsDataURL(file);
 
-      // Convert File to FileList
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
       setValue("image", dataTransfer.files);
+      setFileName(file.name);
     } else {
-      setImagePreview(null);
+      setPreviewSrc(null);
       setValue("image", null);
+      setFileName("");
     }
   };
 
@@ -151,7 +178,7 @@ const IndexArticle = () => {
     setValue("categories_id", item.categories_id);
     setValue("date", item.date);
     setValue("link", item.link);
-    setImagePreview(item.image ?? null);
+    setPreviewSrc(item.image ?? null);
     setModalAdd(true);
   };
 
@@ -222,6 +249,7 @@ const IndexArticle = () => {
           <Table.Th>#</Table.Th>
           <Table.Th>Title</Table.Th>
           <Table.Th>Author</Table.Th>
+          <Table.Th>Category</Table.Th>
           <Table.Th>Date</Table.Th>
           <Table.Th>LInk</Table.Th>
           <Table.Th>Image</Table.Th>
@@ -252,6 +280,7 @@ const IndexArticle = () => {
                       </Table.Td>
                       <Table.Td>{item.title ?? ""}</Table.Td>
                       <Table.Td>{item.author ?? ""}</Table.Td>
+                      <Table.Td>{item.categories[0]?.name ?? ""}</Table.Td>
                       <Table.Td>{item.date ?? ""}</Table.Td>
                       <Table.Td>{item.link ?? ""}</Table.Td>
                       <Table.Td>
@@ -311,31 +340,75 @@ const IndexArticle = () => {
             label="Author"
             error={errors?.author}
           />
-          <FormInput name="categories_id" control={control} label="Category" error={errors?.categories_id} />
+          <FormSelectAsync
+            label="Category"
+            name="categories_id"
+            control={control}
+            loadOption={selectCategory}
+            optionLabel={(option: CategoryType) => `${option.name}`}
+            optionValue={(option: CategoryType) => `${option.id}`}
+            error={errors?.categories_id} />
           <FormInput name="date" type="date" control={control} label="Date" error={errors?.date} />
           <FormInput name="link" control={control} label="Link" error={errors?.link} />
           <div className="mt-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              onChange={handleImageChange}
-            />
-            {imagePreview && (
-              <div className="mt-2">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="h-40 w-auto object-contain"
-                />
+            <div className="max-w-sm mx-auto bg-white rounded-lg shadow-md overflow-hidden items-center">
+              <div className="px-4 py-6">
+                <div
+                  id="image-preview"
+                  className="max-w-sm p-6 mb-4 bg-gray-100 border-dashed border-2 border-gray-400 rounded-lg items-center mx-auto text-center cursor-pointer"
+                  onClick={handleClick}
+                  ref={imagePreviewRef}
+                >
+                  <input
+                    id="upload"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    ref={uploadInputRef}
+                  />
+                  {previewSrc ? (
+                    <img src={previewSrc} className="max-h-48 rounded-lg mx-auto" alt="Image preview" />
+                  ) : (
+                    <label htmlFor="upload" className="cursor-pointer">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="w-8 h-8 text-gray-700 mx-auto mb-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 16.5v2.25A2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                        />
+                      </svg>
+                      <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-700">Upload picture</h5>
+                      <p className="font-normal text-sm text-gray-400 md:px-6">
+                        Choose photo size should be less than <b className="text-gray-600">2mb</b>
+                      </p>
+                      <p className="font-normal text-sm text-gray-400 md:px-6">
+                        and should be in <b className="text-gray-600">JPG, PNG, or GIF</b> format.
+                      </p>
+                      <span id="filename" className="text-gray-500 bg-gray-200 z-50">
+                        {fileName}
+                      </span>
+                    </label>
+                  )}
+                </div>
+                <div className="flex items-center justify-center">
+                  <div className="w-full">
+                    <label className="w-full text-white bg-[#050708] hover:bg-[#050708]/90 focus:ring-4 focus:outline-none focus:ring-[#050708]/50 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center mr-2 mb-2 cursor-pointer">
+                      <span className="text-center ml-2" onClick={handleClick}>
+                        Upload
+                      </span>
+                    </label>
+                  </div>
+                </div>
               </div>
-            )}
-            {errors?.image && (
-              <p className="mt-2 text-sm text-red-600">{errors.image}</p>
-            )}
+            </div>
           </div>
 
           <div className="mt-3 flex items-center justify-end">
