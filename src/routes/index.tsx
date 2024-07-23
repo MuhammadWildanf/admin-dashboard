@@ -15,6 +15,8 @@ import DetailcounselingProduct from "../pages/counselingProduct/list";
 import IndexWebinar from "../pages/webinar/index";
 import DetailWebinar from "../pages/webinar/list";
 import IndexYoutube from "../pages/youtube/index";
+import IndexPricing from "../pages/price/index";
+import IndexAssessment from "../pages/assessmentProduct/index";
 import { createBrowserRouter } from "react-router-dom";
 
 export const routes = createBrowserRouter([
@@ -157,6 +159,22 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <IndexYoutube />
+      </Private>
+    )
+  },
+  {
+    path: "/price",
+    element: (
+      <Private>
+        <IndexPricing />
+      </Private>
+    )
+  },
+  {
+    path: "/assessment-product",
+    element: (
+      <Private>
+        <IndexAssessment />
       </Private>
     )
   },

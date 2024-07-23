@@ -1,10 +1,10 @@
 import {
   HiChartPie,
   HiUserGroup,
-  HiClock 
+  HiClock
 } from "react-icons/hi";
 
-import { MdOutlineDashboard } from "react-icons/md";  
+import { MdOutlineDashboard } from "react-icons/md";
 
 import { FiMessageSquare, FiFolder, FiShoppingCart } from "react-icons/fi";
 
@@ -83,6 +83,18 @@ const ManagementYoutube = {
   icon: FiFolder,
   href: "/youtube",
 };
+const ManagementPrice = {
+  label: "price",
+  name: "price",
+  icon: FiFolder,
+  href: "/price",
+};
+const AssessmentProduct = {
+  label: "Assessment Product",
+  name: "assessmentProduct",
+  icon: FiFolder,
+  href: "/assessment-product",
+};
 
 
 export const menuUser: Menu[] = [
@@ -94,7 +106,9 @@ export const menuUser: Menu[] = [
   ManagementCounselings,
   ManagementCounselingProduct,
   ManagementWebinar,
-  ManagementYoutube
+  ManagementYoutube,
+  ManagementPrice,
+  AssessmentProduct
 ];
 
 export const menuPsikolog: Menu[] = [
@@ -106,7 +120,9 @@ export const menuPsikolog: Menu[] = [
   ManagementCounselings,
   ManagementCounselingProduct,
   ManagementWebinar,
-  ManagementYoutube
+  ManagementYoutube,
+  ManagementPrice,
+  AssessmentProduct
 ];
 export const menuSuperAdmin: Menu[] = [
   dashboardMenu,
@@ -117,7 +133,9 @@ export const menuSuperAdmin: Menu[] = [
   ManagementCounselings,
   ManagementCounselingProduct,
   ManagementWebinar,
-  ManagementYoutube
+  ManagementYoutube,
+  ManagementPrice,
+  AssessmentProduct
 ];
 
 export const menuAdmin: Menu[] = [
@@ -129,7 +147,9 @@ export const menuAdmin: Menu[] = [
   ManagementCounselings,
   ManagementCounselingProduct,
   ManagementWebinar,
-  ManagementYoutube
+  ManagementYoutube,
+  ManagementPrice,
+  AssessmentProduct
 ];
 
 

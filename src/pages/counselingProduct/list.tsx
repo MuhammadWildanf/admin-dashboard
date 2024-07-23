@@ -6,19 +6,13 @@ import { useForm } from "react-hook-form";
 import { useCounselingProduct } from "../../stores/counselingProduct";
 import { FormInput } from "../../components/forms/input";
 import { FormSelect } from "../../components/forms/input-select";
+import { FormInputRadio } from "../../components/forms/input-radio";
 import { FormTextArea } from "../../components/forms/input-textarea";
 import { useAlert } from "../../stores/alert";
 import { request } from "../../api/config";
-import Table from "../../components/tables/base";
 import { getData } from "../../api/get-data";
 import LoadingPage from "../layout.tsx/loading";
 import { Button } from "../../components/buttons";
-import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
-import BaseModal from "../../components/modal/base";
-import { Pencil, Trash, PlusCircle } from "@phosphor-icons/react";
-import { PriceType } from "../../types/price";
-import { usePrice } from "../../stores/price";
-
 
 
 type FormValues = {
@@ -62,19 +56,9 @@ const DetailCounselingProduct = () => {
     const [counselingOptions, setCounselingOptions] = useState<any[]>([]);
     const name = watch('name');
     const navigate = useNavigate();
-
     const uploadInputRef = useRef<HTMLInputElement | null>(null);
     const imagePreviewRef = useRef<HTMLDivElement | null>(null);
     const [fileName, setFileName] = useState<string>("");
-
-    const [modalAdd, setModalAdd] = useState<boolean>(false);
-    const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
-        undefined
-    );
-    const [modalDelete, setModalDelete] = useState<boolean>(false);
-    const [selected, setSelected] = useState<PriceType | null>(null);
-
-
     const getDetail = async () => {
         setLoading(true);
         try {
@@ -156,49 +140,6 @@ const DetailCounselingProduct = () => {
         }
     };
 
-    // for Price
-
-    const handleSavePrice = handleSubmit(async (data) => {
-        setLoadingSubmit(true);
-        try {
-            let payload = {
-                ...data,
-            };
-            if (modalMode === "create") {
-                await request.post("/price/create", payload);
-            } else {
-                await request.post(`/price/${selected?.id}`, payload);
-            }
-            setModalAdd(false);
-            setModalMode(undefined);
-            setMessage("Price saved!", "success");
-        } catch (err: any) {
-            setErrors(err.response.data.errors);
-            console.log(err);
-        }
-        setErrors(null);
-        setLoadingSubmit(false);
-    });
-
-    const handleEditPrice = (pricing: PriceType) => {
-        setSelected(pricing);
-        setModalMode("edit");
-        setValue("name", pricing.name ?? "");
-        setModalAdd(true);
-    };
-
-    const handleDelete = async () => {
-        setLoadingSubmit(true);
-        try {
-            await request.delete(`/price/${selected?.id}`);
-            setSelected(null);
-            setModalDelete(false);
-            setMessage("Price deleted", "success");
-        } catch (err: any) {
-            setErrors(err.response.data.errors);
-        }
-        setLoadingSubmit(false);
-    };
 
     useEffect(() => {
         if (id) {
@@ -274,6 +215,7 @@ const DetailCounselingProduct = () => {
                     <LoadingPage />
                 ) : (
                     <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+                        {/* for counseling products  */}
                         <form>
                             <div className="flex flex-wrap -mx-3 mb-6">
                                 <div className="w-full md:w-1/2 px-3 mb-8 md:mb-0">
@@ -297,21 +239,27 @@ const DetailCounselingProduct = () => {
                                     />
                                     <div className="flex flex-wrap -mx-3 mb-6">
                                         <div className="w-full md:w-1/3 px-3">
-                                            <FormInput
+                                            <FormInputRadio
                                                 name="with_screening"
                                                 control={control}
                                                 label="With Screening"
+                                                options={[
+                                                    { value: true, label: "Ya" },
+                                                    { value: false, label: "Tidak" },
+                                                ]}
                                                 error={errors?.with_screening}
-                                                className="w-1/2"
                                             />
                                         </div>
                                         <div className="w-full md:w-1/3 px-3">
-                                            <FormInput
+                                            <FormInputRadio
                                                 name="with_emergency"
                                                 control={control}
                                                 label="With Emergency"
+                                                options={[
+                                                    { value: true, label: "Ya" },
+                                                    { value: false, label: "Tidak" },
+                                                ]}
                                                 error={errors?.with_emergency}
-                                                className="w-1/2"
                                             />
                                         </div>
                                     </div>
@@ -320,13 +268,6 @@ const DetailCounselingProduct = () => {
                                         control={control}
                                         label="Counseling"
                                         error={errors?.counseling_id}
-                                    />
-                                    <FormSelect
-                                        name="counseling_id"
-                                        control={control}
-                                        label="Counseling ID"
-                                        error={errors?.counseling_id}
-                                        options={counselingOptions.map(option => ({ value: option.id, label: option.id }))}
                                     />
                                     <FormInput
                                         name="tag"
@@ -421,108 +362,8 @@ const DetailCounselingProduct = () => {
                                 </Button>
                             </div>
                         </form>
-
-                        {detail && detail.pricings && (
-                            <div className="mt-6">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-lg font-bold mb-4">Price</h3>
-                                    <PlusCircle
-                                        size={32}
-                                        className="text-blue-600 text-xl cursor-pointer"
-                                        onClick={() => {
-                                            setModalAdd(true);
-                                            setModalMode("create");
-                                            reset();
-                                        }}
-                                    />
-                                </div>
-                                <Table>
-                                    <Table.Thead>
-                                        <Table.Tr>
-                                            <Table.Th>Name</Table.Th>
-                                            <Table.Th>Years of Experience</Table.Th>
-                                            <Table.Th>Chat Min Price</Table.Th>
-                                            <Table.Th>Chat Max Price</Table.Th>
-                                            <Table.Th>Video Call Min Price</Table.Th>
-                                            <Table.Th>Video Call Max Price</Table.Th>
-                                            <Table.Th>Face2Face Min Price</Table.Th>
-                                            <Table.Th>Face2Face Max Price</Table.Th>
-                                            <Table.Th>Default Share Profit</Table.Th>
-                                            <Table.Th>Opsi</Table.Th>
-                                        </Table.Tr>
-                                    </Table.Thead>
-                                    <Table.Tbody>
-                                        {detail.pricings.length > 0 ? (
-                                            detail.pricings.map((pricing) => (
-                                                <Table.Tr key={pricing.id}>
-                                                    <Table.Td>{pricing.name}</Table.Td>
-                                                    <Table.Td>{pricing.year_of_experience}</Table.Td>
-                                                    <Table.Td>{pricing.chat_min_price.toString()}</Table.Td>
-                                                    <Table.Td>{pricing.chat_max_price.toString()}</Table.Td>
-                                                    <Table.Td>{pricing.video_call_min_price.toString()}</Table.Td>
-                                                    <Table.Td>{pricing.video_call_max_price.toString()}</Table.Td>
-                                                    <Table.Td>{pricing.face2face_min_price.toString()}</Table.Td>
-                                                    <Table.Td>{pricing.face2face_max_price.toString()}</Table.Td>
-                                                    <Table.Td>{pricing.default_share_profit.toString()}</Table.Td>
-                                                    <Table.Td>
-                                                        <div className="flex items-center gap-1">
-                                                            <Trash
-                                                                className="text-red-600 text-xl cursor-pointer"
-                                                                onClick={() => {
-                                                                    setSelected(pricing);
-                                                                    setModalDelete(true);
-                                                                }}
-                                                            />
-                                                            <Pencil
-                                                                className="text-blue-600 text-xl cursor-pointer"
-                                                                onClick={() => handleEditPrice(pricing)}
-                                                            />
-                                                        </div>
-                                                    </Table.Td>
-                                                </Table.Tr>
-                                            ))
-                                        ) : (
-                                            <Table.Tr>
-                                                <Table.Td cols={10} className="text-center py-3">
-                                                    Tidak ada data ditemukan!
-                                                </Table.Td>
-                                            </Table.Tr>
-                                        )}
-                                    </Table.Tbody>
-                                </Table>
-                            </div>
-                        )}
                     </div>
-
                 )}
-                <BaseModal
-                    title={modalMode === "create" ? "Tambah Harga" : "Edit Harga"}
-                    isOpen={modalAdd}
-                    close={() => setModalAdd(false)}
-                >
-                    <form>
-                        <FormInput
-                            name="name"
-                            control={control}
-                            label="Nama"
-                            error={errors?.name}
-                        />
-                        <div className="mt-3 flex items-center justify-end">
-                            <Button className="px-8" onClick={handleSavePrice}>
-                                {loadingSubmit ? <Spinner /> : "Simpan"}
-                            </Button>
-                        </div>
-                    </form>
-                </BaseModal>
-
-                <ModalDeleteConfirmation
-                    isOpen={modalDelete}
-                    close={() => setModalDelete(false)}
-                    subTitle="Price"
-                    name={selected?.name ?? ""}
-                    loading={loadingSubmit}
-                    action={handleDelete}
-                />
             </>
         </Layout>
     );
