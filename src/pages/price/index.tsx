@@ -58,14 +58,10 @@ const Price = () => {
   const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
     undefined
   );
-  const [modalReset, setModalReset] = useState<boolean>(false);
-  const [randomString, setRandomString] = useState<string | null>(null);
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<PriceType | null>(null);
   const { setValue, reset, handleSubmit, control, watch } = useForm<FormValues>();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const name = watch('name');
   const { setPrice, GetPrice } = usePrice();
   const { setMessage } = useAlert();
 

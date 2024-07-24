@@ -13,6 +13,8 @@ import { request } from "../../api/config";
 import { getData } from "../../api/get-data";
 import LoadingPage from "../layout.tsx/loading";
 import { Button } from "../../components/buttons";
+import { useMemo } from "react";
+import { Table } from "flowbite-react";
 
 
 type FormValues = {
@@ -59,6 +61,7 @@ const DetailCounselingProduct = () => {
     const uploadInputRef = useRef<HTMLInputElement | null>(null);
     const imagePreviewRef = useRef<HTMLDivElement | null>(null);
     const [fileName, setFileName] = useState<string>("");
+
     const getDetail = async () => {
         setLoading(true);
         try {
@@ -140,7 +143,6 @@ const DetailCounselingProduct = () => {
         }
     };
 
-
     useEffect(() => {
         if (id) {
             setLoading(true);
@@ -203,6 +205,35 @@ const DetailCounselingProduct = () => {
             }
         }
     }, [counselingOptions, id, detail, setValue]);
+
+    const pricingTable = useMemo(() => {
+        if (!detail || !detail.pricings) return null;
+
+        return (
+            <Table className="mt-6">
+                <Table.Head>
+                    <Table.HeadCell>Nama</Table.HeadCell>
+                    <Table.HeadCell>Year Of Experience</Table.HeadCell>
+                    <Table.HeadCell>Chat (Min - Max)</Table.HeadCell>
+                    <Table.HeadCell>Video Call (Min - Max)</Table.HeadCell>
+                    <Table.HeadCell>Face to Face (Min - Max)</Table.HeadCell>
+                    <Table.HeadCell>Default Share Profit</Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y">
+                    {detail.pricings.map((pricing) => (
+                        <Table.Row key={pricing.id}>
+                            <Table.Cell>{pricing.name}</Table.Cell>
+                            <Table.Cell>{pricing.year_of_experience}</Table.Cell>
+                            <Table.Cell>{`${pricing.chat_min_price} - ${pricing.chat_max_price}`}</Table.Cell>
+                            <Table.Cell>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Cell>
+                            <Table.Cell>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "N/A"}</Table.Cell>
+                            <Table.Cell>{pricing.default_share_profit}</Table.Cell>
+                        </Table.Row>
+                    ))}
+                </Table.Body>
+            </Table>
+        );
+    }, [detail]);
 
     return (
         <Layout
@@ -362,6 +393,38 @@ const DetailCounselingProduct = () => {
                                 </Button>
                             </div>
                         </form>
+
+                        {/* dibawah ini untuk menampilkan tabel Pricings  */}
+                        <div className="mt-8">
+                            <Table>
+                                <Table.Head>
+                                    <Table.HeadCell>Nama</Table.HeadCell>
+                                    <Table.HeadCell>Year Of Experience</Table.HeadCell>
+                                    <Table.HeadCell>Chat (Min - Max)</Table.HeadCell>
+                                    <Table.HeadCell>Video Call (Min - Max)</Table.HeadCell>
+                                    <Table.HeadCell>Face to Face (Min - Max)</Table.HeadCell>
+                                    <Table.HeadCell>Default Share Profit</Table.HeadCell>
+                                </Table.Head>
+                                <Table.Body>
+                                    {detail?.pricings?.length ? (
+                                        detail.pricings.map((pricing, index) => (
+                                            <Table.Row key={index}>
+                                                <Table.Cell>{pricing.name}</Table.Cell>
+                                                <Table.Cell>{pricing.year_of_experience}</Table.Cell>
+                                                <Table.Cell>{`${pricing.chat_min_price} - ${pricing.chat_max_price}`}</Table.Cell>
+                                                <Table.Cell>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Cell>
+                                                <Table.Cell>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "N/A"}</Table.Cell>
+                                                <Table.Cell>{pricing.default_share_profit}</Table.Cell>
+                                            </Table.Row>
+                                        ))
+                                    ) : (
+                                        <Table.Row>
+                                            <Table.Cell colSpan={5} className="text-center">No pricing data available</Table.Cell>
+                                        </Table.Row>
+                                    )}
+                                </Table.Body>
+                            </Table>
+                        </div>
                     </div>
                 )}
             </>
