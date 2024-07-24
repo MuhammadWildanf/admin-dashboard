@@ -275,79 +275,79 @@ const Price = () => {
         onPrevious={handlePrevious}
       />
 
-      <BaseModal
-        title={modalMode === "create" ? "Tambah Counseling" : "Edit Counseling"}
-        isOpen={modalAdd}
-        close={() => setModalAdd(false)}
-      >
-        <form>
-          <FormInput
-            name="name"
-            label="Name"
-            control={control}
-            error={errors?.name}
-          />
-          <FormInput
-            name="year_of_experience"
-            label="Years of Experience"
-            control={control}
-            error={errors?.year_of_experience}
-          />
-          <FormInput
-            name="notes"
-            label="Notes"
-            control={control}
-            error={errors?.notes}
-          />
-          <FormInput
-            name="chat_min_price"
-            label="Chat Min Price"
-            control={control}
-            error={errors?.chat_min_price}
-          />
-          <FormInput
-            name="chat_max_price"
-            label="Chat Max Price"
-            control={control}
-            error={errors?.chat_max_price}
-          />
-          <FormInput
-            name="video_call_min_price"
-            label="Video Call Min Price"
-            control={control}
-            error={errors?.video_call_min_price}
-          />
-          <FormInput
-            name="video_call_max_price"
-            label="Video Call Max Price"
-            control={control}
-            error={errors?.video_call_max_price}
-          />
-          <FormInput
-            name="face2face_min_price"
-            label="Face2Face Min Price"
-            control={control}
-            error={errors?.face2face_min_price}
-          />
-          <FormInput
-            name="face2face_max_price"
-            label="Face2Face Max Price"
-            control={control}
-            error={errors?.face2face_max_price}
-          />
-          <FormInput
-            name="default_share_profit"
-            label="Default Share Profit"
-            control={control}
-            error={errors?.default_share_profit}
-          />
-          <div className="mt-3 flex items-center justify-end">
-            <Button className="px-8" onClick={handleSave}>
-              {loadingSubmit ? <Spinner /> : "Simpan"}
-            </Button>
-          </div>
-        </form>
-      </BaseModal>
+        <BaseModal
+          title={modalMode === "create" ? "Tambah Counseling" : "Edit Counseling"}
+          isOpen={modalAdd}
+          close={() => setModalAdd(false)}
+        >
+          <form>
+            <FormInput
+              name="name"
+              label="Name"
+              control={control}
+              error={errors?.name}
+            />
+            <FormInput
+              name="year_of_experience"
+              label="Years of Experience"
+              control={control}
+              error={errors?.year_of_experience}
+            />
+            <FormInput
+              name="notes"
+              label="Notes"
+              control={control}
+              error={errors?.notes}
+            />
+            <FormInput
+              name="chat_min_price"
+              label="Chat Min Price"
+              control={control}
+              error={errors?.chat_min_price}
+            />
+            <FormInput
+              name="chat_max_price"
+              label="Chat Max Price"
+              control={control}
+              error={errors?.chat_max_price}
+            />
+            <FormInput
+              name="video_call_min_price"
+              label="Video Call Min Price"
+              control={control}
+              error={errors?.video_call_min_price}
+            />
+            <FormInput
+              name="video_call_max_price"
+              label="Video Call Max Price"
+              control={control}
+              error={errors?.video_call_max_price}
+            />
+            <FormInput
+              name="face2face_min_price"
+              label="Face2Face Min Price"
+              control={control}
+              error={errors?.face2face_min_price}
+            />
+            <FormInput
+              name="face2face_max_price"
+              label="Face2Face Max Price"
+              control={control}
+              error={errors?.face2face_max_price}
+            />
+            <FormInput
+              name="default_share_profit"
+              label="Default Share Profit"
+              control={control}
+              error={errors?.default_share_profit}
+            />
+            <div className="mt-3 flex items-center justify-end">
+              <Button className="px-8" onClick={handleSave}>
+                {loadingSubmit ? <Spinner /> : "Simpan"}
+              </Button>
+            </div>
+          </form>
+        </BaseModal>
 
       <ModalDeleteConfirmation
         isOpen={modalDelete}

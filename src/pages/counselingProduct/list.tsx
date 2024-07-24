@@ -5,7 +5,6 @@ import { Spinner } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { useCounselingProduct } from "../../stores/counselingProduct";
 import { FormInput } from "../../components/forms/input";
-import { FormSelect } from "../../components/forms/input-select";
 import { FormInputRadio } from "../../components/forms/input-radio";
 import { FormTextArea } from "../../components/forms/input-textarea";
 import { useAlert } from "../../stores/alert";
@@ -15,6 +14,12 @@ import LoadingPage from "../layout.tsx/loading";
 import { Button } from "../../components/buttons";
 import { useMemo } from "react";
 import { Table } from "flowbite-react";
+import { PlusCircle, Pencil, Trash } from "@phosphor-icons/react";
+import { PriceType } from "../../types/price";
+import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
+import BaseModal from "../../components/modal/base";
+
+
 
 
 type FormValues = {
@@ -61,6 +66,14 @@ const DetailCounselingProduct = () => {
     const uploadInputRef = useRef<HTMLInputElement | null>(null);
     const imagePreviewRef = useRef<HTMLDivElement | null>(null);
     const [fileName, setFileName] = useState<string>("");
+    const [selected, setSelected] = useState<PriceType | null>(null);
+    const [modalDelete, setModalDelete] = useState<boolean>(false);
+    const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
+        undefined
+    );
+    const [modalAdd, setModalAdd] = useState<boolean>(false);
+
+
 
     const getDetail = async () => {
         setLoading(true);
@@ -141,6 +154,57 @@ const DetailCounselingProduct = () => {
             setValue("image", null);
             setFileName("");
         }
+    };
+
+    const handleSavePrice = handleSubmit(async (data) => {
+        setLoadingSubmit(true);
+        try {
+            let payload = {
+                ...data,
+            };
+            if (modalMode === "create") {
+                await request.post("/pricing-variable/create", payload);
+            } else {
+                await request.post(`/pricing-variable/${selected?.id}`, payload);
+            }
+            setModalAdd(false);
+            setModalMode(undefined);
+            setMessage("Price saved!", "success");
+        } catch (err: any) {
+            setErrors(err.response.data.errors);
+            console.log(err);
+        }
+        setErrors(null);
+        setLoadingSubmit(false);
+    });
+
+    const handleFormEditPrice = (pricing: PriceType) => {
+        setSelected(pricing);
+        setModalMode("edit");
+        setValue("name", pricing.name ?? "");
+        setValue("year_of_experience", pricing.year_of_experience ?? "");
+        setValue("notes", pricing.notes ?? "");
+        setValue("chat_min_price", pricing.chat_min_price);
+        setValue("chat_max_price", pricing.chat_max_price);
+        setValue("video_call_min_price", pricing.video_call_min_price);
+        setValue("video_call_max_price", pricing.video_call_max_price);
+        setValue("face2face_min_price", pricing.face2face_min_price);
+        setValue("face2face_max_price", pricing.face2face_max_price);
+        setValue("default_share_profit", pricing.default_share_profit);
+        setModalAdd(true);
+    };
+
+    const handleDelete = async () => {
+        setLoadingSubmit(true);
+        try {
+            await request.delete(`/pricing-variable/${selected?.id}`);
+            setSelected(null);
+            setModalDelete(false);
+            setMessage("Price deleted", "success");
+        } catch (err: any) {
+            setErrors(err.response.data.errors);
+        }
+        setLoadingSubmit(false);
     };
 
     useEffect(() => {
@@ -396,6 +460,16 @@ const DetailCounselingProduct = () => {
 
                         {/* dibawah ini untuk menampilkan tabel Pricings  */}
                         <div className="mt-8">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-2xl font-bold">Pricing Variable</h2>
+                                <PlusCircle size={32}
+                                    onClick={() => {
+                                        setModalAdd(true);
+                                        setModalMode("create");
+                                        reset();
+                                    }}
+                                />
+                            </div>
                             <Table>
                                 <Table.Head>
                                     <Table.HeadCell>Nama</Table.HeadCell>
@@ -404,6 +478,7 @@ const DetailCounselingProduct = () => {
                                     <Table.HeadCell>Video Call (Min - Max)</Table.HeadCell>
                                     <Table.HeadCell>Face to Face (Min - Max)</Table.HeadCell>
                                     <Table.HeadCell>Default Share Profit</Table.HeadCell>
+                                    <Table.HeadCell>Opsi</Table.HeadCell>
                                 </Table.Head>
                                 <Table.Body>
                                     {detail?.pricings?.length ? (
@@ -415,16 +490,115 @@ const DetailCounselingProduct = () => {
                                                 <Table.Cell>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Cell>
                                                 <Table.Cell>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "N/A"}</Table.Cell>
                                                 <Table.Cell>{pricing.default_share_profit}</Table.Cell>
+                                                <Table.Cell>
+                                                    <div className="flex items-center gap-1">
+                                                        <Trash
+                                                            className="text-red-600 text-xl cursor-pointer"
+                                                            onClick={() => {
+                                                                setSelected(pricing);
+                                                                setModalDelete(true);
+                                                            }}
+                                                        />
+                                                        <Pencil
+                                                            className="text-blue-600 text-xl cursor-pointer"
+                                                            onClick={() => handleFormEditPrice(pricing)}
+                                                        />
+                                                    </div>
+
+                                                </Table.Cell>
                                             </Table.Row>
                                         ))
                                     ) : (
                                         <Table.Row>
-                                            <Table.Cell colSpan={5} className="text-center">No pricing data available</Table.Cell>
+                                            <Table.Cell colSpan={6} className="text-center">No pricing data available</Table.Cell>
                                         </Table.Row>
                                     )}
                                 </Table.Body>
                             </Table>
                         </div>
+
+
+                        <BaseModal
+                            title={modalMode === "create" ? "Tambah Counseling" : "Edit Counseling"}
+                            isOpen={modalAdd}
+                            close={() => setModalAdd(false)}
+                        >
+                            <form>
+                                <FormInput
+                                    name="name"
+                                    label="Name"
+                                    control={control}
+                                    error={errors?.name}
+                                />
+                                <FormInput
+                                    name="year_of_experience"
+                                    label="Years of Experience"
+                                    control={control}
+                                    error={errors?.year_of_experience}
+                                />
+                                <FormInput
+                                    name="notes"
+                                    label="Notes"
+                                    control={control}
+                                    error={errors?.notes}
+                                />
+                                <FormInput
+                                    name="chat_min_price"
+                                    label="Chat Min Price"
+                                    control={control}
+                                    error={errors?.chat_min_price}
+                                />
+                                <FormInput
+                                    name="chat_max_price"
+                                    label="Chat Max Price"
+                                    control={control}
+                                    error={errors?.chat_max_price}
+                                />
+                                <FormInput
+                                    name="video_call_min_price"
+                                    label="Video Call Min Price"
+                                    control={control}
+                                    error={errors?.video_call_min_price}
+                                />
+                                <FormInput
+                                    name="video_call_max_price"
+                                    label="Video Call Max Price"
+                                    control={control}
+                                    error={errors?.video_call_max_price}
+                                />
+                                <FormInput
+                                    name="face2face_min_price"
+                                    label="Face2Face Min Price"
+                                    control={control}
+                                    error={errors?.face2face_min_price}
+                                />
+                                <FormInput
+                                    name="face2face_max_price"
+                                    label="Face2Face Max Price"
+                                    control={control}
+                                    error={errors?.face2face_max_price}
+                                />
+                                <FormInput
+                                    name="default_share_profit"
+                                    label="Default Share Profit"
+                                    control={control}
+                                    error={errors?.default_share_profit}
+                                />
+                                <div className="mt-3 flex items-center justify-end">
+                                    <Button className="px-8" onClick={handleSavePrice}>
+                                        {loadingSubmit ? <Spinner /> : "Simpan"}
+                                    </Button>
+                                </div>
+                            </form>
+                        </BaseModal>
+
+                        <ModalDeleteConfirmation
+                            isOpen={modalDelete}
+                            close={() => setModalDelete(false)}
+                            name={selected?.name ?? ""}
+                            loading={loadingSubmit}
+                            action={handleDelete}
+                        />
                     </div>
                 )}
             </>
