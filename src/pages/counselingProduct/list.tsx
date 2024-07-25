@@ -13,7 +13,7 @@ import { getData } from "../../api/get-data";
 import LoadingPage from "../layout.tsx/loading";
 import { Button } from "../../components/buttons";
 import { useMemo } from "react";
-import { Table } from "flowbite-react";
+import Table from "../../components/tables/base";
 import { PlusCircle, Pencil, Trash } from "@phosphor-icons/react";
 import { PriceType } from "../../types/price";
 import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
@@ -34,6 +34,21 @@ type FormValues = {
     default_share_profit: number | null;
     screening_modul_id: string | null;
     notes: string;
+    pricings: {
+        id: string;
+        name: string;
+        year_of_experience: string;
+        productable_type: string;
+        productable_id: string;
+        notes: string | null;
+        chat_min_price: number;
+        chat_max_price: number;
+        video_call_min_price: number;
+        video_call_max_price: number;
+        face2face_min_price: number | null;
+        face2face_max_price: number | null;
+        default_share_profit: number;
+    }[];
 };
 
 type ErrorForm = {
@@ -48,6 +63,21 @@ type ErrorForm = {
     default_share_profit: [] | null;
     screening_modul_id: [] | null;
     notes: [] | null;
+    pricings: {
+        id: [] | null;
+        name: [] | null;
+        year_of_experience: [] | null;
+        productable_type: [] | null;
+        productable_id: [] | null;
+        notes: [] | null;
+        chat_min_price: [] | null;
+        chat_max_price: [] | null;
+        video_call_min_price: [] | null;
+        video_call_max_price: [] | null;
+        face2face_min_price: [] | null;
+        face2face_max_price: [] | null;
+        default_share_profit: [] | null;
+    }[];
 };
 
 
@@ -181,16 +211,16 @@ const DetailCounselingProduct = () => {
     const handleFormEditPrice = (pricing: PriceType) => {
         setSelected(pricing);
         setModalMode("edit");
-        setValue("name", pricing.name ?? "");
-        setValue("year_of_experience", pricing.year_of_experience ?? "");
-        setValue("notes", pricing.notes ?? "");
-        setValue("chat_min_price", pricing.chat_min_price);
-        setValue("chat_max_price", pricing.chat_max_price);
-        setValue("video_call_min_price", pricing.video_call_min_price);
-        setValue("video_call_max_price", pricing.video_call_max_price);
-        setValue("face2face_min_price", pricing.face2face_min_price);
-        setValue("face2face_max_price", pricing.face2face_max_price);
-        setValue("default_share_profit", pricing.default_share_profit);
+        setValue("pricings.0.name", pricing.name ?? "");
+        setValue("pricings.0.year_of_experience", pricing.year_of_experience ?? "");
+        setValue("pricings.0.notes", pricing.notes ?? "");
+        setValue("pricings.0.chat_min_price", pricing.chat_min_price);
+        setValue("pricings.0.chat_max_price", pricing.chat_max_price);
+        setValue("pricings.0.video_call_min_price", pricing.video_call_min_price);
+        setValue("pricings.0.video_call_max_price", pricing.video_call_max_price);
+        setValue("pricings.0.face2face_min_price", pricing.face2face_min_price);
+        setValue("pricings.0.face2face_max_price", pricing.face2face_max_price);
+        setValue("pricings.0.default_share_profit", pricing.default_share_profit);
         setModalAdd(true);
     };
 
@@ -269,35 +299,6 @@ const DetailCounselingProduct = () => {
             }
         }
     }, [counselingOptions, id, detail, setValue]);
-
-    const pricingTable = useMemo(() => {
-        if (!detail || !detail.pricings) return null;
-
-        return (
-            <Table className="mt-6">
-                <Table.Head>
-                    <Table.HeadCell>Nama</Table.HeadCell>
-                    <Table.HeadCell>Year Of Experience</Table.HeadCell>
-                    <Table.HeadCell>Chat (Min - Max)</Table.HeadCell>
-                    <Table.HeadCell>Video Call (Min - Max)</Table.HeadCell>
-                    <Table.HeadCell>Face to Face (Min - Max)</Table.HeadCell>
-                    <Table.HeadCell>Default Share Profit</Table.HeadCell>
-                </Table.Head>
-                <Table.Body className="divide-y">
-                    {detail.pricings.map((pricing) => (
-                        <Table.Row key={pricing.id}>
-                            <Table.Cell>{pricing.name}</Table.Cell>
-                            <Table.Cell>{pricing.year_of_experience}</Table.Cell>
-                            <Table.Cell>{`${pricing.chat_min_price} - ${pricing.chat_max_price}`}</Table.Cell>
-                            <Table.Cell>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Cell>
-                            <Table.Cell>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "N/A"}</Table.Cell>
-                            <Table.Cell>{pricing.default_share_profit}</Table.Cell>
-                        </Table.Row>
-                    ))}
-                </Table.Body>
-            </Table>
-        );
-    }, [detail]);
 
     return (
         <Layout
@@ -462,7 +463,9 @@ const DetailCounselingProduct = () => {
                         <div className="mt-8">
                             <div className="flex justify-between items-center">
                                 <h2 className="text-2xl font-bold">Pricing Variable</h2>
+
                                 <PlusCircle size={32}
+                                    className="text-blue-600 text-xl cursor-pointer"
                                     onClick={() => {
                                         setModalAdd(true);
                                         setModalMode("create");
@@ -471,26 +474,26 @@ const DetailCounselingProduct = () => {
                                 />
                             </div>
                             <Table>
-                                <Table.Head>
-                                    <Table.HeadCell>Nama</Table.HeadCell>
-                                    <Table.HeadCell>Year Of Experience</Table.HeadCell>
-                                    <Table.HeadCell>Chat (Min - Max)</Table.HeadCell>
-                                    <Table.HeadCell>Video Call (Min - Max)</Table.HeadCell>
-                                    <Table.HeadCell>Face to Face (Min - Max)</Table.HeadCell>
-                                    <Table.HeadCell>Default Share Profit</Table.HeadCell>
-                                    <Table.HeadCell>Opsi</Table.HeadCell>
-                                </Table.Head>
-                                <Table.Body>
+                                <Table.Thead>
+                                    <Table.Th>Nama</Table.Th>
+                                    <Table.Th>Year Of Experience</Table.Th>
+                                    <Table.Th>Chat (Min - Max)</Table.Th>
+                                    <Table.Th>Video Call (Min - Max)</Table.Th>
+                                    <Table.Th>Face to Face (Min - Max)</Table.Th>
+                                    <Table.Th>Default Share Profit</Table.Th>
+                                    <Table.Th>Opsi</Table.Th>
+                                </Table.Thead>
+                                <Table.Tbody>
                                     {detail?.pricings?.length ? (
                                         detail.pricings.map((pricing, index) => (
-                                            <Table.Row key={index}>
-                                                <Table.Cell>{pricing.name}</Table.Cell>
-                                                <Table.Cell>{pricing.year_of_experience}</Table.Cell>
-                                                <Table.Cell>{`${pricing.chat_min_price} - ${pricing.chat_max_price}`}</Table.Cell>
-                                                <Table.Cell>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Cell>
-                                                <Table.Cell>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "N/A"}</Table.Cell>
-                                                <Table.Cell>{pricing.default_share_profit}</Table.Cell>
-                                                <Table.Cell>
+                                            <Table.Tr key={index}>
+                                                <Table.Td>{pricing.name}</Table.Td>
+                                                <Table.Td>{pricing.year_of_experience}</Table.Td>
+                                                <Table.Td>{`${pricing.chat_min_price} - ${pricing.chat_max_price}`}</Table.Td>
+                                                <Table.Td>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Td>
+                                                <Table.Td>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "-"}</Table.Td>
+                                                <Table.Td>{pricing.default_share_profit.toString()}</Table.Td>
+                                                <Table.Td>
                                                     <div className="flex items-center gap-1">
                                                         <Trash
                                                             className="text-red-600 text-xl cursor-pointer"
@@ -505,91 +508,83 @@ const DetailCounselingProduct = () => {
                                                         />
                                                     </div>
 
-                                                </Table.Cell>
-                                            </Table.Row>
+                                                </Table.Td>
+                                            </Table.Tr>
                                         ))
                                     ) : (
-                                        <Table.Row>
-                                            <Table.Cell colSpan={6} className="text-center">No pricing data available</Table.Cell>
-                                        </Table.Row>
+                                        <Table.Tr>
+                                            <Table.Td cols={6} className="text-center">No pricing data available</Table.Td>
+                                        </Table.Tr>
                                     )}
-                                </Table.Body>
+                                </Table.Tbody>
                             </Table>
                         </div>
 
 
                         <BaseModal
-                            title={modalMode === "create" ? "Tambah Counseling" : "Edit Counseling"}
+                            title={modalMode === "create" ? "Tambah Pricing Variable" : "Edit Pricing Variable"}
                             isOpen={modalAdd}
                             close={() => setModalAdd(false)}
                         >
-                            <form>
-                                <FormInput
-                                    name="name"
-                                    label="Name"
-                                    control={control}
-                                    error={errors?.name}
-                                />
-                                <FormInput
-                                    name="year_of_experience"
-                                    label="Years of Experience"
-                                    control={control}
-                                    error={errors?.year_of_experience}
-                                />
-                                <FormInput
-                                    name="notes"
-                                    label="Notes"
-                                    control={control}
-                                    error={errors?.notes}
-                                />
-                                <FormInput
-                                    name="chat_min_price"
-                                    label="Chat Min Price"
-                                    control={control}
-                                    error={errors?.chat_min_price}
-                                />
-                                <FormInput
-                                    name="chat_max_price"
-                                    label="Chat Max Price"
-                                    control={control}
-                                    error={errors?.chat_max_price}
-                                />
-                                <FormInput
-                                    name="video_call_min_price"
-                                    label="Video Call Min Price"
-                                    control={control}
-                                    error={errors?.video_call_min_price}
-                                />
-                                <FormInput
-                                    name="video_call_max_price"
-                                    label="Video Call Max Price"
-                                    control={control}
-                                    error={errors?.video_call_max_price}
-                                />
-                                <FormInput
-                                    name="face2face_min_price"
-                                    label="Face2Face Min Price"
-                                    control={control}
-                                    error={errors?.face2face_min_price}
-                                />
-                                <FormInput
-                                    name="face2face_max_price"
-                                    label="Face2Face Max Price"
-                                    control={control}
-                                    error={errors?.face2face_max_price}
-                                />
-                                <FormInput
-                                    name="default_share_profit"
-                                    label="Default Share Profit"
-                                    control={control}
-                                    error={errors?.default_share_profit}
-                                />
-                                <div className="mt-3 flex items-center justify-end">
-                                    <Button className="px-8" onClick={handleSavePrice}>
-                                        {loadingSubmit ? <Spinner /> : "Simpan"}
-                                    </Button>
-                                </div>
-                            </form>
+                            <FormInput
+                                name="pricings[0].name"
+                                label="Name"
+                                control={control}
+                                error={errors?.pricings?.[0]?.name}
+                            />
+                            <FormInput
+                                name="pricings[0].year_of_experience"
+                                label="Years of Experience"
+                                control={control}
+                                error={errors?.pricings?.[0]?.year_of_experience}
+                            />
+                            <FormInput
+                                name="pricings[0].chat_min_price"
+                                label="Chat Min Price"
+                                control={control}
+                                error={errors?.pricings?.[0]?.chat_min_price}
+                            />
+                            <FormInput
+                                name="pricings[0].chat_max_price"
+                                label="Chat Max Price"
+                                control={control}
+                                error={errors?.pricings?.[0]?.chat_max_price}
+                            />
+                            <FormInput
+                                name="pricings[0].video_call_min_price"
+                                label="Video Call Min Price"
+                                control={control}
+                                error={errors?.pricings?.[0]?.video_call_min_price}
+                            />
+                            <FormInput
+                                name="pricings[0].video_call_max_price"
+                                label="Video Call Max Price"
+                                control={control}
+                                error={errors?.pricings?.[0]?.video_call_max_price}
+                            />
+                            <FormInput
+                                name="pricings[0].face2face_min_price"
+                                label="Face2Face Min Price"
+                                control={control}
+                                error={errors?.pricings?.[0]?.face2face_min_price}
+                            />
+                            <FormInput
+                                name="pricings[0].face2face_max_price"
+                                label="Face2Face Max Price"
+                                control={control}
+                                error={errors?.pricings?.[0]?.face2face_max_price}
+                            />
+                            <FormInput
+                                name="pricings[0].default_share_profit"
+                                label="Default Share Profit"
+                                control={control}
+                                error={errors?.pricings?.[0]?.default_share_profit}
+                            />
+                            <div className="mt-3 flex items-center justify-end">
+                                <Button className="px-8" onClick={handleSavePrice}>
+                                    {loadingSubmit ? <Spinner /> : "Simpan"}
+                                </Button>
+                            </div>
                         </BaseModal>
 
                         <ModalDeleteConfirmation
