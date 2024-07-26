@@ -107,7 +107,6 @@ export const menuUser: Menu[] = [
   ManagementCounselingProduct,
   ManagementWebinar,
   ManagementYoutube,
-  ManagementPrice,
   AssessmentProduct
 ];
 
@@ -121,7 +120,6 @@ export const menuPsikolog: Menu[] = [
   ManagementCounselingProduct,
   ManagementWebinar,
   ManagementYoutube,
-  ManagementPrice,
   AssessmentProduct
 ];
 export const menuSuperAdmin: Menu[] = [
@@ -134,7 +132,6 @@ export const menuSuperAdmin: Menu[] = [
   ManagementCounselingProduct,
   ManagementWebinar,
   ManagementYoutube,
-  ManagementPrice,
   AssessmentProduct
 ];
 

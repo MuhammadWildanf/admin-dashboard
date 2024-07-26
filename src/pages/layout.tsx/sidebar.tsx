@@ -32,7 +32,8 @@ const SidebarLayout = () => {
         <HiMenuAlt3 size={26} className={`cursor-pointer w-7 ${!open && "rotate-180"}`}
           onClick={() => setOpen(!open)} />
       </div>
-      <div className="mt-4 flex flex-col gap-4 relative">
+      {/* Sidebar Menu Section */}
+      <div className="mt-4 flex flex-col gap-4 relative mb-4">
         {menus?.map((menu, i) => (
           <Link
             to={menu.href || "/"} // Providing a fallback for 'to' prop
@@ -60,7 +61,7 @@ const SidebarLayout = () => {
           {me?.avatar ? (
             <img src={me.avatar} alt="User Avatar" className="w-full h-full rounded-full object-cover border-2 border-white" />
           ) : (
-            <User size={30} className=" text-white" />
+            <User size={23} className="w-full h-full rounded-full object-cover border-2 border-white" />
           )}
         </div>
         {open && (

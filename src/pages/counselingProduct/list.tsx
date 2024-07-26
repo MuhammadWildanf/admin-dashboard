@@ -20,8 +20,6 @@ import ModalDeleteConfirmation from "../../components/modal/delete-confirmation"
 import BaseModal from "../../components/modal/base";
 
 
-
-
 type FormValues = {
     name: string;
     description: string | null;
@@ -189,13 +187,25 @@ const DetailCounselingProduct = () => {
     const handleSavePrice = handleSubmit(async (data) => {
         setLoadingSubmit(true);
         try {
-            let payload = {
-                ...data,
-            };
+            const formData = new FormData();
+            const pricing = data.pricings[0];
+            formData.append("name", pricing.name);
+            formData.append("productable_type", "Product");
+            formData.append("productable_id", `${id}`);
+            formData.append("year_of_experience", pricing.year_of_experience ?? "");
+            formData.append("notes", pricing.notes ?? "");
+            formData.append("chat_min_price", pricing.chat_min_price.toString() ?? "0");
+            formData.append("chat_max_price", pricing.chat_max_price.toString() ?? "0");
+            formData.append("video_call_min_price", pricing.video_call_min_price.toString() ?? "0");
+            formData.append("video_call_max_price", pricing.video_call_max_price.toString() ?? "0");
+            formData.append("face2face_min_price", (pricing.face2face_min_price ?? 0).toString());
+            formData.append("face2face_max_price", (pricing.face2face_max_price ?? 0).toString());
+            formData.append("default_share_profit", pricing.default_share_profit.toString());
+
             if (modalMode === "create") {
-                await request.post("/pricing-variable/create", payload);
+                await request.post("/pricing-variable/create", formData);
             } else {
-                await request.post(`/pricing-variable/${selected?.id}`, payload);
+                await request.post(`/pricing-variable/${selected?.id}`, formData);
             }
             setModalAdd(false);
             setModalMode(undefined);
@@ -473,51 +483,53 @@ const DetailCounselingProduct = () => {
                                     }}
                                 />
                             </div>
-                            <Table>
-                                <Table.Thead>
-                                    <Table.Th>Nama</Table.Th>
-                                    <Table.Th>Year Of Experience</Table.Th>
-                                    <Table.Th>Chat (Min - Max)</Table.Th>
-                                    <Table.Th>Video Call (Min - Max)</Table.Th>
-                                    <Table.Th>Face to Face (Min - Max)</Table.Th>
-                                    <Table.Th>Default Share Profit</Table.Th>
-                                    <Table.Th>Opsi</Table.Th>
-                                </Table.Thead>
-                                <Table.Tbody>
-                                    {detail?.pricings?.length ? (
-                                        detail.pricings.map((pricing, index) => (
-                                            <Table.Tr key={index}>
-                                                <Table.Td>{pricing.name}</Table.Td>
-                                                <Table.Td>{pricing.year_of_experience}</Table.Td>
-                                                <Table.Td>{`${pricing.chat_min_price} - ${pricing.chat_max_price}`}</Table.Td>
-                                                <Table.Td>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Td>
-                                                <Table.Td>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "-"}</Table.Td>
-                                                <Table.Td>{pricing.default_share_profit.toString()}</Table.Td>
-                                                <Table.Td>
-                                                    <div className="flex items-center gap-1">
-                                                        <Trash
-                                                            className="text-red-600 text-xl cursor-pointer"
-                                                            onClick={() => {
-                                                                setSelected(pricing);
-                                                                setModalDelete(true);
-                                                            }}
-                                                        />
-                                                        <Pencil
-                                                            className="text-blue-600 text-xl cursor-pointer"
-                                                            onClick={() => handleFormEditPrice(pricing)}
-                                                        />
-                                                    </div>
+                            <div className="mt-5">
+                                <Table >
+                                    <Table.Thead>
+                                        <Table.Th>Nama</Table.Th>
+                                        <Table.Th>Year Of Experience</Table.Th>
+                                        <Table.Th>Chat (Min - Max)</Table.Th>
+                                        <Table.Th>Video Call (Min - Max)</Table.Th>
+                                        <Table.Th>Face to Face (Min - Max)</Table.Th>
+                                        <Table.Th>Default Share Profit</Table.Th>
+                                        <Table.Th>Opsi</Table.Th>
+                                    </Table.Thead>
+                                    <Table.Tbody>
+                                        {detail?.pricings?.length ? (
+                                            detail.pricings.map((pricing, index) => (
+                                                <Table.Tr key={index}>
+                                                    <Table.Td>{pricing.name}</Table.Td>
+                                                    <Table.Td>{pricing.year_of_experience}</Table.Td>
+                                                    <Table.Td>{`${pricing.chat_min_price} - ${pricing.chat_max_price}`}</Table.Td>
+                                                    <Table.Td>{`${pricing.video_call_min_price} - ${pricing.video_call_max_price}`}</Table.Td>
+                                                    <Table.Td>{pricing.face2face_min_price && pricing.face2face_max_price ? `${pricing.face2face_min_price} - ${pricing.face2face_max_price}` : "-"}</Table.Td>
+                                                    <Table.Td>{pricing.default_share_profit.toString()}</Table.Td>
+                                                    <Table.Td>
+                                                        <div className="flex items-center gap-1">
+                                                            <Trash
+                                                                className="text-red-600 text-xl cursor-pointer"
+                                                                onClick={() => {
+                                                                    setSelected(pricing);
+                                                                    setModalDelete(true);
+                                                                }}
+                                                            />
+                                                            <Pencil
+                                                                className="text-blue-600 text-xl cursor-pointer"
+                                                                onClick={() => handleFormEditPrice(pricing)}
+                                                            />
+                                                        </div>
 
-                                                </Table.Td>
+                                                    </Table.Td>
+                                                </Table.Tr>
+                                            ))
+                                        ) : (
+                                            <Table.Tr>
+                                                <Table.Td cols={6} className="text-center">No pricing data available</Table.Td>
                                             </Table.Tr>
-                                        ))
-                                    ) : (
-                                        <Table.Tr>
-                                            <Table.Td cols={6} className="text-center">No pricing data available</Table.Td>
-                                        </Table.Tr>
-                                    )}
-                                </Table.Tbody>
-                            </Table>
+                                        )}
+                                    </Table.Tbody>
+                                </Table>
+                            </div>
                         </div>
 
 
