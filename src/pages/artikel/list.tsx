@@ -141,6 +141,7 @@ const DetailArticle = () => {
             setLoading(true);
             getDetail().then((res) => {
                 setDetail(res[0]);
+                console.log('ini dari res[0].deskripsi =>>', res[0].diskripsi)
                 setValue("title", res[0].title);
                 setValue("author", res[0].author);
                 setValue("date", res[0].date);
@@ -269,6 +270,7 @@ const DetailArticle = () => {
                                 Deskripsi
                             </label>
                             <Editor
+                                value={detail?.diskripsi || ""}
                                 init={{
                                     height: 500,
                                     menubar: false,

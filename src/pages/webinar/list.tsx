@@ -102,7 +102,7 @@ const DetailWebinar = () => {
                 setMessage("webinar created!", "success");
             }
 
-            navigate('/webinar');
+            navigate('media/webinar');
         } catch (err: any) {
             setErrors(err.response.data.errors);
             console.log(err);
