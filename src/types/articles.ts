@@ -5,7 +5,7 @@ export type ArticleType = {
     categories_id: string;
     date: string;
     image: string;
-    link: string;
+    diskripsi: string;
     created_at: string;
     updated_at: string;
     categories: {

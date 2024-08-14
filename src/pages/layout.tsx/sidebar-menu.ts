@@ -44,109 +44,61 @@ const ManagementVoucher = {
   href: "/voucher",
 };
 
-const ManagementArtikel = {
-  label: "Artikel",
-  name: "Artikel",
-  icon: FiFolder,
-  href: "/artikel",
-};
 
-const ManagementCategory = {
-  label: "Category",
-  name: "Category",
+const ProductMenu = {
+  label:"Product",
+  name:"product",
   icon: FiFolder,
-  href: "/category",
-};
+  href:"#",
+  child:[
+    { label: "Counselings", name: "Counselings", href: "/product/counselings"},
+    { label: "Counseling Products", name: "CounselingProduct", href: "/product/counseling-products"},
+    { label: "price", name: "price",  href: "/product/price"}
+  ],
+}
 
-const ManagementCounselings = {
-  label: "Counselings",
-  name: "Counselings",
+const MediaMenu = {
+  label:"Media",
+  name:"media",
   icon: FiFolder,
-  href: "/counselings",
-};
+  href:"#",
+  child:[
+    { label: "Category", name: "Category", href: "/media/category"},
+    { label: "Artikel", name: "Artikel", href: "/media/artikel"},
+    { label: "Webinar", name: "Webinar",  href: "/media/webinar"},
+    { label: "Youtube", name: "Youtube",  href: "/media/youtube"},
+  ],
+}
 
-const ManagementCounselingProduct = {
-  label: "Counseling Products",
-  name: "CounselingProduct",
+
+const AssessmentMenu = {
+  label:"Assestment",
+  name:"assestment",
   icon: FiFolder,
-  href: "/counseling-products",
-};
-const ManagementWebinar = {
-  label: "Webinar",
-  name: "Webinar",
-  icon: FiFolder,
-  href: "/webinar",
-};
-const ManagementYoutube = {
-  label: "Youtube",
-  name: "Youtube",
-  icon: FiFolder,
-  href: "/youtube",
-};
-const ManagementPrice = {
-  label: "price",
-  name: "price",
-  icon: FiFolder,
-  href: "/price",
-};
-const AssessmentProduct = {
-  label: "Assessment Product",
-  name: "assessmentProduct",
-  icon: FiFolder,
-  href: "/assessment-product",
-};
+  href:"#",
+  child:[
+    { label: "Group", name: "Group", href: "/assestment/group"},
+    { label: "Product", name: "Product", href: "/assestment/product"},
+  ],
+}
 
 
 export const menuUser: Menu[] = [
   dashboardMenu,
   ManagementPsikolog,
   ManagementVoucher,
-  ManagementArtikel,
-  ManagementCategory,
-  ManagementCounselings,
-  ManagementCounselingProduct,
-  ManagementWebinar,
-  ManagementYoutube,
-  AssessmentProduct
-];
-
-export const menuPsikolog: Menu[] = [
-  dashboardMenu,
-  ManagementPsikolog,
-  ManagementVoucher,
-  ManagementArtikel,
-  ManagementCategory,
-  ManagementCounselings,
-  ManagementCounselingProduct,
-  ManagementWebinar,
-  ManagementYoutube,
-  AssessmentProduct
-];
-export const menuSuperAdmin: Menu[] = [
-  dashboardMenu,
-  ManagementPsikolog,
-  ManagementVoucher,
-  ManagementArtikel,
-  ManagementCategory,
-  ManagementCounselings,
-  ManagementCounselingProduct,
-  ManagementWebinar,
-  ManagementYoutube,
-  AssessmentProduct
+  ProductMenu,
+  MediaMenu,
+  AssessmentMenu
 ];
 
 export const menuAdmin: Menu[] = [
   dashboardMenu,
   ManagementPsikolog,
   ManagementVoucher,
-  ManagementArtikel,
-  ManagementCategory,
-  ManagementCounselings,
-  ManagementCounselingProduct,
-  ManagementWebinar,
-  ManagementYoutube,
-  ManagementPrice,
-  AssessmentProduct
+  ProductMenu,
+  MediaMenu,
+  AssessmentMenu
 ];
 
 

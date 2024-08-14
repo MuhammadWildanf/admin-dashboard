@@ -117,7 +117,7 @@ const Webinar = () => {
       }
     >
       <AddButton
-        onClick={() => navigate('/webinar/create')}
+        onClick={() => navigate('create')}
       />
       <Table>
         <Table.Thead>
@@ -172,7 +172,7 @@ const Webinar = () => {
                           />
                           <Pencil
                             className="text-blue-600 text-xl cursor-pointer"
-                            onClick={() => navigate(`/webinar/${item.id}`)}
+                            onClick={() => navigate(`${item.id}`)}
                           />
                         </div>
                       </Table.Td>

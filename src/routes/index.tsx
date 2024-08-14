@@ -14,9 +14,11 @@ import IndexcounselingProduct from "../pages/counselingProduct/index";
 import DetailcounselingProduct from "../pages/counselingProduct/list";
 import IndexWebinar from "../pages/webinar/index";
 import DetailWebinar from "../pages/webinar/list";
+import DetailArtikel from "../pages/artikel/list";
 import IndexYoutube from "../pages/youtube/index";
 import IndexPricing from "../pages/price/index";
 import IndexAssessment from "../pages/assessmentProduct/index";
+import IndexAssessmentGroup from "../pages/assessmentGroup/index";
 import { createBrowserRouter } from "react-router-dom";
 
 export const routes = createBrowserRouter([
@@ -83,7 +85,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/artikel",
+    path: "media/artikel",
     element: (
       <Private>
         <IndexArtikel />
@@ -91,7 +93,23 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/category",
+    path: "media/artikel/create",
+    element: (
+      <Private>
+        <DetailArtikel />
+      </Private>
+    )
+  },
+  {
+    path: "media/artikel/:id",
+    element: (
+      <Private>
+        <DetailArtikel />
+      </Private>
+    )
+  },
+  {
+    path: "media/category",
     element: (
       <Private>
         <IndexCategory />
@@ -99,7 +117,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/counselings",
+    path: "product/counselings",
     element: (
       <Private>
         <IndexCounselings />
@@ -107,7 +125,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/counseling-products",
+    path: "product/counseling-products",
     element: (
       <Private>
         <IndexcounselingProduct />
@@ -115,7 +133,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/counseling-products/create",
+    path: "product/counseling-products/create",
     element: (
       <Private>
         <DetailcounselingProduct />
@@ -123,7 +141,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/counseling-products/:id",
+    path: "product/counseling-products/:id",
     element: (
       <Private>
         <DetailcounselingProduct />
@@ -131,7 +149,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/webinar",
+    path: "media/webinar",
     element: (
       <Private>
         <IndexWebinar />
@@ -139,7 +157,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/webinar/create",
+    path: "media/webinar/create",
     element: (
       <Private>
         <DetailWebinar />
@@ -147,7 +165,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/webinar/:id",
+    path: "media/webinar/:id",
     element: (
       <Private>
         <DetailWebinar />
@@ -155,7 +173,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/youtube",
+    path: "media/youtube",
     element: (
       <Private>
         <IndexYoutube />
@@ -163,7 +181,7 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/price",
+    path: "product/price",
     element: (
       <Private>
         <IndexPricing />
@@ -171,10 +189,18 @@ export const routes = createBrowserRouter([
     )
   },
   {
-    path: "/assessment-product",
+    path: "assestment/product",
     element: (
       <Private>
         <IndexAssessment />
+      </Private>
+    )
+  },
+  {
+    path: "assestment/group",
+    element: (
+      <Private>
+        <IndexAssessmentGroup />
       </Private>
     )
   },

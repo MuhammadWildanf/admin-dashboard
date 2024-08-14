@@ -119,7 +119,7 @@ const Counseling = () => {
       }
     >
       <AddButton
-        onClick={() => navigate('/counseling-products/create')}
+        onClick={() => navigate('create')}
       />
       <Table>
         <Table.Thead>
@@ -168,7 +168,7 @@ const Counseling = () => {
                           />
                           <Pencil
                             className="text-blue-600 text-xl cursor-pointer"
-                            onClick={() => navigate(`/counseling-products/${item.id}`)}
+                            onClick={() => navigate(`${item.id}`)}
                           />
                         </div>
                       </Table.Td>
