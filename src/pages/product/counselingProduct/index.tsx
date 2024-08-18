@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import Layout from "../layout.tsx/app";
-import { getData } from "../../api/get-data";
+import Layout from "../../layout.tsx/app";
+import { getData } from "../../../api/get-data";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
-import AddButton from "../../components/buttons/add";
+import AddButton from "../../../components/buttons/add";
 import { FormProvider, useForm } from "react-hook-form";
-import { Button } from "../../components/buttons";
-import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
-import Pagination from "../../components/tables/pagination";
-import Table from "../../components/tables/base";
-import { CounselingProductType } from "../../types/counselingProduct";
-import { request } from "../../api/config";
+import { Button } from "../../../components/buttons";
+import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
+import Pagination from "../../../components/tables/pagination";
+import Table from "../../../components/tables/base";
+import { CounselingProductType } from "../../../types/counselingProduct";
+import { request } from "../../../api/config";
 import {Pencil, Trash } from "@phosphor-icons/react";
-import { useAlert } from "../../stores/alert";
+import { useAlert } from "../../../stores/alert";
 import moment from "moment";
-import { useCounselingProduct } from "../../stores/counselingProduct";
+import { useCounselingProduct } from "../../../stores/counselingProduct";
 
 
 const Counseling = () => {

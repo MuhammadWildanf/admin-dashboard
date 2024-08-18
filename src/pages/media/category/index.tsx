@@ -1,27 +1,27 @@
 import { useEffect, useState } from "react";
-import Layout from "../layout.tsx/app";
-import { getData } from "../../api/get-data";
+import Layout from "../../layout.tsx/app";
+import { getData } from "../../../api/get-data";
 import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
-import AddButton from "../../components/buttons/add";
+import AddButton from "../../../components/buttons/add";
 import { FormProvider, useForm } from "react-hook-form";
-import { Button } from "../../components/buttons";
-import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
-import BaseModal from "../../components/modal/base";
-import Pagination from "../../components/tables/pagination";
-import Table from "../../components/tables/base";
-import { FormInput, FormInputPassword } from "../../components/forms/input";
+import { Button } from "../../../components/buttons";
+import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
+import BaseModal from "../../../components/modal/base";
+import Pagination from "../../../components/tables/pagination";
+import Table from "../../../components/tables/base";
+import { FormInput, FormInputPassword } from "../../../components/forms/input";
 import {
   FormSelect,
   FormSelectTimezone,
-} from "../../components/forms/input-select";
-import { SelectOptionType } from "../../types/form";
-import { CategoryType } from "../../types/category";
-import { request } from "../../api/config";
+} from "../../../components/forms/input-select";
+import { SelectOptionType } from "../../../types/form";
+import { CategoryType } from "../../../types/category";
+import { request } from "../../../api/config";
 import { Key, Pencil, Trash } from "@phosphor-icons/react";
-import { useAlert } from "../../stores/alert";
+import { useAlert } from "../../../stores/alert";
 import moment from "moment";
-import { useCategories } from "../../stores/category";
+import { useCategories } from "../../../stores/category";
 
 type FormValues = {
   name: string;
@@ -105,7 +105,7 @@ const UserPsikolog = () => {
       if (modalMode === "create") {
         await request.post("/categories-artikel/create", payload);
       } else {
-        await request.post(`/categories-artikel/${selected?.id}`, payload);
+        await request.put(`/categories-artikel/${selected?.id}`, payload);
       }
       setModalAdd(false);
       setModalMode(undefined);

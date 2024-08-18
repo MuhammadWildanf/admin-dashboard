@@ -1,52 +1,62 @@
 import { useEffect, useState, ChangeEvent, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Layout from "../layout.tsx/app";
+import Layout from "../../layout.tsx/app";
 import { FileInput, Label } from "flowbite-react";
 import { Spinner } from "flowbite-react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useArticles } from "../../stores/articles";
-import { FormInput } from "../../components/forms/input";
-import { FormTextArea } from "../../components/forms/input-textarea";
-import { FormSelect, FormSelectAsync } from "../../components/forms/input-select";
-import { SelectOptionType } from "../../types/form";
-import { useAlert } from "../../stores/alert";
-import { request } from "../../api/config";
-import { getData } from "../../api/get-data";
-import { calculateAge, parseDate } from "../../helper/date";
+import { useWebinar } from "../../../stores/webinar";
+import { FormInput } from "../../../components/forms/input";
+import { FormTextArea } from "../../../components/forms/input-textarea";
+import { FormSelect, FormSelectAsync } from "../../../components/forms/input-select";
+import { SelectOptionType } from "../../../types/form";
+import { useAlert } from "../../../stores/alert";
+import { request } from "../../../api/config";
+import { getData } from "../../../api/get-data";
+import { calculateAge, parseDate } from "../../../helper/date";
 import moment from "moment";
-import LoadingPage from "../layout.tsx/loading";
-import { Button } from "../../components/buttons";
-import { CategoryType } from "../../types/category";
-import { Editor } from "@tinymce/tinymce-react";
-
+import LoadingPage from "../../layout.tsx/loading";
+import { Button } from "../../../components/buttons";
 
 
 type FormValues = {
     title: string;
+    limit_peserta: number;
     author: string;
-    categories_id: CategoryType | null;
-    date: string;
     image: FileList | null;
-    diskripsi: string;
+    date: string;
+    time_start: string;
+    time_end: string;
+    media_layanan: string;
+    harga_sertifikat: string;
+    link: string;
+    categories: {
+        id: number;
+        name: string;
+        created_at: string;
+        updated_at: string;
+    }[];
 };
 
 type ErrorForm = {
     title: [] | null;
+    limit_peserta: [] | null;
     author: [] | null;
-    categories_id: [] | null;
-    date: [] | null;
     image: [] | null;
-    diskripsi: [] | null;
-    categories: [] | null;
+    date: [] | null;
+    time_start: [] | null;
+    time_end: [] | null;
+    media_layanan: [] | null;
+    harga_sertifikat: [] | null;
+    link: [] | null;
 };
 
 
-const DetailArticle = () => {
+const DetailWebinar = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
     const [errors, setErrors] = useState<ErrorForm | null>(null);
     const { id } = useParams();
-    const { detail, setDetail } = useArticles();
+    const { detail, setDetail } = useWebinar();
     const { setMessage } = useAlert();
     const { setValue, reset, handleSubmit, control } = useForm<FormValues>();
     const [previewSrc, setPreviewSrc] = useState<string | null>(null);
@@ -59,48 +69,40 @@ const DetailArticle = () => {
     const getDetail = async () => {
         setLoading(true);
         try {
-            const data = await getData(`/artikel/${id}/id`);
+            const data = await getData(`/webinar/${id}/id`);
             return data;
         } catch (err: any) {
             console.log(err);
         }
     };
 
-    const selectCategory = async (inputValue: string) => {
-        let params = {
-            q: inputValue,
-        };
-        const { data } = await request.get("/categories-artikel", {
-            params: params,
-        });
-
-        return data.data.data;
-    };
 
     const handleSave = handleSubmit(async (data) => {
         setLoadingSubmit(true);
-        console.log('ini log dari memilih categories', data.categories_id);
-        const categoryId = data.categories_id?.id;
         try {
             const formData = new FormData();
             formData.append("title", data.title);
+            formData.append("limit_peserta", (data.limit_peserta ?? 0).toString());
             formData.append("author", data.author);
-            formData.append("categories_id", categoryId?.toString() || '');
             formData.append("date", data.date);
-            formData.append("diskripsi", data.diskripsi);
+            formData.append("time_start", data.time_start);
+            formData.append("time_end", data.time_end);
+            formData.append("media_layanan", data.media_layanan);
+            formData.append("harga_sertifikat", data.harga_sertifikat);
+            formData.append("link", data.link);
             if (data.image?.[0]) {
                 formData.append("image", data.image[0]);
             }
 
             if (id) {
-                await request.put(`/artikel/${id}`, formData);
-                setMessage("Artikel updated!", "success");
+                await request.put(`/webinar/${id}`, formData);
+                setMessage("webinar updated!", "success");
             } else {
-                await request.post(`/artikel/create`, formData);
-                setMessage("Artikel created!", "success");
+                await request.post(`/webinar/create`, formData);
+                setMessage("webinar created!", "success");
             }
 
-            navigate('/media/artikel');
+            navigate('/media/webinar');
         } catch (err: any) {
             setErrors(err.response.data.errors);
             console.log(err);
@@ -112,40 +114,44 @@ const DetailArticle = () => {
 
     const handleClick = () => {
         if (uploadInputRef.current) {
-            uploadInputRef.current.click();
+          uploadInputRef.current.click();
         }
-    };
-
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+      };
+    
+      const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewSrc(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            setValue("image", dataTransfer.files);
-            setFileName(file.name);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewSrc(reader.result as string);
+          };
+          reader.readAsDataURL(file);
+    
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          setValue("image", dataTransfer.files);
+          setFileName(file.name);
         } else {
-            setPreviewSrc(null);
-            setValue("image", null);
-            setFileName("");
+          setPreviewSrc(null);
+          setValue("image", null);
+          setFileName("");
         }
-    };
+      };
 
     useEffect(() => {
         if (id) {
             setLoading(true);
             getDetail().then((res) => {
                 setDetail(res[0]);
-                console.log('ini dari res[0].deskripsi =>>', res[0].diskripsi)
                 setValue("title", res[0].title);
+                setValue("limit_peserta", res[0].limit_peserta?.toString() ?? "0");
                 setValue("author", res[0].author);
                 setValue("date", res[0].date);
-                setValue("diskripsi", res[0].diskripsi);
+                setValue("time_start", res[0].time_start);
+                setValue("time_end", res[0].time_end);
+                setValue("media_layanan", res[0].media_layanan);
+                setValue("harga_sertifikat", res[0].harga_sertifikat);
+                setValue("link", res[0].link);
                 setPreviewSrc(res[0].image ?? null);
                 setLoading(false);
             });
@@ -153,9 +159,14 @@ const DetailArticle = () => {
             setDetail(null);
             reset({
                 title: "",
+                limit_peserta: 0,
                 author: "",
                 date: "",
-                diskripsi: "",
+                time_start: "",
+                time_end: "",
+                media_layanan: "",
+                harga_sertifikat: "",
+                link: "",
                 image: null,
             });
         }
@@ -164,7 +175,7 @@ const DetailArticle = () => {
     return (
         <Layout
             withPageTitle
-            title={id ? 'Edit Artikel' : 'Create Artikel'}
+            title={id ? 'Edit Webinar' : 'Create Webinar'}
             pageTitleContent={<></>}
         >
             <>
@@ -182,20 +193,59 @@ const DetailArticle = () => {
                                     error={errors?.title}
                                 />
                                 <FormInput
+                                    name="limit_peserta"
+                                    control={control}
+                                    label="Limit Peserta"
+                                    error={errors?.limit_peserta}
+                                />
+                                <FormInput
                                     name="author"
                                     control={control}
                                     label="Author"
                                     error={errors?.author}
                                 />
-                                <FormSelectAsync
-                                    label="Category"
-                                    name="categories_id"
+
+                                <div className="flex flex-wrap -mx-3">
+                                    <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                        <FormInput
+                                            name="time_start"
+                                            type="time"
+                                            control={control}
+                                            label="Time Start"
+                                            error={errors?.time_start}
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/2 px-3">
+                                        <FormInput
+                                            name="time_end"
+                                            type="time"
+                                            control={control}
+                                            label="Time End"
+                                            error={errors?.time_end}
+                                        />
+                                    </div>
+                                </div>
+
+                                <FormInput
+                                    name="media_layanan"
                                     control={control}
-                                    loadOption={selectCategory}
-                                    optionLabel={(option: CategoryType) => option.name}
-                                    optionValue={(option: CategoryType) => option.id.toString()}  // Pastikan mengembalikan string ID
-                                    error={errors?.categories_id}
+                                    label="Media Layanan"
+                                    error={errors?.media_layanan}
                                 />
+                                <FormInput
+                                    name="harga_sertifikat"
+                                    control={control}
+                                    label="Harga Sertifikat"
+                                    error={errors?.harga_sertifikat}
+                                />
+                                <FormInput
+                                    name="link"
+                                    control={control}
+                                    label="Link"
+                                    error={errors?.link}
+                                />
+                            </div>
+                            <div className="-full md:w-1/2 px-3">
                                 <FormInput
                                     name="date"
                                     type="date"
@@ -203,8 +253,6 @@ const DetailArticle = () => {
                                     label="Date"
                                     error={errors?.date}
                                 />
-                            </div>
-                            <div className="-full md:w-1/2 px-3">
                                 <div className="max-w-sm mx-auto bg-white rounded-lg shadow-md overflow-hidden items-center">
                                     <div className="px-4 py-6">
                                         <div
@@ -265,32 +313,6 @@ const DetailArticle = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-3">
-                            <label className="block text-sm mb-1 text-gray-700">
-                                Deskripsi
-                            </label>
-                            <Editor
-                                value={detail?.diskripsi || ""}
-                                init={{
-                                    height: 500,
-                                    menubar: false,
-                                    plugins: [
-                                        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                                        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                                        'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                                    ],
-                                    toolbar: 'undo redo | blocks | ' +
-                                        'bold italic forecolor | alignleft aligncenter ' +
-                                        'alignright alignjustify | bullist numlist outdent indent | ' +
-                                        'removeformat | help',
-                                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                                }}
-                                apiKey='e26pww344ed68y1cc1o5aaptc7kes3anxxqach3spk89gk5t'
-                                onEditorChange={(content, editor) =>
-                                    setValue("diskripsi", content)
-                                }
-                            />
-                        </div>
                         <div className="mt-3 flex items-center justify-end">
                             <Button className="px-8" onClick={handleSave}>
                                 {loadingSubmit ? <Spinner /> : (id ? "Update" : "Create")}
@@ -303,4 +325,4 @@ const DetailArticle = () => {
     );
 };
 
-export default DetailArticle;
+export default DetailWebinar;

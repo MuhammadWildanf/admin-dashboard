@@ -1,41 +1,35 @@
 import { useEffect, useState, ChangeEvent, useRef } from "react";
-import Layout from "../layout.tsx/app";
-import { getData } from "../../api/get-data";
+import Layout from "../../layout.tsx/app";
+import { getData } from "../../../api/get-data";
 import { HiOutlineSearch, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
-import AddButton from "../../components/buttons/add";
+import AddButton from "../../../components/buttons/add";
 import { useForm } from "react-hook-form";
-import { Button } from "../../components/buttons";
-import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
-import BaseModal from "../../components/modal/base";
-import Pagination from "../../components/tables/pagination";
-import Table from "../../components/tables/base";
-import { FormInput } from "../../components/forms/input";
+import { Button } from "../../../components/buttons";
+import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
+import BaseModal from "../../../components/modal/base";
+import Pagination from "../../../components/tables/pagination";
+import Table from "../../../components/tables/base";
+import { FormInput } from "../../../components/forms/input";
 import {
   FormSelect,
   FormSelectAsync,
   FormSelectTimezone,
-} from "../../components/forms/input-select";
-import { YoutubeType } from "../../types/youtube";
-import { request } from "../../api/config";
+} from "../../../components/forms/input-select";
+import { YoutubeType } from "../../../types/youtube";
+import { request } from "../../../api/config";
 import { Pencil, Trash } from "@phosphor-icons/react";
-import { useAlert } from "../../stores/alert";
+import { useAlert } from "../../../stores/alert";
 import moment from "moment";
-import { useYouTube } from "../../stores/youtube";
-import { CategoryType } from "../../types/category";
+import { useYouTube } from "../../../stores/youtube";
+import { CategoryType } from "../../../types/category";
 
 
 type FormValues = {
   title: string;
-  categories_id: string;
+  categories_id: CategoryType | null;
   link: string;
   image: FileList | null;
-  categories: {
-    id: number;
-    name: string;
-    created_at: string;
-    updated_at: string;
-  }[];
 };
 
 type ErrorForm = {
@@ -84,9 +78,7 @@ const IndexYoutube = () => {
     let params = {
       q: inputValue,
     };
-    const { data } = await request.get("/categories-artikel", {
-      params: params,
-    });
+    const { data } = await request.get("/categories-artikel", { params });
     return data.data.data;
   };
 
@@ -115,10 +107,11 @@ const IndexYoutube = () => {
 
   const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
+    const categoryId = data.categories_id?.id;
     try {
       const formData = new FormData();
       formData.append("title", data.title);
-      formData.append("categories_id", data.categories_id);
+      formData.append("categories_id", categoryId?.toString() || '');
       formData.append("link", data.link);
       if (data.image) {
         formData.append("image", data.image[0]);
@@ -126,7 +119,7 @@ const IndexYoutube = () => {
       if (modalMode === "create") {
         await request.post("/youtube/create", formData);
       } else {
-        await request.post(`/youtube/${selected?.id}/update`, formData);
+        await request.put(`/youtube/${selected?.id}`, formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
@@ -169,7 +162,6 @@ const IndexYoutube = () => {
     setSelected(item);
     setModalMode("edit");
     setValue("title", item.title ?? "");
-    setValue("categories_id", item.categories_id.toString());
     setValue("link", item.link);
     setPreviewSrc(item.image ?? null);
     setModalAdd(true);
@@ -329,7 +321,7 @@ const IndexYoutube = () => {
             control={control}
             loadOption={selectCategory}
             optionLabel={(option: CategoryType) => `${option.name}`}
-            optionValue={(option: CategoryType) => `${option.id}`}
+            optionValue={(option: CategoryType) => `${option.id.toString()}`}
             error={errors?.categories_id} />
           <FormInput
             name="link"

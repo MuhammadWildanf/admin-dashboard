@@ -1,65 +1,52 @@
-import { useEffect, useState, ChangeEvent, useRef } from "react";
-import Layout from "../layout.tsx/app";
-import { getData } from "../../api/get-data";
-import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
+import { useEffect, useState } from "react";
+import Layout from "../../layout.tsx/app";
+import { getData } from "../../../api/get-data";
+import { HiOutlineSearch, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
-import AddButton from "../../components/buttons/add";
-import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
-import Pagination from "../../components/tables/pagination";
-import Table from "../../components/tables/base";
-import { ArticleType } from "../../types/articles";
-import { request } from "../../api/config";
-import { Key, Pencil, Trash } from "@phosphor-icons/react";
-import { useAlert } from "../../stores/alert";
-import moment from "moment";
-import { useArticles } from "../../stores/articles";
+import AddButton from "../../../components/buttons/add";
+import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
+import Pagination from "../../../components/tables/pagination";
+import Table from "../../../components/tables/base";
+import { WebinarType } from "../../../types/webinar";
+import { request } from "../../../api/config";
+import {  Pencil, Trash } from "@phosphor-icons/react";
+import { useAlert } from "../../../stores/alert";
 import { useNavigate } from "react-router-dom";
+import { useWebinar } from "../../../stores/webinar";
 
-
-type ErrorForm = {
-  title: [] | null;
-  author: [] | null;
-  categories_id: [] | null;
-  date: [] | null;
-  image: [] | null;
-  link: [] | null;
-  categories: [] | null;
-};
-
-const IndexArticle = () => {
+const Webinar = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [q, setQ] = useState<string | undefined>(undefined);
   const [page, setPage] = useState<number>(1);
-  const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
-  const [selected, setSelected] = useState<ArticleType | null>(null);
-  const { setArticles, GetArticles } = useArticles();
+  const [selected, setSelected] = useState<WebinarType | null>(null);
+  const { setWebinars, webinars } = useWebinar();
   const { setMessage } = useAlert();
   const navigate = useNavigate();
 
 
 
-  const GetAllArticle = async (
+  const getWebinar = async (
     search?: string,
     searchMode: boolean = false
   ) => {
     setLoading(true);
     try {
-      const data = await getData("/artikel", page, search, searchMode);
+      const data = await getData("/webinar", page, search, searchMode);
       return data;
     } catch { }
   };
 
   const handleSearch = async (input: string | undefined) => {
     setQ(input);
-    const data = await GetAllArticle(input ?? "", true);
-    setArticles(data);
+    const data = await getWebinar(input ?? "", true);
+    setWebinars(data);
     setLoading(false);
   };
 
   const handleNext = () => {
-    if (page === GetArticles?.last_page) {
+    if (page === webinars?.last_page) {
       return;
     }
 
@@ -77,19 +64,19 @@ const IndexArticle = () => {
   const handleDelete = async () => {
     setLoadingSubmit(true);
     try {
-      await request.delete(`/artikel/${selected?.id}`);
+      await request.delete(`/webinar/${selected?.id}`);
       setSelected(null);
       setModalDelete(false);
-      setMessage("Article deleted", "success");
+      setMessage("Webinar deleted", "success");
     } catch (err: any) {
-      setErrors(err.response.data.errors);
+      setMessage(err.response.data.errors , "error");
     }
     setLoadingSubmit(false);
   };
 
   useEffect(() => {
-    Promise.all([GetAllArticle()]).then((res) => {
-      setArticles(res[0]);
+    Promise.all([getWebinar()]).then((res) => {
+      setWebinars(res[0]);
       setLoading(false);
     });
   }, [page, loadingSubmit]);
@@ -97,7 +84,7 @@ const IndexArticle = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Artikel"
+      title="Manajemen Webinar"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -136,10 +123,12 @@ const IndexArticle = () => {
         <Table.Thead>
           <Table.Th>#</Table.Th>
           <Table.Th>Title</Table.Th>
+          <Table.Th>Limit Peserta</Table.Th>
           <Table.Th>Author</Table.Th>
-          <Table.Th>Category</Table.Th>
           <Table.Th>Date</Table.Th>
-          <Table.Th>Image</Table.Th>
+          <Table.Th>Media Layanan</Table.Th>
+          <Table.Th>Harga Sertifikat</Table.Th>
+          <Table.Th>Link</Table.Th>
           <Table.Th className="text-center">Opsi</Table.Th>
         </Table.Thead>
         <Table.Tbody>
@@ -147,7 +136,7 @@ const IndexArticle = () => {
             <Table.TrLoading cols={7} rows={4} />
           ) : (
             <>
-              {GetArticles?.data.length === 0 ? (
+              {webinars?.data.length === 0 ? (
                 <Table.Tr>
                   <Table.Td cols={8} className="text-center py-3">
                     Tidak ada data ditemukan!
@@ -155,29 +144,23 @@ const IndexArticle = () => {
                 </Table.Tr>
               ) : (
                 <>
-                  {GetArticles?.data.map((item, key) => (
+                  {webinars?.data.map((item, key) => (
                     <Table.Tr key={key}>
                       <Table.Td>
                         {(
                           key +
                           1 +
-                          GetArticles.per_page *
-                          (GetArticles.current_page - 1)
+                          webinars.per_page *
+                          (webinars.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.title ?? ""}</Table.Td>
+                      <Table.Td>{item.limit_peserta?.toString() ?? ""}</Table.Td>
                       <Table.Td>{item.author ?? ""}</Table.Td>
-                      <Table.Td>{item.categories[0]?.name ?? ""}</Table.Td>
                       <Table.Td>{item.date ?? ""}</Table.Td>
-                      <Table.Td>
-                        {item.image && (
-                          <img
-                            src={item.image}
-                            alt="Image"
-                            className="h-10 w-10 object-cover"
-                          />
-                        )}
-                      </Table.Td>
+                      <Table.Td>{item.media_layanan ?? ""}</Table.Td>
+                      <Table.Td>{item.harga_sertifikat ?? ""}</Table.Td>
+                      <Table.Td>{item.link ?? ""}</Table.Td>
                       <Table.Td>
                         <div className="flex items-center gap-1">
                           <Trash
@@ -202,8 +185,8 @@ const IndexArticle = () => {
         </Table.Tbody>
       </Table>
       <Pagination
-        currentPage={GetArticles?.current_page ?? 1}
-        totalPage={GetArticles?.last_page ?? 1}
+        currentPage={webinars?.current_page ?? 1}
+        totalPage={webinars?.last_page ?? 1}
         onNext={handleNext}
         onPrevious={handlePrevious}
       />
@@ -219,4 +202,4 @@ const IndexArticle = () => {
   );
 };
 
-export default IndexArticle;
+export default Webinar;

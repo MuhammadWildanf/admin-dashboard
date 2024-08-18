@@ -1,23 +1,23 @@
 import { useEffect, useState, ChangeEvent, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Layout from "../layout.tsx/app";
+import Layout from "../../layout.tsx/app";
 import { Spinner } from "flowbite-react";
 import { useForm } from "react-hook-form";
-import { useCounselingProduct } from "../../stores/counselingProduct";
-import { FormInput } from "../../components/forms/input";
-import { FormInputRadio } from "../../components/forms/input-radio";
-import { FormTextArea } from "../../components/forms/input-textarea";
-import { useAlert } from "../../stores/alert";
-import { request } from "../../api/config";
-import { getData } from "../../api/get-data";
-import LoadingPage from "../layout.tsx/loading";
-import { Button } from "../../components/buttons";
+import { useCounselingProduct } from "../../../stores/counselingProduct";
+import { FormInput } from "../../../components/forms/input";
+import { FormInputRadio } from "../../../components/forms/input-radio";
+import { FormTextArea } from "../../../components/forms/input-textarea";
+import { useAlert } from "../../../stores/alert";
+import { request } from "../../../api/config";
+import { getData } from "../../../api/get-data";
+import LoadingPage from "../../layout.tsx/loading";
+import { Button } from "../../../components/buttons";
 import { useMemo } from "react";
-import Table from "../../components/tables/base";
+import Table from "../../../components/tables/base";
 import { PlusCircle, Pencil, Trash } from "@phosphor-icons/react";
-import { PriceType } from "../../types/price";
-import ModalDeleteConfirmation from "../../components/modal/delete-confirmation";
-import BaseModal from "../../components/modal/base";
+import { PriceType } from "../../../types/price";
+import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
+import BaseModal from "../../../components/modal/base";
 
 
 type FormValues = {
