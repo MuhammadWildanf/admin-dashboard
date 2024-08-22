@@ -89,7 +89,6 @@ export const menuUser: Menu[] = [
   ManagementVoucher,
   ProductMenu,
   MediaMenu,
-  AssessmentMenu
 ];
 
 export const menuAdmin: Menu[] = [
@@ -98,7 +97,6 @@ export const menuAdmin: Menu[] = [
   ManagementVoucher,
   ProductMenu,
   MediaMenu,
-  AssessmentMenu
 ];
 
 
