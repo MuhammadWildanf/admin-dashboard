@@ -95,7 +95,8 @@ const DetailWebinar = () => {
             }
 
             if (id) {
-                await request.put(`/webinar/${id}`, formData);
+                formData.append("_method", "PUT");
+                await request.post(`/webinar/${id}`, formData);
                 setMessage("webinar updated!", "success");
             } else {
                 await request.post(`/webinar/create`, formData);

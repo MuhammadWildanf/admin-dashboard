@@ -108,11 +108,14 @@ const Counseling = () => {
       if (data.image) {
         formData.append("image", data.image[0]);
       }
-      if (modalMode === "create") {
-        await request.post("/counselings/create", formData);
+      
+      if (modalMode !== "create") {
+        formData.append("_method", "PUT");
+        await request.post(`/counselings/${selected?.id}`, formData);
       } else {
-        await request.put(`/counselings/${selected?.id}`, formData);
+        await request.post("/counselings/create", formData);
       }
+
       setModalAdd(false);
       setModalMode(undefined);
       setMessage("Counseling saved!", "success");

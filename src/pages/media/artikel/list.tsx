@@ -93,7 +93,8 @@ const DetailArticle = () => {
             }
 
             if (id) {
-                await request.put(`/artikel/${id}`, formData);
+                formData.append("_method", "PUT");
+                await request.post(`/artikel/${id}`, formData);
                 setMessage("Artikel updated!", "success");
             } else {
                 await request.post(`/artikel/create`, formData);

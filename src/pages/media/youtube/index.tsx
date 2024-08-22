@@ -116,10 +116,11 @@ const IndexYoutube = () => {
       if (data.image) {
         formData.append("image", data.image[0]);
       }
-      if (modalMode === "create") {
-        await request.post("/youtube/create", formData);
+      if (modalMode !== "create") {
+        formData.append("_method", "PUT");
+        await request.post(`/youtube/${selected?.id}`, formData);
       } else {
-        await request.put(`/youtube/${selected?.id}`, formData);
+        await request.post("/youtube/create", formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
