@@ -122,7 +122,8 @@ const DetailVoucher = () => {
             }
 
             if (id) {
-                await request.put(`/voucher/update/${id}`, formData);
+                formData.append("_method", "PUT");
+                await request.post(`/voucher/update/${id}`, formData);
                 setMessage("Voucher updated!", "success");
             } else {
                 await request.post(`/voucher/create`, formData);

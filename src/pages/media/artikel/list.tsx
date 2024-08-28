@@ -104,7 +104,7 @@ const DetailArticle = () => {
             navigate('/media/artikel');
         } catch (err: any) {
             setErrors(err.response.data.errors);
-            console.log(err);
+            console.log('ini log dari error',err.response.data.errors);
         }
         setErrors(null);
         setLoadingSubmit(false);
