@@ -12,7 +12,6 @@ import { SelectOptionType } from "../../../types/form";
 import { useAlert } from "../../../stores/alert";
 import { request } from "../../../api/config";
 import { getData } from "../../../api/get-data";
-import { calculateAge, parseDate } from "../../../helper/date";
 import moment from "moment";
 import LoadingPage from "../../layout.tsx/loading";
 import { Button } from "../../../components/buttons";
@@ -53,6 +52,7 @@ const DetailArticle = () => {
     const uploadInputRef = useRef<HTMLInputElement | null>(null);
     const imagePreviewRef = useRef<HTMLDivElement | null>(null);
     const [fileName, setFileName] = useState<string>("");
+    const [editorContent, setEditorContent] = useState("");
     const navigate = useNavigate();
 
 
@@ -142,11 +142,15 @@ const DetailArticle = () => {
             setLoading(true);
             getDetail().then((res) => {
                 setDetail(res[0]);
-                console.log('ini dari res[0].deskripsi =>>', res[0].diskripsi)
+                console.log('ini dari res[0].categories_id =>>', res[0].categories_id)
+                console.log('categories_id:', res[0].categories_id);
+                console.log('category_name:', res[0].categories.name);
                 setValue("title", res[0].title);
                 setValue("author", res[0].author);
                 setValue("date", res[0].date);
                 setValue("diskripsi", res[0].diskripsi);
+                setValue("categories_id", res[0].categories_id);
+                setEditorContent(res[0].diskripsi);
                 setPreviewSrc(res[0].image ?? null);
                 setLoading(false);
             });
@@ -158,7 +162,9 @@ const DetailArticle = () => {
                 date: "",
                 diskripsi: "",
                 image: null,
+                categories_id: null,
             });
+            setEditorContent("");
         }
     }, [id]);
 
@@ -271,7 +277,7 @@ const DetailArticle = () => {
                                 Deskripsi
                             </label>
                             <Editor
-                                value={detail?.diskripsi || ""}
+                                value={editorContent}
                                 init={{
                                     height: 500,
                                     menubar: false,
@@ -287,9 +293,10 @@ const DetailArticle = () => {
                                     content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                                 }}
                                 apiKey='e26pww344ed68y1cc1o5aaptc7kes3anxxqach3spk89gk5t'
-                                onEditorChange={(content, editor) =>
-                                    setValue("diskripsi", content)
-                                }
+                                onEditorChange={(content) => {
+                                    setEditorContent(content);
+                                    setValue("diskripsi", content); // Update form value
+                                }}
                             />
                         </div>
                         <div className="mt-3 flex items-center justify-end">

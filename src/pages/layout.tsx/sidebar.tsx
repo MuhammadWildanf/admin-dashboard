@@ -2,7 +2,7 @@ import { useSession } from "../../stores/session";
 import { User } from "@phosphor-icons/react";
 import { MoreVertical } from "lucide-react";
 import { HiMenuAlt3, HiOutlineMinusSm, HiOutlinePlusSm } from "react-icons/hi";
-import { menuAdmin, menuUser } from "./sidebar-menu";
+import { menuAdmin, menuUser , menuWriter } from "./sidebar-menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Dropdown, Spinner } from "flowbite-react";
@@ -17,6 +17,7 @@ const SidebarLayout = () => {
   const location = useLocation();
   let menus = menuUser;
   if (me?.role === "admin") menus = menuAdmin;
+  if (me?.role === "writer") menus = menuWriter;
 
   useEffect(() => {
     // Buka menu collapse jika child aktif

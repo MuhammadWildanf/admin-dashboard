@@ -64,11 +64,17 @@ const MediaMenu = {
   href:"#",
   child:[
     { label: "Category", name: "Category", href: "/media/category"},
-    { label: "Artikel", name: "Artikel", href: "/media/artikel"},
     { label: "Webinar", name: "Webinar",  href: "/media/webinar"},
     { label: "Youtube", name: "Youtube",  href: "/media/youtube"},
   ],
 }
+
+const ManagementArtikel = {
+  label: "Artikel",
+  name: "Artikel",
+  icon: FiFolder,
+  href: "/media/artikel",
+};
 
 
 const AssessmentMenu = {
@@ -89,6 +95,11 @@ export const menuUser: Menu[] = [
   ManagementVoucher,
   ProductMenu,
   MediaMenu,
+];
+
+export const menuWriter: Menu[] = [
+  dashboardMenu,
+  ManagementArtikel
 ];
 
 export const menuAdmin: Menu[] = [
