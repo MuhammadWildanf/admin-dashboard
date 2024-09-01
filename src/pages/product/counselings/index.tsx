@@ -32,11 +32,11 @@ type FormValues = {
 };
 
 type ErrorForm = {
-  name: [] | null;
-  description: [] | null;
-  slug: [] | null;
-  image: [] | null;
-  notes: [] | null;
+  name: [];
+  description: [];
+  slug: [];
+  image: [];
+  notes: [];
 };
 
 const Counseling = () => {
@@ -120,9 +120,11 @@ const Counseling = () => {
       setModalMode(undefined);
       setMessage("Counseling saved!", "success");
     } catch (err: any) {
-      setErrors(err.response.data.errors);
-      console.log(err);
-    }
+      if (err.response && err.response.data.errors) {
+          setErrors(err.response.data.errors); // Update state with errors
+      }
+      setMessage(err.response.data.message, "error");
+  }
     setErrors(null);
     setLoadingSubmit(false);
   });

@@ -145,8 +145,11 @@ const Price = () => {
       setModalDelete(false);
       setMessage("Price deleted", "success");
     } catch (err: any) {
-      setErrors(err.response.data.errors);
-    }
+      if (err.response && err.response.data.errors) {
+          setErrors(err.response.data.errors); // Update state with errors
+      }
+      setMessage(err.response.data.message, "error");
+  }
     setLoadingSubmit(false);
   };
 

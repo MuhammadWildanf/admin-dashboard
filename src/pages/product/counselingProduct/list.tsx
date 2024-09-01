@@ -151,8 +151,10 @@ const DetailCounselingProduct = () => {
 
             navigate('/counseling-products');
         } catch (err: any) {
-            setErrors(err.response.data.errors);
-            console.log(err);
+            if (err.response && err.response.data.errors) {
+                setErrors(err.response.data.errors); // Update state with errors
+            }
+            setMessage(err.response.data.message, "error");
         }
         setErrors(null);
         setLoadingSubmit(false);
