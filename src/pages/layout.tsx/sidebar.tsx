@@ -38,7 +38,7 @@ const SidebarLayout = () => {
     setLoading(true);
     logout();
     setLoading(false);
-    navigate('/login');
+    navigate('/auth/login');
   };
 
   return (
