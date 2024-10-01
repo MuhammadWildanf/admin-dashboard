@@ -73,28 +73,32 @@ const UserPsikolog = () => {
 
 
   const handleApprove = async (id: string) => {
+    setLoading(true); // Mulai loading sebelum proses approve
     try {
       await request.patch(`/psikolog/${id}/approve`);
-      // Refresh data setelah approve
       const updatedData = await getUserPsikolog();
       setUserPsikologs(updatedData);
       setMessage("Psikolog berhasil diapprove", "success");
     } catch (error) {
       console.error("Error approving psikolog:", error);
       setMessage("Gagal melakukan approve psikolog", "error");
+    } finally {
+      setLoading(false); // Hentikan loading setelah proses selesai
     }
   };
 
   const handleUnapprove = async (id: string) => {
+    setLoading(true); // Mulai loading sebelum proses unapprove
     try {
       await request.patch(`/psikolog/${id}/unapprove`);
-      // Refresh data setelah unapprove
       const updatedData = await getUserPsikolog();
       setUserPsikologs(updatedData);
       setMessage("Psikolog berhasil diunapprove", "success");
     } catch (error) {
       console.error("Error unapproving psikolog:", error);
       setMessage("Gagal melakukan unapprove psikolog", "error");
+    } finally {
+      setLoading(false); // Hentikan loading setelah proses selesai
     }
   };
 
@@ -129,7 +133,6 @@ const UserPsikolog = () => {
 
       try {
         const res = await getUserPsikolog();
-        console.log(res, 'ini tanpa menggunakan res.data datanya muncul'); // Mengambil data dari API
         setUserPsikologs(res); // Mengatur data ke state setelah berhasil diambil
         setLoading(false); // Menghentikan loading setelah data selesai dimuat
       } catch (error) {
@@ -211,37 +214,39 @@ const UserPsikolog = () => {
                       </Table.Td>
                       <Table.Td>{item.fullname ?? ""}</Table.Td>
                       <Table.Td>{item.email ?? ""}</Table.Td>
-                      {/* <Table.Td>{item.role ?? ""}</Table.Td> */}
                       <Table.Td>{item.timezone ?? ""}</Table.Td>
                       <Table.Td>
-                        {item.is_active ? (
+                        {item.status === "verified" ? (
                           <span className="text-xs py-1 px-3 rounded text-green-50 bg-green-600">
-                            Aktif
+                            Verified
+                          </span>
+                        ) : item.status === "moderation" ? (
+                          <span className="text-xs py-1 px-3 rounded text-white bg-yellow-300">
+                            Moderation
                           </span>
                         ) : (
-                          (
-                            <span className="text-xs py-1 px-3 rounded text-red-50 bg-red-600">
-                              Tidak Aktif
-                            </span>
-                          ) ?? ""
+                          ""
                         )}
                       </Table.Td>
+
                       <Table.Td>
                         <div className="flex items-center gap-1">
-                          {item.is_active ? (
+                          {item.status === "verified" ? (
                             <Button
                               onClick={() => handleUnapprove(item.id)}
                               className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
                             >
                               Unapprove
                             </Button>
-                          ) : (
+                          ) : item.status === "moderation" ? (
                             <Button
                               onClick={() => handleApprove(item.id)}
                               className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
                             >
                               Approve
                             </Button>
+                          ) : (
+                            ""
                           )}
                         </div>
                       </Table.Td>
