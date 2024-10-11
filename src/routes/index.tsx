@@ -9,6 +9,7 @@ import IndexVoucher from "../pages/voucher/index";
 import DetailVoucher from "../pages/voucher/list";
 import IndexArtikel from "../pages/media/artikel/index";
 import IndexCategory from "../pages/media/category/index";
+import IndexSubCategory from "../pages/media/subcategory/index";
 import IndexCounselings from "../pages/product/counselings/index";
 import IndexcounselingProduct from "../pages/product/counselingProduct/index";
 import DetailcounselingProduct from "../pages/product/counselingProduct/list";
@@ -113,6 +114,14 @@ export const routes = createBrowserRouter([
     element: (
       <Private>
         <IndexCategory />
+      </Private>
+    )
+  },
+  {
+    path: "media/sub-category",
+    element: (
+      <Private>
+        <IndexSubCategory />
       </Private>
     )
   },

@@ -64,6 +64,7 @@ const MediaMenu = {
   href:"#",
   child:[
     { label: "Category", name: "Category", href: "/media/category"},
+    { label: "Sub Category", name: "Sub Category", href: "/media/sub-category"},
     { label: "Webinar", name: "Webinar",  href: "/media/webinar"},
     { label: "Youtube", name: "Youtube",  href: "/media/youtube"},
   ],

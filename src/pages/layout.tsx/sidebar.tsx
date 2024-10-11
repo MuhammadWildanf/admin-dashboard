@@ -2,7 +2,7 @@ import { useSession } from "../../stores/session";
 import { User } from "@phosphor-icons/react";
 import { MoreVertical } from "lucide-react";
 import { HiMenuAlt3, HiOutlineMinusSm, HiOutlinePlusSm } from "react-icons/hi";
-import { menuAdmin, menuUser , menuWriter } from "./sidebar-menu";
+import { menuAdmin, menuUser, menuWriter } from "./sidebar-menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Dropdown, Spinner } from "flowbite-react";
@@ -84,7 +84,7 @@ const SidebarLayout = () => {
                     <Link
                       to={child.href}
                       key={j}
-                      className={`flex items-center text-sm gap-3.5 font-medium p-2 ${location.pathname === child.href ? "bg-blue-600" : "hover:bg-blue-600"} rounded-md`}
+                      className={`flex items-center text-sm gap-3.5 font-medium p-2 mb-2 mt-2 ${location.pathname === child.href ? "bg-blue-600" : "hover:bg-blue-600"} rounded-md`}
                     >
                       <h2 className="whitespace-pre duration-500">{child.label}</h2>
                     </Link>
@@ -95,6 +95,7 @@ const SidebarLayout = () => {
           );
         })}
       </div>
+
 
       {/* Profile Section */}
       <div className={`border-t flex items-center p-3 mt-auto ${!open && "justify-center"}`}>

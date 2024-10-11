@@ -66,7 +66,7 @@ const UserPsikolog = () => {
     setLoading(true);
     try {
       const data = await getData("/psikolog/?type=psikolog", page, search, searchMode);
-      console.log('ini data getUserPsikolog ==>>>', data)
+      // console.log('ini data getUserPsikolog ==>>>', data)
       return data;
     } catch { }
   };
@@ -104,10 +104,12 @@ const UserPsikolog = () => {
 
 
   const handleSearch = async (input: string | undefined) => {
+    setLoading(true); // Set loading state saat pencarian dimulai
     setQ(input);
     const data = await getUserPsikolog(input ?? "", true);
+    console.log(data, 'data pencarian');
     setUserPsikologs(data);
-    setLoading(false);
+    setLoading(false); // Set loading false setelah pencarian selesai
   };
 
   const handleNext = () => {
@@ -129,20 +131,20 @@ const UserPsikolog = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true); // Menandakan sedang memuat data
-
+      setLoading(true);
       try {
-        const res = await getUserPsikolog();
-        setUserPsikologs(res); // Mengatur data ke state setelah berhasil diambil
-        setLoading(false); // Menghentikan loading setelah data selesai dimuat
+        const res = await getUserPsikolog(q ?? ""); // Pass the search query here to maintain the filtered result on pagination
+        setUserPsikologs(res);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Menghentikan loading jika terjadi kesalahan
+        setLoading(false);
       }
     };
 
-    fetchData(); // Memanggil fungsi fetchData untuk memulai pengambilan data
-  }, [page, loadingSubmit]);
+    fetchData();
+  }, [page, loadingSubmit, q]); // Tambahkan `q` sebagai dependensi
+
 
   return (
     <Layout
@@ -160,7 +162,10 @@ const UserPsikolog = () => {
           />
           {q && (
             <button
-              onClick={() => handleSearch("")}
+              onClick={() => {
+                setQ("");
+                handleSearch("");
+              }}
               className="py-3 px-2 border border-red-600 bg-red-600 text-white"
             >
               <HiX />
