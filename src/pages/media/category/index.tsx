@@ -59,6 +59,7 @@ const UserPsikolog = () => {
       timezone: { label: moment.tz.guess(), value: moment.tz.guess() },
     },
   });
+  
   const { setCategories, getCategories } = useCategories();
   const { setMessage } = useAlert();
 

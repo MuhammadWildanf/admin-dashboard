@@ -21,12 +21,10 @@ import { useSubCategories } from "../../../stores/subcategory";
 
 type FormValues = {
   name: string;
-  parent_id: CategoryType | null;
 };
 
 type ErrorForm = {
   name: [] | null;
-  parent_id: [] | null;
 };
 
 const UserPsikolog = () => {
@@ -44,6 +42,8 @@ const UserPsikolog = () => {
   const [selected, setSelected] = useState<SubCategoryType | null>(null);
   const { setSubCategories, getSubCategories } = useSubCategories();
   const { setMessage } = useAlert();
+
+  
 
 
   const getSubCategory = async (
@@ -92,11 +92,19 @@ const UserPsikolog = () => {
         console.log(key + ': ' + value);
       });
 
-      if (modalMode === "create") {
-        await request.post("/subcategories/create", formData);
-      } else {
-        await request.put(`/subcategories/${selected?.id}`, formData);
-      }
+      // if (modalMode === "create") {
+      //   await request.post("/subcategories/create", formData);
+      // } else {
+      //   await request.put(`/subcategories/${selected?.id}`, formData);
+      // }
+
+      if (selected?.id) {
+        formData.append("_method", "PUT");
+        await request.post(`/subcategories/${selected?.id}`, formData);
+    } else {
+        await request.post(`/subcategories/create`, formData);
+    }
+
       setModalAdd(false);
       setModalMode(undefined);
       setMessage("Sub Category saved!", "success");
