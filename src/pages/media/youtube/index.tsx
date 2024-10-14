@@ -190,7 +190,7 @@ const IndexYoutube = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Youtube"
+      title="YouTube Management"
       pageTitleContent={
         <div className="flex items-center">
           <input

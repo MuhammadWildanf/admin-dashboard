@@ -206,7 +206,7 @@ const Counseling = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Counseling"
+      title="Counseling Management"
       pageTitleContent={
         <div className="flex items-center">
           <input

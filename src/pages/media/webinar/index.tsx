@@ -9,7 +9,7 @@ import Pagination from "../../../components/tables/pagination";
 import Table from "../../../components/tables/base";
 import { WebinarType } from "../../../types/webinar";
 import { request } from "../../../api/config";
-import {  Pencil, Trash } from "@phosphor-icons/react";
+import { Pencil, Trash } from "@phosphor-icons/react";
 import { useAlert } from "../../../stores/alert";
 import { useNavigate } from "react-router-dom";
 import { useWebinar } from "../../../stores/webinar";
@@ -25,17 +25,12 @@ const Webinar = () => {
   const { setMessage } = useAlert();
   const navigate = useNavigate();
 
-
-
-  const getWebinar = async (
-    search?: string,
-    searchMode: boolean = false
-  ) => {
+  const getWebinar = async (search?: string, searchMode: boolean = false) => {
     setLoading(true);
     try {
       const data = await getData("/webinar", page, search, searchMode);
       return data;
-    } catch { }
+    } catch {}
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -69,7 +64,7 @@ const Webinar = () => {
       setModalDelete(false);
       setMessage("Webinar deleted", "success");
     } catch (err: any) {
-      setMessage(err.response.data.errors , "error");
+      setMessage(err.response.data.errors, "error");
     }
     setLoadingSubmit(false);
   };
@@ -84,7 +79,7 @@ const Webinar = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Webinar"
+      title="Webinar Management"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -104,10 +99,11 @@ const Webinar = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -116,9 +112,7 @@ const Webinar = () => {
         </div>
       }
     >
-      <AddButton
-        onClick={() => navigate('create')}
-      />
+      <AddButton onClick={() => navigate("create")} />
       <Table>
         <Table.Thead>
           <Table.Th>#</Table.Th>
@@ -150,12 +144,13 @@ const Webinar = () => {
                         {(
                           key +
                           1 +
-                          webinars.per_page *
-                          (webinars.current_page - 1)
+                          webinars.per_page * (webinars.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.title ?? ""}</Table.Td>
-                      <Table.Td>{item.limit_peserta?.toString() ?? ""}</Table.Td>
+                      <Table.Td>
+                        {item.limit_peserta?.toString() ?? ""}
+                      </Table.Td>
                       <Table.Td>{item.author ?? ""}</Table.Td>
                       <Table.Td>{item.date ?? ""}</Table.Td>
                       <Table.Td>{item.media_layanan ?? ""}</Table.Td>

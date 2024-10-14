@@ -93,7 +93,7 @@ const IndexArticle = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Artikel"
+      title="Article Management"
       pageTitleContent={
         <div className="flex items-center">
           <input

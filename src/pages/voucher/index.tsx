@@ -84,7 +84,7 @@ const IndexVoucher = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Voucher"
+      title="Voucher Management"
       pageTitleContent={
         <div className="flex items-center">
           <input

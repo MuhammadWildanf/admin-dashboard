@@ -150,7 +150,7 @@ const UserPsikolog = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen User Psikolog"
+      title="Psycholog User Management"
       pageTitleContent={
         <div className="flex items-center">
           <input

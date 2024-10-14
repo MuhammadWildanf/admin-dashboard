@@ -90,7 +90,7 @@ const Counseling = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Counseling Product"
+      title="Counseling Product Management"
       pageTitleContent={
         <div className="flex items-center">
           <input
