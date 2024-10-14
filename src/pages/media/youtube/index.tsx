@@ -24,7 +24,6 @@ import moment from "moment";
 import { useYouTube } from "../../../stores/youtube";
 import { CategoryType } from "../../../types/category";
 
-
 type FormValues = {
   title: string;
   categories_id: CategoryType | null;
@@ -58,8 +57,6 @@ const IndexYoutube = () => {
   const [fileName, setFileName] = useState<string>("");
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
-
-
   const { setYouTubeVideos, youTubeVideos } = useYouTube();
   const { setMessage } = useAlert();
 
@@ -71,7 +68,7 @@ const IndexYoutube = () => {
     try {
       const data = await getData("/youtube", page, search, searchMode);
       return data;
-    } catch { }
+    } catch {}
   };
 
   const selectCategory = async (inputValue: string) => {
@@ -111,7 +108,7 @@ const IndexYoutube = () => {
     try {
       const formData = new FormData();
       formData.append("title", data.title);
-      formData.append("categories_id", categoryId?.toString() || '');
+      formData.append("categories_id", categoryId?.toString() || "");
       formData.append("link", data.link);
       if (data.image) {
         formData.append("image", data.image[0]);
@@ -213,10 +210,11 @@ const IndexYoutube = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -261,7 +259,7 @@ const IndexYoutube = () => {
                           key +
                           1 +
                           youTubeVideos.per_page *
-                          (youTubeVideos.current_page - 1)
+                            (youTubeVideos.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.title ?? ""}</Table.Td>
@@ -277,7 +275,7 @@ const IndexYoutube = () => {
                         )}
                       </Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {
@@ -325,7 +323,8 @@ const IndexYoutube = () => {
             loadOption={selectCategory}
             optionLabel={(option: CategoryType) => `${option.name}`}
             optionValue={(option: CategoryType) => `${option.id.toString()}`}
-            error={errors?.categories_id} />
+            error={errors?.categories_id}
+          />
           <FormInput
             name="link"
             control={control}
@@ -350,7 +349,11 @@ const IndexYoutube = () => {
                     ref={uploadInputRef}
                   />
                   {previewSrc ? (
-                    <img src={previewSrc} className="max-h-48 rounded-lg mx-auto" alt="Image preview" />
+                    <img
+                      src={previewSrc}
+                      className="max-h-48 rounded-lg mx-auto"
+                      alt="Image preview"
+                    />
                   ) : (
                     <label htmlFor="upload" className="cursor-pointer">
                       <svg
@@ -367,14 +370,22 @@ const IndexYoutube = () => {
                           d="M3 16.5v2.25A2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
                         />
                       </svg>
-                      <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-700">Upload picture</h5>
+                      <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-700">
+                        Upload picture
+                      </h5>
                       <p className="font-normal text-sm text-gray-400 md:px-6">
-                        Choose photo size should be less than <b className="text-gray-600">2mb</b>
+                        Choose photo size should be less than{" "}
+                        <b className="text-gray-600">2mb</b>
                       </p>
                       <p className="font-normal text-sm text-gray-400 md:px-6">
-                        and should be in <b className="text-gray-600">JPG, PNG, or GIF</b> format.
+                        and should be in{" "}
+                        <b className="text-gray-600">JPG, PNG, or GIF</b>{" "}
+                        format.
                       </p>
-                      <span id="filename" className="text-gray-500 bg-gray-200 z-50">
+                      <span
+                        id="filename"
+                        className="text-gray-500 bg-gray-200 z-50"
+                      >
                         {fileName}
                       </span>
                     </label>

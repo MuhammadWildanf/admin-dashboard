@@ -14,7 +14,6 @@ import { useAlert } from "../../../stores/alert";
 import { useArticles } from "../../../stores/articles";
 import { useNavigate } from "react-router-dom";
 
-
 type ErrorForm = {
   title: [] | null;
   author: [] | null;
@@ -37,8 +36,6 @@ const IndexArticle = () => {
   const { setMessage } = useAlert();
   const navigate = useNavigate();
 
-
-
   const GetAllArticle = async (
     search?: string,
     searchMode: boolean = false
@@ -47,7 +44,7 @@ const IndexArticle = () => {
     try {
       const data = await getData("/artikel", page, search, searchMode);
       return data;
-    } catch { }
+    } catch {}
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -116,10 +113,11 @@ const IndexArticle = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -128,9 +126,7 @@ const IndexArticle = () => {
         </div>
       }
     >
-      <AddButton
-        onClick={() => navigate('create')}
-      />
+      <AddButton onClick={() => navigate("create")} />
       <Table>
         <Table.Thead>
           <Table.Th>#</Table.Th>
@@ -161,8 +157,7 @@ const IndexArticle = () => {
                         {(
                           key +
                           1 +
-                          GetArticles.per_page *
-                          (GetArticles.current_page - 1)
+                          GetArticles.per_page * (GetArticles.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.title ?? ""}</Table.Td>
@@ -189,7 +184,7 @@ const IndexArticle = () => {
                         )}
                       </Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {

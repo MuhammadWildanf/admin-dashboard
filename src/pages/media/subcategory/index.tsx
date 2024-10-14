@@ -45,7 +45,6 @@ const UserPsikolog = () => {
   const { setSubCategories, getSubCategories } = useSubCategories();
   const { setMessage } = useAlert();
 
-
   const getSubCategory = async (
     search?: string,
     searchMode: boolean = false
@@ -54,7 +53,7 @@ const UserPsikolog = () => {
     try {
       const data = await getData("/subcategories", page, search, searchMode);
       return data;
-    } catch { }
+    } catch {}
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -81,15 +80,15 @@ const UserPsikolog = () => {
   };
 
   const handleSave = handleSubmit(async (data) => {
-    console.log(data , 'requests dari form');
+    console.log(data, "requests dari form");
     setLoadingSubmit(true);
-    
+
     try {
       const formData = new FormData();
       formData.append("name", data.name);
 
       formData.forEach((value, key) => {
-        console.log(key + ': ' + value);
+        console.log(key + ": " + value);
       });
 
       if (modalMode === "create") {
@@ -160,10 +159,11 @@ const UserPsikolog = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -205,12 +205,12 @@ const UserPsikolog = () => {
                           key +
                           1 +
                           getSubCategories.per_page *
-                          (getSubCategories.current_page - 1)
+                            (getSubCategories.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.name ?? ""}</Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {
@@ -240,7 +240,9 @@ const UserPsikolog = () => {
       />
 
       <BaseModal
-        title={modalMode === "create" ? "Tambah Sub Kategori" : "Edit Sub Kategori"}
+        title={
+          modalMode === "create" ? "Tambah Sub Kategori" : "Edit Sub Kategori"
+        }
         isOpen={modalAdd}
         close={() => setModalAdd(false)}
       >
@@ -257,7 +259,6 @@ const UserPsikolog = () => {
             </Button>
           </div>
         </form>
-
       </BaseModal>
 
       <ModalDeleteConfirmation

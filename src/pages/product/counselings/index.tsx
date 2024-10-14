@@ -53,13 +53,14 @@ const Counseling = () => {
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<CounselingType | null>(null);
-  const { setValue, reset, handleSubmit, control, watch } = useForm<FormValues>();
+  const { setValue, reset, handleSubmit, control, watch } =
+    useForm<FormValues>();
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const imagePreviewRef = useRef<HTMLDivElement | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const name = watch('name');
+  const name = watch("name");
   const { setCounselings, GetCounselings } = useCounseling();
   const { setMessage } = useAlert();
 
@@ -71,7 +72,7 @@ const Counseling = () => {
     try {
       const data = await getData("/counselings", page, search, searchMode);
       return data;
-    } catch { }
+    } catch {}
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -108,7 +109,7 @@ const Counseling = () => {
       if (data.image) {
         formData.append("image", data.image[0]);
       }
-      
+
       if (modalMode !== "create") {
         formData.append("_method", "PUT");
         await request.post(`/counselings/${selected?.id}`, formData);
@@ -121,10 +122,10 @@ const Counseling = () => {
       setMessage("Counseling saved!", "success");
     } catch (err: any) {
       if (err.response && err.response.data.errors) {
-          setErrors(err.response.data.errors); // Update state with errors
+        setErrors(err.response.data.errors); // Update state with errors
       }
       setMessage(err.response.data.message, "error");
-  }
+    }
     setErrors(null);
     setLoadingSubmit(false);
   });
@@ -194,10 +195,10 @@ const Counseling = () => {
         const slug = name
           .toLowerCase()
           .trim()
-          .replace(/[^\w\s-]/g, '')
-          .replace(/[\s_-]+/g, '-')
-          .replace(/^-+|-+$/g, '');
-        setValue('slug', slug);
+          .replace(/[^\w\s-]/g, "")
+          .replace(/[\s_-]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+        setValue("slug", slug);
       }
     }
   }, [name, setValue]);
@@ -225,10 +226,11 @@ const Counseling = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -274,7 +276,7 @@ const Counseling = () => {
                           key +
                           1 +
                           GetCounselings.per_page *
-                          (GetCounselings.current_page - 1)
+                            (GetCounselings.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.name ?? ""}</Table.Td>
@@ -291,7 +293,7 @@ const Counseling = () => {
                         )}
                       </Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {
@@ -368,7 +370,11 @@ const Counseling = () => {
                     ref={uploadInputRef}
                   />
                   {previewSrc ? (
-                    <img src={previewSrc} className="max-h-48 rounded-lg mx-auto" alt="Image preview" />
+                    <img
+                      src={previewSrc}
+                      className="max-h-48 rounded-lg mx-auto"
+                      alt="Image preview"
+                    />
                   ) : (
                     <label htmlFor="upload" className="cursor-pointer">
                       <svg
@@ -385,14 +391,22 @@ const Counseling = () => {
                           d="M3 16.5v2.25A2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
                         />
                       </svg>
-                      <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-700">Upload picture</h5>
+                      <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-700">
+                        Upload picture
+                      </h5>
                       <p className="font-normal text-sm text-gray-400 md:px-6">
-                        Choose photo size should be less than <b className="text-gray-600">2mb</b>
+                        Choose photo size should be less than{" "}
+                        <b className="text-gray-600">2mb</b>
                       </p>
                       <p className="font-normal text-sm text-gray-400 md:px-6">
-                        and should be in <b className="text-gray-600">JPG, PNG, or GIF</b> format.
+                        and should be in{" "}
+                        <b className="text-gray-600">JPG, PNG, or GIF</b>{" "}
+                        format.
                       </p>
-                      <span id="filename" className="text-gray-500 bg-gray-200 z-50">
+                      <span
+                        id="filename"
+                        className="text-gray-500 bg-gray-200 z-50"
+                      >
                         {fileName}
                       </span>
                     </label>
