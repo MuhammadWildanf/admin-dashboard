@@ -12,11 +12,10 @@ import Pagination from "../../../components/tables/pagination";
 import Table from "../../../components/tables/base";
 import { CounselingProductType } from "../../../types/counselingProduct";
 import { request } from "../../../api/config";
-import {Pencil, Trash } from "@phosphor-icons/react";
+import { Pencil, Trash } from "@phosphor-icons/react";
 import { useAlert } from "../../../stores/alert";
 import moment from "moment";
 import { useCounselingProduct } from "../../../stores/counselingProduct";
-
 
 const Counseling = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -35,9 +34,14 @@ const Counseling = () => {
   ) => {
     setLoading(true);
     try {
-      const data = await getData("/counseling-products", page, search, searchMode);
+      const data = await getData(
+        "/counseling-products",
+        page,
+        search,
+        searchMode
+      );
       return data;
-    } catch { }
+    } catch {}
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -86,7 +90,7 @@ const Counseling = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Counseling Product"
+      title="Counseling Product Management"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -106,10 +110,11 @@ const Counseling = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -118,9 +123,7 @@ const Counseling = () => {
         </div>
       }
     >
-      <AddButton
-        onClick={() => navigate('create')}
-      />
+      <AddButton onClick={() => navigate("create")} />
       <Table>
         <Table.Thead>
           <Table.Th>#</Table.Th>
@@ -150,7 +153,7 @@ const Counseling = () => {
                           key +
                           1 +
                           GetcounselingProduct.per_page *
-                          (GetcounselingProduct.current_page - 1)
+                            (GetcounselingProduct.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.name ?? ""}</Table.Td>
@@ -158,7 +161,7 @@ const Counseling = () => {
                       <Table.Td>{item.slug ?? ""}</Table.Td>
                       <Table.Td>{item.notes ?? ""}</Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {

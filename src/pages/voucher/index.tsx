@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { useVoucher } from "../../stores/voucher";
 
-
 const IndexVoucher = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -27,7 +26,6 @@ const IndexVoucher = () => {
   const { setMessage } = useAlert();
   const navigate = useNavigate();
 
-
   const getAllVoucher = async (
     search?: string,
     searchMode: boolean = false
@@ -35,9 +33,9 @@ const IndexVoucher = () => {
     setLoading(true);
     try {
       const data = await getData("/voucher", page, search, searchMode);
-      console.log('ini data getAllVoucher ==>>>', data)
+      console.log("ini data getAllVoucher ==>>>", data);
       return data;
-    } catch { }
+    } catch {}
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -86,7 +84,7 @@ const IndexVoucher = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Voucher"
+      title="Voucher Management"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -106,10 +104,11 @@ const IndexVoucher = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -118,9 +117,7 @@ const IndexVoucher = () => {
         </div>
       }
     >
-      <AddButton
-        onClick={() => navigate('/voucher/create')}
-      />
+      <AddButton onClick={() => navigate("/voucher/create")} />
       <Table>
         <Table.Thead>
           <Table.Th>#</Table.Th>
@@ -129,7 +126,7 @@ const IndexVoucher = () => {
           <Table.Th>Amount</Table.Th>
           <Table.Th>Expiry Date</Table.Th>
           <Table.Th>User Type</Table.Th>
-          <Table.Th>for</Table.Th>
+          <Table.Th className="text-center">for</Table.Th>
           <Table.Th className="text-center">Opsi</Table.Th>
         </Table.Thead>
         <Table.Tbody>
@@ -151,18 +148,19 @@ const IndexVoucher = () => {
                         {(
                           key +
                           1 +
-                          getVouchers.per_page *
-                          (getVouchers.current_page - 1)
+                          getVouchers.per_page * (getVouchers.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.code || "Belum ada kode"}</Table.Td>
                       <Table.Td>{item.description}</Table.Td>
                       <Table.Td>{item.amount}</Table.Td>
-                      <Table.Td>{moment(item.expiry_date).format("DD-MM-YYYY")}</Table.Td>
-                      <Table.Td>{item.user_type}</Table.Td>
-                      <Table.Td>{item.for}</Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-1">
+                        {moment(item.expiry_date).format("DD-MM-YYYY")}
+                      </Table.Td>
+                      <Table.Td>{item.user_type}</Table.Td>
+                      <Table.Td className="text-center">{item.for}</Table.Td>
+                      <Table.Td>
+                        <div className="flex items-center justify-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {

@@ -63,15 +63,17 @@ const UserPsikolog = () => {
   const { setCategories, getCategories } = useCategories();
   const { setMessage } = useAlert();
 
-  const getCategory = async (
-    search?: string,
-    searchMode: boolean = false
-  ) => {
+  const getCategory = async (search?: string, searchMode: boolean = false) => {
     setLoading(true);
     try {
-      const data = await getData("/categories-artikel", page , search , searchMode);
+      const data = await getData(
+        "/categories-artikel",
+        page,
+        search,
+        searchMode
+      );
       return data;
-    } catch { }
+    } catch {}
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -113,10 +115,10 @@ const UserPsikolog = () => {
       setMessage("Category saved!", "success");
     } catch (err: any) {
       if (err.response && err.response.data.errors) {
-          setErrors(err.response.data.errors); // Update state with errors
+        setErrors(err.response.data.errors); // Update state with errors
       }
       setMessage(err.response.data.message, "error");
-  }
+    }
     setErrors(null);
     setLoadingSubmit(false);
   });
@@ -151,7 +153,7 @@ const UserPsikolog = () => {
   return (
     <Layout
       withPageTitle
-      title="Manajemen Kategori Artikel"
+      title="Category Management"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -171,10 +173,11 @@ const UserPsikolog = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
                 ? "bg-blue-500 text-white cursor-not-allowed"
                 : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -216,12 +219,12 @@ const UserPsikolog = () => {
                           key +
                           1 +
                           getCategories.per_page *
-                          (getCategories.current_page - 1)
+                            (getCategories.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.name ?? ""}</Table.Td>
                       <Table.Td>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-center gap-1">
                           <Trash
                             className="text-red-600 text-xl cursor-pointer"
                             onClick={() => {

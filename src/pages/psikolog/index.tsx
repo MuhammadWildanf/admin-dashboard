@@ -65,12 +65,16 @@ const UserPsikolog = () => {
   ) => {
     setLoading(true);
     try {
-      const data = await getData("/psikolog/?type=psikolog", page, search, searchMode);
+      const data = await getData(
+        "/psikolog/?type=psikolog",
+        page,
+        search,
+        searchMode
+      );
       // console.log('ini data getUserPsikolog ==>>>', data)
       return data;
-    } catch { }
+    } catch {}
   };
-
 
   const handleApprove = async (id: string) => {
     setLoading(true); // Mulai loading sebelum proses approve
@@ -102,12 +106,11 @@ const UserPsikolog = () => {
     }
   };
 
-
   const handleSearch = async (input: string | undefined) => {
     setLoading(true); // Set loading state saat pencarian dimulai
     setQ(input);
     const data = await getUserPsikolog(input ?? "", true);
-    console.log(data, 'data pencarian');
+    console.log(data, "data pencarian");
     setUserPsikologs(data);
     setLoading(false); // Set loading false setelah pencarian selesai
   };
@@ -128,7 +131,6 @@ const UserPsikolog = () => {
     setPage(page - 1);
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -145,11 +147,10 @@ const UserPsikolog = () => {
     fetchData();
   }, [page, loadingSubmit, q]); // Tambahkan `q` sebagai dependensi
 
-
   return (
     <Layout
       withPageTitle
-      title="Manajemen User Psikolog"
+      title="Psycholog User Management"
       pageTitleContent={
         <div className="flex items-center">
           <input
@@ -172,10 +173,11 @@ const UserPsikolog = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
-              ? "bg-blue-500 text-white cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
+              loading
+                ? "bg-blue-500 text-white cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -191,7 +193,7 @@ const UserPsikolog = () => {
           <Table.Th>Email</Table.Th>
           {/* <Table.Th>Role</Table.Th> */}
           <Table.Th>Zona waktu</Table.Th>
-          <Table.Th>Status</Table.Th>
+          <Table.Th className="text-center">Status</Table.Th>
           <Table.Th className="text-center">Opsi</Table.Th>
         </Table.Thead>
         <Table.Tbody>
@@ -214,13 +216,13 @@ const UserPsikolog = () => {
                           key +
                           1 +
                           userPsikologs.per_page *
-                          (userPsikologs.current_page - 1)
+                            (userPsikologs.current_page - 1)
                         ).toString()}
                       </Table.Td>
                       <Table.Td>{item.fullname ?? ""}</Table.Td>
                       <Table.Td>{item.email ?? ""}</Table.Td>
                       <Table.Td>{item.timezone ?? ""}</Table.Td>
-                      <Table.Td>
+                      <Table.Td className="text-center">
                         {item.status === "verified" ? (
                           <span className="text-xs py-1 px-3 rounded text-green-50 bg-green-600">
                             Verified
@@ -234,8 +236,8 @@ const UserPsikolog = () => {
                         )}
                       </Table.Td>
 
-                      <Table.Td>
-                        <div className="flex items-center gap-1">
+                      <Table.Td className="text-center">
+                        <div className="flex items-center justify-center   gap-1">
                           {item.status === "verified" ? (
                             <Button
                               onClick={() => handleUnapprove(item.id)}
