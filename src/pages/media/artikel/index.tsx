@@ -11,7 +11,6 @@ import { ArticleType } from "../../../types/articles";
 import { request } from "../../../api/config";
 import { Key, Pencil, Trash } from "@phosphor-icons/react";
 import { useAlert } from "../../../stores/alert";
-import moment from "moment";
 import { useArticles } from "../../../stores/articles";
 import { useNavigate } from "react-router-dom";
 
@@ -138,6 +137,7 @@ const IndexArticle = () => {
           <Table.Th>Title</Table.Th>
           <Table.Th>Author</Table.Th>
           <Table.Th>Category</Table.Th>
+          <Table.Th>Sub Category</Table.Th>
           <Table.Th>Date</Table.Th>
           <Table.Th>Image</Table.Th>
           <Table.Th className="text-center">Opsi</Table.Th>
@@ -167,7 +167,17 @@ const IndexArticle = () => {
                       </Table.Td>
                       <Table.Td>{item.title ?? ""}</Table.Td>
                       <Table.Td>{item.author ?? ""}</Table.Td>
-                      <Table.Td>{item.categories[0]?.name ?? ""}</Table.Td>
+                      <Table.Td>{item.categories_id?.name ?? ""}</Table.Td>
+                      <Table.Td>
+                        {item.sub_categories.map((e, index) => (
+                          <span
+                            key={index}
+                            className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
+                          >
+                            {e.name}
+                          </span>
+                        ))}
+                      </Table.Td>
                       <Table.Td>{item.date ?? ""}</Table.Td>
                       <Table.Td>
                         {item.image && (

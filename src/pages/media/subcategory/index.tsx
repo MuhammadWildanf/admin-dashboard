@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import Layout from "../../layout.tsx/app";
 import { getData } from "../../../api/get-data";
-import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
+import { HiOutlineSearch, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
 import AddButton from "../../../components/buttons/add";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "../../../components/buttons";
 import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
 import BaseModal from "../../../components/modal/base";
 import Pagination from "../../../components/tables/pagination";
 import Table from "../../../components/tables/base";
 import { FormInput } from "../../../components/forms/input";
-import { FormSelectAsync } from "../../../components/forms/input-select";
 import { SubCategoryType } from "../../../types/subcategory";
 import { CategoryType } from "../../../types/category";
 import { request } from "../../../api/config";
@@ -46,16 +45,6 @@ const UserPsikolog = () => {
   const { setSubCategories, getSubCategories } = useSubCategories();
   const { setMessage } = useAlert();
 
-  const selectCategory = async (inputValue: string) => {
-    let params = {
-      q: inputValue,
-    };
-    const { data } = await request.get("/categories-artikel", {
-      params: params,
-    });
-
-    return data.data.data;
-  };
 
   const getSubCategory = async (
     search?: string,
@@ -94,12 +83,10 @@ const UserPsikolog = () => {
   const handleSave = handleSubmit(async (data) => {
     console.log(data , 'requests dari form');
     setLoadingSubmit(true);
-    const categoryId = data.parent_id?.id;
     
     try {
       const formData = new FormData();
       formData.append("name", data.name);
-      formData.append("parent_id", categoryId?.toString() || '');
 
       formData.forEach((value, key) => {
         console.log(key + ': ' + value);
@@ -127,7 +114,6 @@ const UserPsikolog = () => {
     setSelected(item);
     setModalMode("edit");
     setValue("name", item.name ?? "");
-    setValue("name", item.parent_id ?? "");
     setModalAdd(true);
   };
 
@@ -264,15 +250,6 @@ const UserPsikolog = () => {
             control={control}
             label="Nama"
             error={errors?.name}
-          />
-          <FormSelectAsync
-            label="Category"
-            name="parent_id"
-            control={control}
-            loadOption={selectCategory}
-            optionLabel={(option: CategoryType) => option.name}
-            optionValue={(option: CategoryType) => option.id.toString()}
-            error={errors?.parent_id}
           />
           <div className="mt-3 flex items-center justify-end">
             <Button className="px-8" onClick={handleSave}>

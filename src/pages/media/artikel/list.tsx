@@ -16,6 +16,7 @@ import moment from "moment";
 import LoadingPage from "../../layout.tsx/loading";
 import { Button } from "../../../components/buttons";
 import { CategoryType } from "../../../types/category";
+import { SubCategoryType } from "../../../types/subcategory";
 import { Editor } from "@tinymce/tinymce-react";
 
 
@@ -24,6 +25,7 @@ type FormValues = {
     title: string;
     author: string;
     categories_id: CategoryType | null;
+    sub_categories: SubCategoryType[] | null;
     date: string;
     image: FileList | null;
     diskripsi: string;
@@ -33,10 +35,10 @@ type ErrorForm = {
     title: [] | null;
     author: [] | null;
     categories_id: [] | null;
+    sub_categories: [] | null;
     date: [] | null;
     image: [] | null;
     diskripsi: [] | null;
-    categories: [] | null;
 };
 
 
@@ -77,15 +79,28 @@ const DetailArticle = () => {
         return data.data.data;
     };
 
+    const selectSubCategory = async (inputValue: string) => {
+        let params = {
+            q: inputValue,
+        };
+        const { data } = await request.get("/subcategories", {
+            params: params,
+        });
+
+        return data.data.data;
+    };
+
     const handleSave = handleSubmit(async (data) => {
         setLoadingSubmit(true);
         // console.log('ini log dari memilih categories', data.categories_id);
         const categoryId = data.categories_id?.id;
+        const subCategoryIds = data.sub_categories?.map(subCategory => subCategory.id);
         try {
             const formData = new FormData();
             formData.append("title", data.title);
             formData.append("author", data.author);
             formData.append("categories_id", categoryId?.toString() || '');
+            formData.append("sub_categories_id", subCategoryIds?.join(',') || '');
             formData.append("date", data.date);
             formData.append("diskripsi", data.diskripsi);
             if (data.image?.[0]) {
@@ -145,13 +160,12 @@ const DetailArticle = () => {
             getDetail().then((res) => {
                 setDetail(res[0]);
                 console.log('ini dari res[0].categories_id =>>', res[0].categories_id)
-                console.log('categories_id:', res[0].categories_id);
-                console.log('category_name:', res[0].categories.name);
                 setValue("title", res[0].title);
                 setValue("author", res[0].author);
                 setValue("date", res[0].date);
                 setValue("diskripsi", res[0].diskripsi);
                 setValue("categories_id", res[0].categories_id);
+                setValue("sub_categories", res[0].sub_categories);
                 setEditorContent(res[0].diskripsi);
                 setPreviewSrc(res[0].image ?? null);
                 setLoading(false);
@@ -165,6 +179,7 @@ const DetailArticle = () => {
                 diskripsi: "",
                 image: null,
                 categories_id: null,
+                sub_categories: null,
             });
             setEditorContent("");
         }
@@ -203,6 +218,16 @@ const DetailArticle = () => {
                                     loadOption={selectCategory}
                                     optionLabel={(option: CategoryType) => option.name}
                                     optionValue={(option: CategoryType) => option.id.toString()}  // Pastikan mengembalikan string ID
+                                    error={errors?.categories_id}
+                                />
+                                <FormSelectAsync
+                                    label="Sub Category"
+                                    name="sub_categories"
+                                    control={control}
+                                    loadOption={selectSubCategory}
+                                    optionLabel={(option: SubCategoryType) => option.name}
+                                    optionValue={(option: SubCategoryType) => option.id.toString()}  // Pastikan mengembalikan string ID
+                                    multiple={true}
                                     error={errors?.categories_id}
                                 />
                                 <FormInput
