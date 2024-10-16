@@ -12,12 +12,8 @@ import { request } from "../../../api/config";
 import { getData } from "../../../api/get-data";
 import LoadingPage from "../../layout.tsx/loading";
 import { Button } from "../../../components/buttons";
-import { useMemo } from "react";
-import Table from "../../../components/tables/base";
-import { PlusCircle, Pencil, Trash } from "@phosphor-icons/react";
-import { PriceType } from "../../../types/price";
-import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
-import BaseModal from "../../../components/modal/base";
+import { FormSelectAsync } from "../../../components/forms/input-select";
+import { CounselingType } from "../../../types/counselings";
 
 
 type FormValues = {
@@ -27,7 +23,7 @@ type FormValues = {
     image: FileList | null;
     with_screening: number | null;
     with_emergency: number;
-    counseling_id: string;
+    counseling_id: CounselingType | null;
     tag: string;
     default_share_profit: number | null;
     screening_modul_id: string | null;
@@ -88,18 +84,11 @@ const DetailCounselingProduct = () => {
     const { detail, setDetail } = useCounselingProduct();
     const { setMessage } = useAlert();
     const { setValue, reset, handleSubmit, control, watch } = useForm<FormValues>();
-    const [counselingOptions, setCounselingOptions] = useState<any[]>([]);
     const name = watch('name');
     const navigate = useNavigate();
     const uploadInputRef = useRef<HTMLInputElement | null>(null);
     const imagePreviewRef = useRef<HTMLDivElement | null>(null);
     const [fileName, setFileName] = useState<string>("");
-    const [selected, setSelected] = useState<PriceType | null>(null);
-    const [modalDelete, setModalDelete] = useState<boolean>(false);
-    const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
-        undefined
-    );
-    const [modalAdd, setModalAdd] = useState<boolean>(false);
 
 
 
@@ -113,25 +102,20 @@ const DetailCounselingProduct = () => {
         }
     };
 
-    const getCounselingOptions = async () => {
-        try {
-            const response = await getData("https://api-dev.deeptalk.co.id/admin/counselings");
-            setCounselingOptions(response.data);
-        } catch (err: any) {
-            console.log(err);
-        }
-    };
+   
 
     const handleSave = handleSubmit(async (data) => {
         setLoadingSubmit(true);
         try {
+            console.log( data.counseling_id)
+            const counselingId = data.counseling_id?.id;
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description ?? "");
             formData.append("slug", data.slug);
             formData.append("with_screening", data.with_screening?.toString() ?? "0");
             formData.append("with_emergency", data.with_emergency.toString());
-            formData.append("counseling_id", data.counseling_id);
+            formData.append("counseling_id", counselingId?.toString() || '');
             formData.append("tag", data.tag);
             formData.append("default_share_profit", data.default_share_profit?.toString() ?? "0");
             formData.append("screening_modul_id", data.screening_modul_id ?? "");
@@ -149,7 +133,7 @@ const DetailCounselingProduct = () => {
                 setMessage("Counseling Products created!", "success");
             }
 
-            navigate('/counseling-products');
+            navigate('/product/counseling-products');
         } catch (err: any) {
             if (err.response && err.response.data.errors) {
                 setErrors(err.response.data.errors); // Update state with errors
@@ -186,67 +170,16 @@ const DetailCounselingProduct = () => {
         }
     };
 
-    const handleSavePrice = handleSubmit(async (data) => {
-        setLoadingSubmit(true);
-        try {
-            const formData = new FormData();
-            const pricing = data.pricings[0];
-            formData.append("name", pricing.name);
-            formData.append("productable_type", "Product");
-            formData.append("productable_id", `${id}`);
-            formData.append("year_of_experience", pricing.year_of_experience ?? "");
-            formData.append("notes", pricing.notes ?? "");
-            formData.append("chat_min_price", pricing.chat_min_price.toString() ?? "0");
-            formData.append("chat_max_price", pricing.chat_max_price.toString() ?? "0");
-            formData.append("video_call_min_price", pricing.video_call_min_price.toString() ?? "0");
-            formData.append("video_call_max_price", pricing.video_call_max_price.toString() ?? "0");
-            formData.append("face2face_min_price", (pricing.face2face_min_price ?? 0).toString());
-            formData.append("face2face_max_price", (pricing.face2face_max_price ?? 0).toString());
-            formData.append("default_share_profit", pricing.default_share_profit.toString());
 
-            if (modalMode === "create") {
-                await request.post("/pricing-variable/create", formData);
-            } else {
-                await request.post(`/pricing-variable/${selected?.id}`, formData);
-            }
-            setModalAdd(false);
-            setModalMode(undefined);
-            setMessage("Price saved!", "success");
-        } catch (err: any) {
-            setErrors(err.response.data.errors);
-            console.log(err);
-        }
-        setErrors(null);
-        setLoadingSubmit(false);
-    });
+    const selectCounseling = async (inputValue: string) => {
+        let params = {
+            q: inputValue,
+        };
+        const { data } = await request.get("/counselings", {
+            params: params,
+        });
 
-    const handleFormEditPrice = (pricing: PriceType) => {
-        setSelected(pricing);
-        setModalMode("edit");
-        setValue("pricings.0.name", pricing.name ?? "");
-        setValue("pricings.0.year_of_experience", pricing.year_of_experience ?? "");
-        setValue("pricings.0.notes", pricing.notes ?? "");
-        setValue("pricings.0.chat_min_price", pricing.chat_min_price);
-        setValue("pricings.0.chat_max_price", pricing.chat_max_price);
-        setValue("pricings.0.video_call_min_price", pricing.video_call_min_price);
-        setValue("pricings.0.video_call_max_price", pricing.video_call_max_price);
-        setValue("pricings.0.face2face_min_price", pricing.face2face_min_price);
-        setValue("pricings.0.face2face_max_price", pricing.face2face_max_price);
-        setValue("pricings.0.default_share_profit", pricing.default_share_profit);
-        setModalAdd(true);
-    };
-
-    const handleDelete = async () => {
-        setLoadingSubmit(true);
-        try {
-            await request.delete(`/pricing-variable/${selected?.id}`);
-            setSelected(null);
-            setModalDelete(false);
-            setMessage("Price deleted", "success");
-        } catch (err: any) {
-            setErrors(err.response.data.errors);
-        }
-        setLoadingSubmit(false);
+        return data.data.data;
     };
 
     useEffect(() => {
@@ -275,7 +208,7 @@ const DetailCounselingProduct = () => {
                 slug: "",
                 with_screening: null,
                 with_emergency: 0,
-                counseling_id: "",
+                counseling_id: null,
                 tag: "",
                 default_share_profit: null,
                 screening_modul_id: "",
@@ -283,7 +216,6 @@ const DetailCounselingProduct = () => {
                 image: null,
             });
         }
-        getCounselingOptions();
     }, [id]);
 
     useEffect(() => {
@@ -303,14 +235,7 @@ const DetailCounselingProduct = () => {
     }, [name, setValue]);
 
 
-    useEffect(() => {
-        if (id && counselingOptions.length > 0 && detail) {
-            const selectedOption = counselingOptions.find(option => option.id === detail.counseling_id);
-            if (!selectedOption) {
-                setValue('counseling_id', '');
-            }
-        }
-    }, [counselingOptions, id, detail, setValue]);
+   
 
     return (
         <Layout
@@ -371,10 +296,13 @@ const DetailCounselingProduct = () => {
                                             />
                                         </div>
                                     </div>
-                                    <FormInput
+                                    <FormSelectAsync
+                                        label="Counseling"
                                         name="counseling_id"
                                         control={control}
-                                        label="Counseling"
+                                        loadOption={selectCounseling}
+                                        optionLabel={(option: CounselingType) => option.name}
+                                        optionValue={(option: CounselingType) => option.id?.toString() || ''}  // Pastikan mengembalikan string ID
                                         error={errors?.counseling_id}
                                     />
                                     <FormInput

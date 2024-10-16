@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../layout.tsx/app";
 import { getData } from "../../../api/get-data";
-import { HiOutlineSearch, HiTrash, HiX } from "react-icons/hi";
+import { HiOutlineSearch, HiX } from "react-icons/hi";
 import { Spinner } from "flowbite-react";
 import AddButton from "../../../components/buttons/add";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "../../../components/buttons";
 import ModalDeleteConfirmation from "../../../components/modal/delete-confirmation";
 import BaseModal from "../../../components/modal/base";
 import Pagination from "../../../components/tables/pagination";
 import Table from "../../../components/tables/base";
-import { FormInput, FormInputPassword } from "../../../components/forms/input";
-import {
-  FormSelect,
-  FormSelectTimezone,
-} from "../../../components/forms/input-select";
-import { SelectOptionType } from "../../../types/form";
+import { FormInput } from "../../../components/forms/input";
 import { PriceType } from "../../../types/price";
 import { request } from "../../../api/config";
-import { Key, Pencil, Trash } from "@phosphor-icons/react";
+import { Pencil, Trash } from "@phosphor-icons/react";
 import { useAlert } from "../../../stores/alert";
-import moment from "moment";
 import { usePrice } from "../../../stores/price";
+import { FormSelectAsync } from "../../../components/forms/input-select";
+import { CounselingProductType } from "../../../types/counselingProduct";
+
 
 type FormValues = {
+  productable_id: string;
   name: string;
   year_of_experience: string;
   notes: string;
@@ -37,6 +35,7 @@ type FormValues = {
 };
 
 type ErrorForm = {
+  productable_id: [] | null;
   name: [] | null;
   year_of_experience: [] | null;
   notes: [] | null;
@@ -55,14 +54,11 @@ const Price = () => {
   const [q, setQ] = useState<string | undefined>(undefined);
   const [page, setPage] = useState<number>(1);
   const [modalAdd, setModalAdd] = useState<boolean>(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(
-    undefined
-  );
+  const [modalMode, setModalMode] = useState<"create" | "edit" | undefined>(undefined);
   const [errors, setErrors] = useState<ErrorForm | null>(null);
   const [modalDelete, setModalDelete] = useState<boolean>(false);
   const [selected, setSelected] = useState<PriceType | null>(null);
-  const { setValue, reset, handleSubmit, control, watch } =
-    useForm<FormValues>();
+  const { setValue, reset, handleSubmit, control, watch } = useForm<FormValues>();
   const { setPrice, GetPrice } = usePrice();
   const { setMessage } = useAlert();
 
@@ -74,7 +70,7 @@ const Price = () => {
     try {
       const data = await getData("/pricing-variable", page, search, searchMode);
       return data;
-    } catch {}
+    } catch { }
   };
 
   const handleSearch = async (input: string | undefined) => {
@@ -103,13 +99,25 @@ const Price = () => {
   const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
-      let payload = {
-        ...data,
-      };
+
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("productable_type", "Product");
+      formData.append("productable_id", data.productable_id.toString() || '');
+      formData.append("year_of_experience", data.year_of_experience ?? "");
+      formData.append("notes", data.notes ?? "");
+      formData.append("chat_min_price", data.chat_min_price?.toString() || "0");
+      formData.append("chat_max_price", data.chat_max_price?.toString() || "0");
+      formData.append("video_call_min_price", data.video_call_min_price?.toString() || "0");
+      formData.append("video_call_max_price", data.video_call_max_price?.toString() || "0");
+      formData.append("face2face_min_price", data.face2face_min_price?.toString() || "0");
+      formData.append("face2face_max_price", data.face2face_max_price?.toString() || "0");
+      formData.append("default_share_profit", data.default_share_profit?.toString() || "0");
+
       if (modalMode === "create") {
-        await request.post("/pricing-variable/create", payload);
+        await request.post("/pricing-variable/create", formData);
       } else {
-        await request.post(`/pricing-variable/${selected?.id}`, payload);
+        await request.post(`/pricing-variable/${selected?.id}`, formData);
       }
       setModalAdd(false);
       setModalMode(undefined);
@@ -154,6 +162,18 @@ const Price = () => {
     setLoadingSubmit(false);
   };
 
+  const selectCounselingProduct = async (inputValue: string) => {
+    let params = {
+      q: inputValue,
+    };
+    const { data } = await request.get("/counseling-products", {
+      params: params,
+    });
+
+    return data.data.data;
+  };
+
+
   useEffect(() => {
     Promise.all([getPriceVariable()]).then((res) => {
       setPrice(res[0]);
@@ -184,11 +204,10 @@ const Price = () => {
             </button>
           )}
           <button
-            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${
-              loading
-                ? "bg-blue-500 text-white cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-            }`}
+            className={`${loading ? "py-2 px-3" : "p-3"} text-lg rounded-r-lg ${loading
+              ? "bg-blue-500 text-white cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             disabled={loading}
             onClick={() => handleSearch(q ?? "")}
           >
@@ -299,6 +318,15 @@ const Price = () => {
         close={() => setModalAdd(false)}
       >
         <form>
+          <FormSelectAsync
+            label="Counseling Product"
+            name="productable_id"
+            control={control}
+            loadOption={selectCounselingProduct}
+            optionLabel={(option: CounselingProductType) => option.name}
+            optionValue={(option: CounselingProductType) => option.id?.toString() || ''}  // Pastikan mengembalikan string ID
+            error={errors?.productable_id}
+          />
           <FormInput
             name="name"
             label="Name"
