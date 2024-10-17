@@ -102,7 +102,7 @@ const Price = () => {
 
       const formData = new FormData();
       formData.append("name", data.name);
-      formData.append("productable_type", "Product");
+      formData.append("productable_type", "CounselingProduct");
       formData.append("productable_id", data.productable_id.toString() || '');
       formData.append("year_of_experience", data.year_of_experience ?? "");
       formData.append("notes", data.notes ?? "");
@@ -170,8 +170,12 @@ const Price = () => {
       params: params,
     });
 
-    return data.data.data;
-  };
+    // Ambil products dari data response
+    const products = data.data.data.flatMap((counselingProduct: any) => counselingProduct.products);
+
+    return products;
+};
+
 
 
   useEffect(() => {
