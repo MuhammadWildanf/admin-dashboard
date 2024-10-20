@@ -70,6 +70,17 @@ const MediaMenu = {
   ],
 }
 
+const MediaMenuWriter = {
+  label: "Media",
+  name: "media",
+  icon: FiFolder,
+  href: "#",
+  child: [
+    { label: "Category", name: "Category", href: "/media/category" },
+    { label: "Sub Category", name: "Sub Category", href: "/media/sub-category" },
+  ],
+};
+
 const ManagementArtikel = {
   label: "Artikel",
   name: "Artikel",
@@ -100,6 +111,7 @@ export const menuUser: Menu[] = [
 
 export const menuWriter: Menu[] = [
   dashboardMenu,
+  MediaMenuWriter,
   ManagementArtikel
 ];
 
