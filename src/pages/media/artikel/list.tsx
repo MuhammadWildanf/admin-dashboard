@@ -1,18 +1,14 @@
 import { useEffect, useState, ChangeEvent, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../../layout.tsx/app";
-import { FileInput, Label } from "flowbite-react";
 import { Spinner } from "flowbite-react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useArticles } from "../../../stores/articles";
 import { FormInput } from "../../../components/forms/input";
-import { FormTextArea } from "../../../components/forms/input-textarea";
-import { FormSelect, FormSelectAsync } from "../../../components/forms/input-select";
-import { SelectOptionType } from "../../../types/form";
+import { FormSelectAsync } from "../../../components/forms/input-select";
 import { useAlert } from "../../../stores/alert";
 import { request } from "../../../api/config";
 import { getData } from "../../../api/get-data";
-import moment from "moment";
 import LoadingPage from "../../layout.tsx/loading";
 import { Button } from "../../../components/buttons";
 import { CategoryType } from "../../../types/category";
@@ -45,6 +41,7 @@ type ErrorForm = {
 const DetailArticle = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
+    const [existingImage, setExistingImage] = useState<string | null>(null);
     const [errors, setErrors] = useState<ErrorForm | null>(null);
     const { id } = useParams();
     const { detail, setDetail } = useArticles();
@@ -72,22 +69,22 @@ const DetailArticle = () => {
         let params = {
             q: inputValue,
         };
-        const { data } = await request.get("/categories-artikel", {
+        const { data } = await request.get("/categories-artikel/category", {
             params: params,
         });
 
-        return data.data.data;
+        return data.data;
     };
 
     const selectSubCategory = async (inputValue: string) => {
         let params = {
             q: inputValue,
         };
-        const { data } = await request.get("/subcategories", {
+        const { data } = await request.get("/subcategories/sub-category", {
             params: params,
         });
 
-        return data.data.data;
+        return data.data;
     };
 
     const handleSave = handleSubmit(async (data) => {
@@ -103,9 +100,16 @@ const DetailArticle = () => {
             formData.append("sub_categories_id", subCategoryIds?.join(',') || '');
             formData.append("date", data.date);
             formData.append("diskripsi", data.diskripsi);
-            if (data.image?.[0]) {
-                formData.append("image", data.image[0]);
-            }
+        if (data.image && data.image.length > 0) {
+            formData.append("image", data.image[0]);
+        }
+
+        // Only append the existing image if no new image has been uploaded
+        if (!data.image && existingImage) {
+            formData.append("existing_image_url", existingImage); // You can handle this on the backend
+        }
+
+
 
             if (id) {
                 formData.append("_method", "PUT");
@@ -167,7 +171,12 @@ const DetailArticle = () => {
                 setValue("categories_id", res[0].categories_id);
                 setValue("sub_categories", res[0].sub_categories);
                 setEditorContent(res[0].diskripsi);
-                setPreviewSrc(res[0].image ?? null);
+                if (res[0].image) {
+                    setExistingImage(res[0].image); 
+                    setPreviewSrc(res[0].image);    
+                } else {
+                    setExistingImage(null);
+                }
                 setLoading(false);
             });
         } else {
@@ -244,7 +253,6 @@ const DetailArticle = () => {
                                         <div
                                             id="image-preview"
                                             className="max-w-sm p-6 mb-4 bg-gray-100 border-dashed border-2 border-gray-400 rounded-lg items-center mx-auto text-center cursor-pointer"
-                                            onClick={handleClick}
                                             ref={imagePreviewRef}
                                         >
                                             <input
@@ -278,7 +286,7 @@ const DetailArticle = () => {
                                                         Choose photo size should be less than <b className="text-gray-600">2mb</b>
                                                     </p>
                                                     <p className="font-normal text-sm text-gray-400 md:px-6">
-                                                        and should be in <b className="text-gray-600">JPG, PNG, or GIF</b> format.
+                                                        and should be in <b className="text-gray-600">JPG, PNG</b> format.
                                                     </p>
                                                     <span id="filename" className="text-gray-500 bg-gray-200 z-50">
                                                         {fileName}

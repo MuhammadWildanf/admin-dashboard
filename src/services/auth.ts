@@ -1,5 +1,4 @@
 import { Cookies } from "react-cookie";
-import { request } from "../api/config";
 
 const cookies = new Cookies();
 

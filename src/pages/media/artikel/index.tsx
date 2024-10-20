@@ -47,6 +47,7 @@ const IndexArticle = () => {
     } catch {}
   };
 
+
   const handleSearch = async (input: string | undefined) => {
     setQ(input);
     const data = await GetAllArticle(input ?? "", true);

@@ -54,6 +54,7 @@ type ErrorForm = {
 const DetailWebinar = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
+    const [existingImage, setExistingImage] = useState<string | null>(null);
     const [errors, setErrors] = useState<ErrorForm | null>(null);
     const { id } = useParams();
     const { detail, setDetail } = useWebinar();
@@ -90,9 +91,15 @@ const DetailWebinar = () => {
             formData.append("media_layanan", data.media_layanan);
             formData.append("harga_sertifikat", data.harga_sertifikat);
             formData.append("link", data.link);
-            if (data.image?.[0]) {
+            if (data.image && data.image.length > 0) {
                 formData.append("image", data.image[0]);
             }
+
+            // Only append the existing image if no new image has been uploaded
+            if (!data.image && existingImage) {
+                formData.append("existing_image_url", existingImage); // You can handle this on the backend
+            }
+
 
             if (id) {
                 formData.append("_method", "PUT");
@@ -117,29 +124,29 @@ const DetailWebinar = () => {
 
     const handleClick = () => {
         if (uploadInputRef.current) {
-          uploadInputRef.current.click();
+            uploadInputRef.current.click();
         }
-      };
-    
-      const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    };
+
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewSrc(reader.result as string);
-          };
-          reader.readAsDataURL(file);
-    
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(file);
-          setValue("image", dataTransfer.files);
-          setFileName(file.name);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewSrc(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            setValue("image", dataTransfer.files);
+            setFileName(file.name);
         } else {
-          setPreviewSrc(null);
-          setValue("image", null);
-          setFileName("");
+            setPreviewSrc(null);
+            setValue("image", null);
+            setFileName("");
         }
-      };
+    };
 
     useEffect(() => {
         if (id) {
@@ -155,7 +162,12 @@ const DetailWebinar = () => {
                 setValue("media_layanan", res[0].media_layanan);
                 setValue("harga_sertifikat", res[0].harga_sertifikat);
                 setValue("link", res[0].link);
-                setPreviewSrc(res[0].image ?? null);
+                if (res[0].image) {
+                    setExistingImage(res[0].image);
+                    setPreviewSrc(res[0].image);
+                } else {
+                    setExistingImage(null);
+                }
                 setLoading(false);
             });
         } else {
