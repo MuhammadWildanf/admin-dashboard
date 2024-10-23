@@ -13,10 +13,7 @@ export const FormInputRadio = ({
   control,
   error,
   display = "block",
-  defaultValue,
-  grid,
   options,
-  onChange,
 }: Props) => {
   return (
     <div className="mb-3">
@@ -29,18 +26,18 @@ export const FormInputRadio = ({
           control={control}
           render={({ field }) => (
             <div
-              className={`${display} py-2 ${display === "grid" && "gap-2"} ${
-                display === "flex" && "gap-3"
-              }`}
+              className={`${display} py-2 ${display === "grid" && "gap-2"} ${display === "flex" && "gap-3"
+                }`}
             >
               {options?.map((item: any, key) => (
-                <div className="flex items-center gap-2">
+                <div key={key} className="flex items-center gap-2">
                   <Radio
                     {...field}
-                    defaultChecked={defaultValue === item.value}
                     id={`radio-option-${name}-${key}`}
                     name={name}
                     value={item.value}
+                    checked={field.value === item.value} // Use checked instead of defaultChecked
+                    onChange={() => field.onChange(item.value)} // Set the value on change
                   />
                   <Label htmlFor={`radio-option-${name}-${key}`}>
                     {item.label}
@@ -50,19 +47,7 @@ export const FormInputRadio = ({
             </div>
           )}
         />
-      ) : (
-        // <input
-        //   type={type ?? "text"}
-        //   name={name} // Add name for uncontrolled inputs
-        //   className={`block w-full rounded-lg border border-gray-300 p-2 ${
-        //     error ? "border-red-600" : "border-gray-300"
-        //   } ${className}`}
-        //   placeholder={placeholder ?? ""}
-        //   required={required}
-        //   onChange={onChange}
-        // />
-        <></>
-      )}
+      ) : null}
       {error && <small className="text-xs text-red-600">{error}</small>}
     </div>
   );

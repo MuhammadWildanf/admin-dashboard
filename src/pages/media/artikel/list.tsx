@@ -4,6 +4,7 @@ import Layout from "../../layout.tsx/app";
 import { Spinner } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { useArticles } from "../../../stores/articles";
+import { FormImage } from "../../../components/forms/input-image";
 import { FormInput } from "../../../components/forms/input";
 import { FormSelectAsync } from "../../../components/forms/input-select";
 import { useAlert } from "../../../stores/alert";

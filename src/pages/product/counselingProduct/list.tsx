@@ -75,6 +75,18 @@ type ErrorForm = {
 };
 
 
+const screeningOptions = [
+    { value: 1, label: "Ya" },
+    { value: 0, label: "Tidak" }
+];
+
+const emergencyOptions = [
+    { value: 1, label: "Ya" },
+    { value: 0, label: "Tidak" }
+];
+
+
+
 const DetailCounselingProduct = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -102,19 +114,17 @@ const DetailCounselingProduct = () => {
         }
     };
 
-   
-
     const handleSave = handleSubmit(async (data) => {
         setLoadingSubmit(true);
         try {
-            console.log( data.counseling_id)
+            console.log(data.counseling_id)
             const counselingId = data.counseling_id?.id;
             const formData = new FormData();
             formData.append("name", data.name);
             formData.append("description", data.description ?? "");
             formData.append("slug", data.slug);
-            formData.append("with_screening", data.with_screening?.toString() ?? "0");
-            formData.append("with_emergency", data.with_emergency.toString());
+            formData.append("with_screening", data.with_screening ? "1" : "0");
+            formData.append("with_emergency", data.with_emergency ? "1" : "0");
             formData.append("counseling_id", counselingId?.toString() || '');
             formData.append("tag", data.tag);
             formData.append("default_share_profit", data.default_share_profit?.toString() ?? "0");
@@ -175,29 +185,29 @@ const DetailCounselingProduct = () => {
         let params = {
             q: inputValue,
         };
-        const { data } = await request.get("/counselings", {
+        const { data } = await request.get("/counselings/counseling", {
             params: params,
         });
 
-        return data.data.data;
+        return data.data;
     };
 
     useEffect(() => {
         if (id) {
             setLoading(true);
             getDetail().then((res) => {
-                setDetail(res[0]);
-                setValue("name", res[0].name);
-                setValue("description", res[0].description);
-                setValue("slug", res[0].slug);
-                setValue("with_screening", res[0].with_screening);
-                setValue("with_emergency", res[0].with_emergency);
-                setValue("counseling_id", res[0].counseling_id);
-                setValue("tag", res[0].tag);
-                setValue("default_share_profit", res[0].default_share_profit);
-                setValue("screening_modul_id", res[0].screening_modul_id);
-                setValue("notes", res[0].notes);
-                setPreviewSrc(res[0].image);
+                setDetail(res);
+                setValue("name", res.name);
+                setValue("description", res.description);
+                setValue("slug", res.slug);
+                setValue("with_screening", res.with_screening);
+                setValue("with_emergency", res.with_emergency);
+                setValue("counseling_id", res.counseling_id);
+                setValue("tag", res.tag);
+                setValue("default_share_profit", res.default_share_profit);
+                setValue("screening_modul_id", res.screening_modul_id);
+                setValue("notes", res.notes);
+                setPreviewSrc(res.image);
                 setLoading(false);
             });
         } else {
@@ -235,7 +245,6 @@ const DetailCounselingProduct = () => {
     }, [name, setValue]);
 
 
-   
 
     return (
         <Layout
@@ -248,7 +257,6 @@ const DetailCounselingProduct = () => {
                     <LoadingPage />
                 ) : (
                     <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-                        {/* for counseling products  */}
                         <form>
                             <div className="flex flex-wrap -mx-3 mb-6">
                                 <div className="w-full md:w-1/2 px-3 mb-8 md:mb-0">
@@ -273,26 +281,22 @@ const DetailCounselingProduct = () => {
                                     <div className="flex flex-wrap -mx-3 mb-6">
                                         <div className="w-full md:w-1/3 px-3">
                                             <FormInputRadio
+                                                label="With Screening"
                                                 name="with_screening"
                                                 control={control}
-                                                label="With Screening"
-                                                options={[
-                                                    { value: true, label: "Ya" },
-                                                    { value: false, label: "Tidak" },
-                                                ]}
-                                                error={errors?.with_screening}
+                                                options={screeningOptions}
+                                                required
+                                                error={null} // Berikan pesan error jika diperlukan
                                             />
                                         </div>
                                         <div className="w-full md:w-1/3 px-3">
                                             <FormInputRadio
+                                                label="With Emergency"
                                                 name="with_emergency"
                                                 control={control}
-                                                label="With Emergency"
-                                                options={[
-                                                    { value: true, label: "Ya" },
-                                                    { value: false, label: "Tidak" },
-                                                ]}
-                                                error={errors?.with_emergency}
+                                                options={emergencyOptions}
+                                                required
+                                                error={null} // Berikan pesan error jika diperlukan
                                             />
                                         </div>
                                     </div>
@@ -302,7 +306,7 @@ const DetailCounselingProduct = () => {
                                         control={control}
                                         loadOption={selectCounseling}
                                         optionLabel={(option: CounselingType) => option.name}
-                                        optionValue={(option: CounselingType) => option.id?.toString() || ''}  // Pastikan mengembalikan string ID
+                                        optionValue={(option: CounselingType) => option.id?.toString()}  // Pastikan mengembalikan string ID
                                         error={errors?.counseling_id}
                                     />
                                     <FormInput

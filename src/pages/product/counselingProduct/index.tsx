@@ -70,7 +70,7 @@ const Counseling = () => {
   const handleDelete = async () => {
     setLoadingSubmit(true);
     try {
-      await request.delete(`/counselings/${selected?.id}`);
+      await request.delete(`/counseling-products/${selected?.id}`);
       setSelected(null);
       setModalDelete(false);
       setMessage("Counseling Product deleted", "success");

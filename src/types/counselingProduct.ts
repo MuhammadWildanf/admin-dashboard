@@ -5,21 +5,21 @@ export type CounselingProductType = {
   image: string | null;
   notes: string | null;
   description: string | null;
+  with_screening: number;
+  with_emergency: number;
+  tag: string | null;
+  default_share_profit: number | null;
+  screening_modul: string | null;
+  is_general: boolean;
   created_at: string;
   updated_at: string;
-  products: {
+  counseling: {
     id: string;
     name: string;
     slug: string;
     image: string | null;
-    with_screening: number;
-    with_emergency: number;
-    tag: string | null;
-    default_share_profit: number | null;
-    screening_modul: string | null;
     notes: string | null;
     description: string | null;
-    is_counseling_general: boolean;
     created_at: string;
     updated_at: string;
     pricings: {

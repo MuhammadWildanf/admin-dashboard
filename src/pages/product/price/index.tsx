@@ -21,7 +21,7 @@ import { CounselingProductType } from "../../../types/counselingProduct";
 
 
 type FormValues = {
-  productable_id: string;
+  productable_id: CounselingProductType | null;
   name: string;
   year_of_experience: string;
   notes: string;
@@ -99,11 +99,11 @@ const Price = () => {
   const handleSave = handleSubmit(async (data) => {
     setLoadingSubmit(true);
     try {
-
+      const Productableid = data.productable_id?.id;
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("productable_type", "CounselingProduct");
-      formData.append("productable_id", data.productable_id.toString() || '');
+      formData.append("productable_id", Productableid?.toString() ?? "");
       formData.append("year_of_experience", data.year_of_experience ?? "");
       formData.append("notes", data.notes ?? "");
       formData.append("chat_min_price", data.chat_min_price?.toString() || "0");
@@ -166,14 +166,11 @@ const Price = () => {
     let params = {
       q: inputValue,
     };
-    const { data } = await request.get("/counseling-products", {
+    const { data } = await request.get("/counseling-products/counseling-product", {
       params: params,
     });
 
-    // Ambil products dari data response
-    const products = data.data.data.flatMap((counselingProduct: any) => counselingProduct.products);
-
-    return products;
+    return data.data;
 };
 
 
@@ -328,7 +325,7 @@ const Price = () => {
             control={control}
             loadOption={selectCounselingProduct}
             optionLabel={(option: CounselingProductType) => option.name}
-            optionValue={(option: CounselingProductType) => option.id?.toString() || ''}  // Pastikan mengembalikan string ID
+            optionValue={(option: CounselingProductType) => option.id}  // Pastikan mengembalikan string ID
             error={errors?.productable_id}
           />
           <FormInput
